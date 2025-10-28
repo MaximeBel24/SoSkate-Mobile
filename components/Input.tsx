@@ -1,8 +1,14 @@
 import { colors, radius, spacingX } from "@/constants/theme";
-import { InputProps } from "@/types";
 import { verticalScale } from "@/utils/styling";
 import React, { useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import {StyleSheet, TextInput, TextInputProps, TextStyle, View, ViewStyle} from "react-native";
+
+interface InputProps extends TextInputProps {
+    icon?: React.ReactNode;
+    containerStyle?: ViewStyle;
+    inputStyle?: TextStyle;
+    inputRef?: React.RefObject<TextInput>;
+}
 
 const Input = (props: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -17,7 +23,7 @@ const Input = (props: InputProps) => {
       {props.icon && props.icon}
       <TextInput
         style={(styles.input, props.inputStyle)}
-        placeholderTextColor={colors.neutral400}
+        placeholderTextColor={colors.neutral700}
         ref={props.inputRef && props.inputRef}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
@@ -36,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: colors.neutral200,
+    borderColor: colors.neutral900,
     borderRadius: radius.full,
     borderCurve: "continuous",
     paddingHorizontal: spacingX._15,
@@ -48,7 +54,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: colors.text,
+    color: colors.neutral100,
     fontSize: verticalScale(14),
   },
 });

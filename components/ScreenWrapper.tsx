@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 
 const { height } = Dimensions.get("window");
 
@@ -33,12 +34,12 @@ const ScreenWrapper = ({
         backgroundColor: isModal ? colors.white : colors.neutral900,
       }}
       imageStyle={{ opacity: showPattern ? bgOpacity : 0 }}
-      source={require("../assets/images/bgPattern.png")}
+      // source={require("../assets/images/bgPattern.png")}
     >
-      <View style={[{ paddingTop, paddingBottom, flex: 1 }, style]}>
+      <SafeAreaView edges={['bottom', 'top']} style={[{ paddingTop, paddingBottom, flex: 1}, style]}>
         <StatusBar barStyle={"light-content"} backgroundColor={"transparent"} />
         {children}
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
