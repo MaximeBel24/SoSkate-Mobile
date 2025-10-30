@@ -18,15 +18,15 @@ export default function CustomTabs({
         color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
-      statistics: (isFocused: boolean) => (
-          <Icons.ChartBarIcon
+      map: (isFocused: boolean) => (
+          <Icons.MapPinIcon
               size={verticalScale(30)}
               weight={isFocused ? "fill" : "regular"}
               color={isFocused ? colors.primary : colors.neutral400}
           />
       ),
-      wallet: (isFocused: boolean) => (
-          <Icons.WalletIcon
+      spots: (isFocused: boolean) => (
+          <Icons.MagnifyingGlassIcon
               size={verticalScale(30)}
               weight={isFocused ? "fill" : "regular"}
               color={isFocused ? colors.primary : colors.neutral400}

@@ -1,77 +1,34 @@
+import {SpotResponse} from "@/interfaces/spot.interface";
+import {API_CONFIG, ENDPOINTS} from "@/constants/constants";
 import apiClient from "@/api/axiosConfig";
-import {ENDPOINTS} from "@/constants/constants";
-import {Spot} from "@/interfaces/spot.interface";
+import {AxiosError} from "axios";
+import {ApiError} from "@/api/apiError";
 
+export async function getAllSpots(): Promise<SpotResponse[]> {
 
-
-/**
- * Service pour gérer les spots de skate
- */
-const spotService = {
-    /**
-     * Récupère tous les spots
-     * @returns {Promise<Array>} Liste des spots
-     */
-    getAllSpots: async () => {
-        try {
-            const response = await apiClient.get(ENDPOINTS.SPOTS);
-            return response.data;
-        } catch (error) {
-            console.error('Erreur lors de la récupération des spots:', error);
-            throw error;
+    try {
+        const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.SPOTS}`
+        const { data } = await apiClient.get<SpotResponse[]>(endpoint);
+        if (!Array.isArray(data)) {
+            throw new ApiError("Format de réponse invalide", 500);
         }
-    },
+        return data;
+    } catch (err) {
+        const error = err as AxiosError<any>;
 
-    /**
-     * Récupère un spot par son ID
-     * @param {number} spotId - ID du spot
-     * @returns {Promise<Object>} Détails du spot
-     */
-    getSpotById: async (spotId: number) => {
-        try {
-            const response = await apiClient.get(`${ENDPOINTS.SPOTS}/${spotId}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Erreur lors de la récupération du spot ${spotId}:`, error);
-            throw error;
-        }
-    },
+        const status = error.response?.status;
+        const backend = error.response?.data;
 
-    /**
-     * Récupère les spots par ville
-     * @param {string} city - Nom de la ville
-     * @returns {Promise<Array>} Liste des spots de la ville
-     */
-    getSpotsByCity: async (city: string) => {
-        try {
-            const response = await apiClient.get(ENDPOINTS.SPOTS, {
-                params: { city },
-            });
-            return response.data;
-        } catch (error) {
-            console.error(`Erreur lors de la récupération des spots de ${city}:`, error);
-            throw error;
-        }
-    },
+        const backendMessage =
+            (backend && (backend.message || backend.error || backend.title)) ??
+            error.message;
 
-    /**
-     * Filtre les spots actifs
-     * @param {Array} spots - Liste de spots
-     * @returns {Array} Spots actifs uniquement
-     */
-    filterActiveSpots: (spots: Spot[]) => {
-        return spots.filter(spot => spot.isActive);
-    },
+        const details = backend?.errors ?? backend;
 
-    /**
-     * Filtre les spots indoor/outdoor
-     * @param {Array} spots - Liste de spots
-     * @param {boolean} isIndoor - true pour indoor, false pour outdoor
-     * @returns {Array} Spots filtrés
-     */
-    filterByType: (spots: Spot[], isIndoor: boolean) => {
-        return spots.filter(spot => spot.isIndoor === isIndoor);
-    },
-};
-
-export default spotService;
+        throw new ApiError(
+            backendMessage || "Erreur lors de la récupération des spots",
+            status,
+            details
+        );
+    }
+}

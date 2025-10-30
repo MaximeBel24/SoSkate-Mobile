@@ -1,5 +1,5 @@
-export interface Spot {
-    spotId: number;
+export interface SpotResponse {
+    id: number;
     name: string;
     description: string;
     address: string;
