@@ -1,72 +1,33 @@
+import { ApiError } from "@/api/apiError";
 import apiClient from "@/api/axiosConfig";
-import {ENDPOINTS} from "@/constants/constants";
-import {Service} from "@/interfaces/service.interface";
+import { API_CONFIG, ENDPOINTS } from "@/constants/constants";
+import { ServiceResponse } from "@/interfaces/service.interface";
+import { AxiosError } from "axios";
 
-/**
- * Service pour gérer les services de cours
- */
-const serviceService = {
-    /**
-     * Récupère tous les services
-     * @returns {Promise<Array>} Liste des services
-     */
-    getAllServices: async () => {
-        try {
-            const response = await apiClient.get(ENDPOINTS.SERVICES);
-            return response.data;
-        } catch (error) {
-            console.error('Erreur lors de la récupération des services:', error);
-            throw error;
-        }
-    },
+export async function getAllServices(): Promise<ServiceResponse[]> {
+  try {
+    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.SERVICES}`;
+    const { data } = await apiClient.get<ServiceResponse[]>(endpoint);
+    if (!Array.isArray(data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
+    return data;
+  } catch (err) {
+    const error = err as AxiosError<any>;
 
-    /**
-     * Récupère un service par son ID
-     * @param {number} serviceId - ID du service
-     * @returns {Promise<Object>} Détails du service
-     */
-    getServiceById: async (serviceId: number) => {
-        try {
-            const response = await apiClient.get(`${ENDPOINTS.SERVICES}/${serviceId}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Erreur lors de la récupération du service ${serviceId}:`, error);
-            throw error;
-        }
-    },
+    const status = error.response?.status;
+    const backend = error.response?.data;
 
-    /**
-     * Filtre les services actifs
-     * @param {Array} services - Liste de services
-     * @returns {Array} Services actifs uniquement
-     */
-    filterActiveServices: (services: Service[]) => {
-        return services.filter(service => service.isActive);
-    },
+    const backendMessage =
+      (backend && (backend.message || backend.error || backend.title)) ??
+      error.message;
 
-    /**
-     * Groupe les services par type
-     * @param {Array} services - Liste de services
-     * @returns {Object} Services groupés par type (RENTAL, LESSON, etc.)
-     */
-    // groupByType: (services: Service[]) => {
-    //     return services.reduce((acc, service) => {
-    //         if (!acc[service.type]) {
-    //             acc[service.type] = [];
-    //         }
-    //         acc[service.type].push(service);
-    //         return acc;
-    //     }, {});
-    // },
+    const details = backend?.errors ?? backend;
 
-    /**
-     * Formate le prix en euros
-     * @param {number} priceCents - Prix en centimes
-     * @returns {string} Prix formaté (ex: "20,00 €")
-     */
-    formatPrice: (priceCents: number) => {
-        return `${(priceCents / 100).toFixed(2)} €`;
-    },
-};
-
-export default serviceService;
+    throw new ApiError(
+      backendMessage || "Erreur lors de la récupération des spots",
+      status,
+      details
+    );
+  }
+}

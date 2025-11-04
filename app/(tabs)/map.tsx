@@ -1,206 +1,179 @@
 import ScreenWrapper from "@/components/ScreenWrapper";
-import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Alert, StyleSheet, View, Text, Button} from "react-native";
-import MapView, {Marker, Region} from "react-native-maps";
-import {SpotResponse} from "@/interfaces/spot.interface";
-import {getAllSpots} from "@/services/spotService";
-import {colors} from "@/constants/theme";
-// import Geolocation from "@react-native-community/geolocation";
+import ErrorState from "@/components/map/MapLoadingStates/ErrorState";
+import LoadingState from "@/components/map/MapLoadingStates/LoadingState";
+import CustomMarker from "@/components/map/MapView/CustomMarker";
+import MapControls from "@/components/map/MapView/MapControls";
+import MapHeader from "@/components/map/MapView/MapHeader";
+import SpotCard from "@/components/map/SpotCard";
+import { darkMapStyle } from "@/constants/mapStyle";
+import { SpotResponse } from "@/interfaces/spot.interface";
+import { getAllSpots } from "@/services/spotService";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet } from "react-native";
+import MapView, { Marker, Region } from "react-native-maps";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Map = () => {
+  const router = useRouter();
+  const mapRef = useRef<MapView>(null);
+  const insets = useSafeAreaInsets();
 
-    const [spots, setSpots] = useState<SpotResponse[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [region, setRegion] = useState<Region>({
-        latitude: 48.774159,
-        longitude: 2.536275,
-        latitudeDelta: 0.0522,
-        longitudeDelta: 0.0221,
-    });
-    const [selectedSpot, setSelectedSpot] = useState<SpotResponse | null>(null);
-    // const [userLocation, setUserLocation] = useState<{
-    //     latitude: number;
-    //     longitude: number;
-    // } | null>(null);
+  const [spots, setSpots] = useState<SpotResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSpot, setSelectedSpot] = useState<SpotResponse | null>(null);
+  const [mapType, setMapType] = useState<"standard" | "satellite">("standard");
+  const [region] = useState<Region>({
+    latitude: 48.774159,
+    longitude: 2.536275,
+    latitudeDelta: 0.0522,
+    longitudeDelta: 0.0221,
+  });
 
-    useEffect(() => {
-        loadSpots();
-    }, []);
+    const NAVBAR_HEIGHT = 80;
+  const SPOT_CARD_HEIGHT = 400;
 
-    // const getUserLocation = () => {
-    //     Geolocation.getCurrentPosition(
-    //         (position) => {
-    //             const { latitude, longitude } = position.coords;
-    //             setUserLocation({ latitude, longitude });
-    //             setRegion({
-    //                 latitude,
-    //                 longitude,
-    //                 latitudeDelta: 0.0522,
-    //                 longitudeDelta: 0.0221,
-    //             });
-    //         },
-    //         (error) => {
-    //             console.error("Erreur géolocalisation:", error);
-    //             Alert.alert("Erreur", "Impossible de récupérer votre position");
-    //         },
-    //         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    //     );
-    // };
+  useEffect(() => {
+    loadSpots();
+  }, []);
 
-    const loadSpots = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const data = await getAllSpots();
-            setSpots(data);
-        } catch (err: any) {
-            console.error("Erreur lors du chargement des spots:", err);
-            setError(err.message || "Impossible de charger les spots");
-            Alert.alert(
-                "Erreur",
-                "Impossible de charger les spots. Vérifiez votre connexion.",
-            );
-        } finally {
-            setLoading(false);
-        }
+  const loadSpots = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getAllSpots();
+      setSpots(data);
+    } catch (err: any) {
+      console.error("Erreur lors du chargement des spots:", err);
+      setError(err.message || "Impossible de charger les spots");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (loading) {
-        return (
-            <ScreenWrapper style={styles.container}>
-                <View style={styles.centerContent}>
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={styles.loadingText}>Chargement des spots...</Text>
-                </View>
-            </ScreenWrapper>
-        );
-    }
+  const handleMarkerPress = (spot: SpotResponse) => {
+    setSelectedSpot(spot);
 
-    if (error) {
-        return (
-            <ScreenWrapper style={styles.container}>
-                <View style={styles.centerContent}>
-                    <Text style={styles.errorText}>❌ {error}</Text>
-                </View>
-            </ScreenWrapper>
-        );
+      if (mapRef.current && spot.latitude && spot.longitude) {
+
+          mapRef.current.animateToRegion(
+              {
+                  latitude: spot.latitude + 0.008, // Décalage vers le haut
+                  longitude: spot.longitude,
+                  latitudeDelta: 0.02,
+                  longitudeDelta: 0.02,
+              },
+              500
+          );
+      }
+  };
+
+  const handleRecenterMap = () => {
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(region, 500);
     }
+  };
+
+  const toggleMapType = () => {
+    setMapType((prev) => (prev === "standard" ? "satellite" : "standard"));
+  };
+
+    const handleViewCourses = (spotId: number) => {
+        // router.push(`/(modals)/spotDetails?id=${spotId}`);
+    };
+
+  if (loading) {
+    return (
+      <ScreenWrapper style={styles.container}>
+        <LoadingState />
+      </ScreenWrapper>
+    );
+  }
+
+  if (error) {
+    <ScreenWrapper style={styles.container}>
+      <ErrorState error={error} onRetry={loadSpots} />
+    </ScreenWrapper>;
+  }
 
   return (
-      <ScreenWrapper style={styles.container}>
-          <MapView
-              region={region}
-              style={styles.map}
-              userInterfaceStyle='dark'
-          >
-              {spots.filter((spot) => spot.latitude && spot.longitude).map((spot) => {
-                  // Vérifie que le spot a des coordonnées valides
-                  if (!spot.latitude || !spot.longitude) {
-                      console.warn(`Spot ${spot.id} n'a pas de coordonnées valides`);
-                      return null;
-                  }
+    <ScreenWrapper style={styles.container}>
+      <MapView
+        ref={mapRef}
+        initialRegion={region}
+        style={styles.map}
+        mapType={mapType}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        showsCompass={false}
+          // ✅ Cache les contrôles Google Maps natifs
+        toolbarEnabled={false}  // Android
+        showsIndoors={false}
+        showsTraffic={false}
+        showsBuildings={false}
+        showsPointsOfInterest={false}
+          // ✅ Cache le logo Google et les contrôles de zoom
+        liteMode={false}
+        loadingEnabled={true}
+          // ✅ Désactive les boutons natifs
+        zoomEnabled={true}
+        zoomControlEnabled={false}  // Android
+        zoomTapEnabled={true}
+        rotateEnabled={true}
+        scrollEnabled={true}
+        pitchEnabled={true}
+        customMapStyle={mapType === "standard" ? darkMapStyle : undefined}
+        mapPadding={{
+            top: 0,
+            right: 0,
+            bottom: selectedSpot
+                ? SPOT_CARD_HEIGHT + insets.bottom
+                : NAVBAR_HEIGHT + insets.bottom,
+            left: 0,
+        }}
+      >
+        {spots
+          .filter((spot) => spot.latitude && spot.longitude)
+          .map((spot) => (
+            <Marker
+              key={spot.id}
+              coordinate={{
+                latitude: spot.latitude,
+                longitude: spot.longitude,
+              }}
+              onPress={() => handleMarkerPress(spot)}
+            >
+              <CustomMarker isSelected={selectedSpot?.id === spot.id} />
+            </Marker>
+          ))}
+      </MapView>
 
-                  return (
-                      <Marker
-                          key={`spot-${spot.id}`} // ✅ Préfixe pour garantir l'unicité
-                          coordinate={{
-                              latitude: spot.latitude,
-                              longitude: spot.longitude,
-                          }}
-                          title={spot.name} // 🎯 Affiche le nom au tap (optionnel)
-                          description={spot.description} // 🎯 Affiche la description
-                          onPress={() => setSelectedSpot(spot)}
-                      />
-                  );
-              })}
-          </MapView>
-
-          {selectedSpot && (
-              <View style={styles.spotCard}>
-                  <Text style={styles.spotName}>{selectedSpot.name}</Text>
-                  <Text style={styles.spotDescription}>{selectedSpot.description}</Text>
-                  <Text style={styles.spotAddress}>{selectedSpot.address}</Text>
-                  <View style={styles.buttonContainer}>
-                      <Button
-                          title="Voir les cours"
-                          onPress={() => {/* Navigation vers les cours */}}
-                          color={colors.primary}
-                      />
-                      <Button
-                          title="Fermer"
-                          onPress={() => setSelectedSpot(null)}
-                          color={colors.primaryDark}
-                      />
-                  </View>
-              </View>
-          )}
-      </ScreenWrapper>
+      <MapHeader spotsCount={spots.length} topInset={insets.top}/>
+      <MapControls
+        topInset={insets.top}
+        onRecenter={handleRecenterMap}
+        onToggleMapType={toggleMapType}
+        onRefresh={loadSpots}
+      />
+      {selectedSpot && <SpotCard
+        spot={selectedSpot}
+        bottomInset={insets.bottom}
+        onClose={() => setSelectedSpot(null)}
+        onViewCourses={handleViewCourses}
+      />}
+    </ScreenWrapper>
   );
 };
 
 export default Map;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    map: {
-        width: "100%",
-        height: "108%",
-    },
-    centerContent: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: "#666",
-    },
-    errorText: {
-        fontSize: 16,
-        color: "#ff0000",
-        textAlign: "center",
-    },
-    spotCard: {
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
-        backgroundColor: colors.neutral700,
-        borderRadius: 12,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 8,
-    },
-    spotName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.primary,
-        marginBottom: 8,
-    },
-    spotDescription: {
-        fontSize: 14,
-        color: colors.white,
-        marginBottom: 8,
-    },
-    spotAddress: {
-        fontSize: 12,
-        color: colors.neutral200,
-        fontStyle: 'italic',
-        marginBottom: 12,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderRadius: 50,
-        gap: 10,
-    },
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
 });
