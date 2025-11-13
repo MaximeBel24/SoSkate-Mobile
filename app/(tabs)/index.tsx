@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import ScreenWrapper from "@/components/ScreenWrapper";
+import ScreenWrapper from "@/components/screen/ScreenWrapper";
 
 const Index = () => {
   return (

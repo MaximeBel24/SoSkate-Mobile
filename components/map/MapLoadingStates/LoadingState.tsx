@@ -1,4 +1,4 @@
-import Typo from "@/components/Typo";
+import Typo from "@/components/text/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";

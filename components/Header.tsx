@@ -1,4 +1,4 @@
-import Typo from "@/components/Typo";
+import Typo from "@/components/text/Typo";
 import { HeaderProps } from "@/types";
 import React from "react";
 import { StyleSheet, View } from "react-native";

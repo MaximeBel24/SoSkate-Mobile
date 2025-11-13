@@ -1,0 +1,135 @@
+// components/spotDetails/SpotDetailsHeader.tsx
+import Typo from "@/components/text/Typo";
+import { colors, spacingX, spacingY } from "@/constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Icons from "phosphor-react-native";
+import React from "react";
+import { Image, StyleSheet, View } from "react-native";
+
+type SpotDetailsHeaderProps = {
+    name: string;
+    city: string;
+    zipCode: string;
+    imageUrl?: string;
+    isIndoor: boolean;
+};
+
+const SpotDetailsHeader = ({
+                               name,
+                               city,
+                               zipCode,
+                               imageUrl,
+                               isIndoor,
+                           }: SpotDetailsHeaderProps) => {
+    return (
+        <View style={styles.container}>
+            {/* Image avec gradient overlay */}
+            <View style={styles.imageContainer}>
+                {imageUrl ? (
+                    <Image source={{ uri: imageUrl }} style={styles.image} />
+                ) : (
+                    <View style={styles.placeholderImage}>
+                        <Icons.ImageIcon size={48} color="rgba(255, 255, 255, 0.3)" weight="thin" />
+                    </View>
+                )}
+
+                {/* Gradient overlay pour la lisibilité */}
+                <LinearGradient
+                    colors={["transparent", "rgba(10, 9, 8, 0.95)"]}
+                    style={styles.gradient}
+                />
+            </View>
+
+            {/* Informations textuelles */}
+            <View style={styles.infoContainer}>
+                {/* Badge Indoor/Outdoor */}
+                <View style={styles.badgeContainer}>
+                    <View style={styles.badge}>
+                        {isIndoor ? (
+                            <Icons.HouseIcon size={14} color={colors.primary} weight="fill" />
+                        ) : (
+                            <Icons.SunIcon size={14} color={colors.primary} weight="fill" />
+                        )}
+                        <Typo size={12} fontWeight="600" color={colors.primary}>
+                            {isIndoor ? "Intérieur" : "Extérieur"}
+                        </Typo>
+                    </View>
+                </View>
+
+                {/* Nom du spot */}
+                <Typo size={24} fontWeight="700" color={colors.white} style={styles.name}>
+                    {name}
+                </Typo>
+
+                {/* Localisation */}
+                <View style={styles.locationContainer}>
+                    <Icons.MapPinIcon size={16} color="rgba(255, 255, 255, 0.6)" weight="fill" />
+                    <Typo size={14} color="rgba(255, 255, 255, 0.6)">
+                        {city} · {zipCode}
+                    </Typo>
+                </View>
+            </View>
+        </View>
+    );
+};
+
+export default SpotDetailsHeader;
+
+const styles = StyleSheet.create({
+    container: {
+        height: 300,
+        backgroundColor: "#161412",
+    },
+    imageContainer: {
+        height: 150,
+        width: "100%",
+        position: "relative",
+    },
+    image: {
+        width: "100%",
+        height: "100%",
+        resizeMode: "cover",
+    },
+    placeholderImage: {
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    gradient: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 80,
+    },
+    infoContainer: {
+        paddingHorizontal: spacingX._20,
+        paddingVertical: spacingY._12,
+        gap: 6,
+    },
+    badgeContainer: {
+        flexDirection: "row",
+        marginBottom: 4,
+    },
+    badge: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        backgroundColor: "rgba(255, 107, 53, 0.15)",
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "rgba(255, 107, 53, 0.3)",
+    },
+    name: {
+        lineHeight: 28,
+    },
+    locationContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+});

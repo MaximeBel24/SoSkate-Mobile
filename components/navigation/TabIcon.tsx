@@ -1,6 +1,7 @@
 import { colors } from "@/constants/theme";
 import * as Icons from "phosphor-react-native";
 import { JSX } from "react";
+import { Image } from "react-native";
 
 type TabIconProps = {
   name: string;
@@ -14,7 +15,15 @@ const TabIcon = ({ name, isFocused }: TabIconProps) => {
 
   const icons: Record<string, JSX.Element> = {
     index: (
-      <Icons.HouseIcon size={iconSize} color={iconColor} weight={weight} />
+      // <Icons.HouseIcon size={iconSize} color={iconColor} weight={weight} />
+        <Image
+            source={require("@/assets/images/soskate_logo_mobile.png")}
+            style={{
+                width: 35,
+                height: 35,
+            }}
+            resizeMode="contain"
+        />
     ),
     map: <Icons.MapPinIcon size={iconSize} color={iconColor} weight={weight} />,
     spots: (

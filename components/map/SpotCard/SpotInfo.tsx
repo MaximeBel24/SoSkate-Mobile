@@ -1,17 +1,19 @@
 // components/map/SpotCard/SpotInfo.tsx
 import { View, StyleSheet } from "react-native";
 import * as Icons from "phosphor-react-native";
-import Typo from "@/components/Typo";
+import Typo from "@/components/text/Typo";
 import { colors, spacingY } from "@/constants/theme";
 
 type SpotInfoProps = {
     name: string;
     address: string;
+    zipCode: string;
+    city: string;
+    isIndoor: boolean;
     description?: string;
-    rating?: number;
 };
 
-const SpotInfo = ({ name, address, description, rating = 4.5 }: SpotInfoProps) => {
+const SpotInfo = ({ name, address, zipCode, city, isIndoor, description }: SpotInfoProps) => {
     return (
         <>
             {/* Title & rating */}
@@ -23,17 +25,9 @@ const SpotInfo = ({ name, address, description, rating = 4.5 }: SpotInfoProps) =
                     <View style={styles.addressRow}>
                         <Icons.MapPinIcon size={14} color={colors.neutral400} weight="fill" />
                         <Typo size={13} color={colors.neutral400}>
-                            {address}
+                            {address}, {zipCode} {city}
                         </Typo>
                     </View>
-                </View>
-
-                {/* Rating */}
-                <View style={styles.ratingBadge}>
-                    <Icons.StarIcon size={16} color="#fbbf24" weight="fill" />
-                    <Typo size={14} fontWeight="700" color={colors.white}>
-                        {rating}
-                    </Typo>
                 </View>
             </View>
 
@@ -47,15 +41,9 @@ const SpotInfo = ({ name, address, description, rating = 4.5 }: SpotInfoProps) =
             {/* Tags */}
             <View style={styles.tags}>
                 <View style={styles.tag}>
-                    <Icons.UsersIcon size={14} color={colors.primary} weight="duotone" />
+                    <Icons.MapPinIcon size={14} color={colors.primary} weight="duotone" />
                     <Typo size={12} fontWeight="600" color={colors.primary}>
-                        Skatepark
-                    </Typo>
-                </View>
-                <View style={styles.tag}>
-                    <Icons.ClockIcon size={14} color={colors.primary} weight="duotone" />
-                    <Typo size={12} fontWeight="600" color={colors.primary}>
-                        Ouvert
+                        {isIndoor ? 'Intérieur' : 'Extérieur'}
                     </Typo>
                 </View>
             </View>

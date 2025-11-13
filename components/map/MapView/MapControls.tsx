@@ -7,14 +7,12 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 type MapControlsProps = {
   topInset: number;
   onRecenter: () => void;
-  onToggleMapType: () => void;
   onRefresh: () => void;
 };
 
 const MapControls = ({
   topInset,
   onRecenter,
-  onToggleMapType,
   onRefresh,
 }: MapControlsProps) => {
 
@@ -30,15 +28,6 @@ const MapControls = ({
             color={colors.white}
             weight="bold"
           />
-        </LinearGradient>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.controlButton} onPress={onToggleMapType}>
-        <LinearGradient
-          colors={["rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.08)"]}
-          style={styles.controlGradient}
-        >
-          <Icons.SquaresFourIcon size={24} color={colors.white} weight="bold" />
         </LinearGradient>
       </TouchableOpacity>
 

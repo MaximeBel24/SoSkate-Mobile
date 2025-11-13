@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
-import ScreenWrapper from "@/components/ScreenWrapper";
-import Typo from "@/components/Typo";
+import ScreenWrapper from "@/components/screen/ScreenWrapper";
+import Typo from "@/components/text/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { Image } from "expo-image";
@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React from "react";
 
 type accountOptionType = {
   title: string;
@@ -49,12 +50,12 @@ const Profile = () => {
       // routeName: "/(modals)/bookingsModal",
       bgColor: "#8b5cf6",
     },
-    {
-      title: "Mes spots favoris",
-      icon: <Icons.HeartIcon size={24} color={colors.white} weight="duotone" />,
-      // routeName: "/(modals)/favoritesModal",
-      bgColor: "#ec4899",
-    },
+    // {
+    //   title: "Mes spots favoris",
+    //   icon: <Icons.HeartIcon size={24} color={colors.white} weight="duotone" />,
+    //   // routeName: "/(modals)/favoritesModal",
+    //   bgColor: "#ec4899",
+    // },
     {
       title: "Paramètres",
       icon: (
@@ -197,53 +198,53 @@ const Profile = () => {
                 </View>
 
                 {/* Stats */}
-                <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-                    <Icons.CalendarCheckIcon
-                      size={20}
-                      color={colors.white}
-                      weight="duotone"
-                    />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
-                      12
-                    </Typo>
-                    <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                      Cours suivis
-                    </Typo>
-                  </View>
+                {/*<View style={styles.statsContainer}>*/}
+                {/*  <View style={styles.statItem}>*/}
+                {/*    <Icons.CalendarCheckIcon*/}
+                {/*      size={20}*/}
+                {/*      color={colors.white}*/}
+                {/*      weight="duotone"*/}
+                {/*    />*/}
+                {/*    <Typo size={18} fontWeight="700" color={colors.white}>*/}
+                {/*      12*/}
+                {/*    </Typo>*/}
+                {/*    <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+                {/*      Cours suivis*/}
+                {/*    </Typo>*/}
+                {/*  </View>*/}
 
-                  <View style={styles.statDivider} />
+                {/*  <View style={styles.statDivider} />*/}
 
-                  <View style={styles.statItem}>
-                    <Icons.HeartIcon
-                      size={20}
-                      color={colors.white}
-                      weight="duotone"
-                    />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
-                      8
-                    </Typo>
-                    <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                      Spots favoris
-                    </Typo>
-                  </View>
+                {/*  <View style={styles.statItem}>*/}
+                {/*    <Icons.HeartIcon*/}
+                {/*      size={20}*/}
+                {/*      color={colors.white}*/}
+                {/*      weight="duotone"*/}
+                {/*    />*/}
+                {/*    <Typo size={18} fontWeight="700" color={colors.white}>*/}
+                {/*      8*/}
+                {/*    </Typo>*/}
+                {/*    <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+                {/*      Spots favoris*/}
+                {/*    </Typo>*/}
+                {/*  </View>*/}
 
-                  <View style={styles.statDivider} />
+                {/*  <View style={styles.statDivider} />*/}
 
-                  <View style={styles.statItem}>
-                    <Icons.TrophyIcon
-                      size={20}
-                      color={colors.white}
-                      weight="duotone"
-                    />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
-                      5
-                    </Typo>
-                    <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                      Niveau
-                    </Typo>
-                  </View>
-                </View>
+                {/*  <View style={styles.statItem}>*/}
+                {/*    <Icons.TrophyIcon*/}
+                {/*      size={20}*/}
+                {/*      color={colors.white}*/}
+                {/*      weight="duotone"*/}
+                {/*    />*/}
+                {/*    <Typo size={18} fontWeight="700" color={colors.white}>*/}
+                {/*      5*/}
+                {/*    </Typo>*/}
+                {/*    <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+                {/*      Niveau*/}
+                {/*    </Typo>*/}
+                {/*  </View>*/}
+                {/*</View>*/}
               </View>
             </LinearGradient>
           </Animated.View>

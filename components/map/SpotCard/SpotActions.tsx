@@ -1,21 +1,27 @@
 // components/map/SpotCard/SpotActions.tsx
-import Typo from "@/components/Typo";
+import Typo from "@/components/text/Typo";
 import { colors, spacingY } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import {useRouter} from "expo-router";
 
 type SpotActionsProps = {
   spotId: number;
-  onViewCourses: (spotId: number) => void;
 };
 
-const SpotActions = ({ spotId, onViewCourses }: SpotActionsProps) => {
+const SpotActions = ({ spotId }: SpotActionsProps) => {
+
+    const router = useRouter();
+
+    const handleViewCourses = () => {
+        router.push(`/(modals)/spotDetails?spotId=${spotId}`);
+    };
   return (
     <View style={styles.actions}>
       <TouchableOpacity
         style={styles.primaryButton}
-        onPress={() => onViewCourses(spotId)}
+        onPress={handleViewCourses}
       >
         <LinearGradient
           colors={[colors.primary, colors.primaryDark]}

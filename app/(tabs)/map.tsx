@@ -1,13 +1,13 @@
-import ScreenWrapper from "@/components/ScreenWrapper";
+import ScreenWrapper from "@/components/screen/ScreenWrapper";
 import ErrorState from "@/components/map/MapLoadingStates/ErrorState";
 import LoadingState from "@/components/map/MapLoadingStates/LoadingState";
 import CustomMarker from "@/components/map/MapView/CustomMarker";
 import MapControls from "@/components/map/MapView/MapControls";
 import MapHeader from "@/components/map/MapView/MapHeader";
-import SpotCard from "@/components/map/SpotCard";
+import SpotCard from "@/components/map/SpotCard/SpotCard";
 import { darkMapStyle } from "@/constants/mapStyle";
 import { SpotResponse } from "@/interfaces/spot.interface";
-import { getAllSpots } from "@/services/spotService";
+import {getActiveSpots} from "@/services/spotService";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
@@ -42,7 +42,7 @@ const Map = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllSpots();
+      const data = await getActiveSpots();
       setSpots(data);
     } catch (err: any) {
       console.error("Erreur lors du chargement des spots:", err);
@@ -74,14 +74,6 @@ const Map = () => {
       mapRef.current.animateToRegion(region, 500);
     }
   };
-
-  const toggleMapType = () => {
-    setMapType((prev) => (prev === "standard" ? "satellite" : "standard"));
-  };
-
-    const handleViewCourses = (spotId: number) => {
-        // router.push(`/(modals)/spotDetails?id=${spotId}`);
-    };
 
   if (loading) {
     return (
@@ -153,14 +145,12 @@ const Map = () => {
       <MapControls
         topInset={insets.top}
         onRecenter={handleRecenterMap}
-        onToggleMapType={toggleMapType}
         onRefresh={loadSpots}
       />
       {selectedSpot && <SpotCard
         spot={selectedSpot}
         bottomInset={insets.bottom}
         onClose={() => setSelectedSpot(null)}
-        onViewCourses={handleViewCourses}
       />}
     </ScreenWrapper>
   );

@@ -1,6 +1,6 @@
 import Button from "@/components/button/Button";
-import ScreenWrapper from "@/components/ScreenWrapper";
-import Typo from "@/components/Typo";
+import ScreenWrapper from "@/components/screen/ScreenWrapper";
+import Typo from "@/components/text/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { LinearGradient } from "expo-linear-gradient";
@@ -43,14 +43,14 @@ const Welcome = () => {
             </Typo>
           </View>
 
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/login")}
-            style={styles.loginButton}
-          >
-            <Typo fontWeight="600" color={colors.white} size={14}>
-              Se connecter
-            </Typo>
-          </TouchableOpacity>
+          {/*<TouchableOpacity*/}
+          {/*  onPress={() => router.push("/(auth)/login")}*/}
+          {/*  style={styles.loginButton}*/}
+          {/*>*/}
+          {/*  <Typo fontWeight="600" color={colors.white} size={14}>*/}
+          {/*    Se connecter*/}
+          {/*  </Typo>*/}
+          {/*</TouchableOpacity>*/}
         </Animated.View>
 
         {/* Hero Image plus compact */}
@@ -60,7 +60,7 @@ const Welcome = () => {
         >
           <Animated.Image
             entering={FadeIn.duration(1000).springify()}
-            source={require("../../assets/images/logo.png")}
+            source={require("../../assets/images/soskate_logo_home.png")}
             style={styles.welcomeImage}
             resizeMode="contain"
           />
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   welcomeImage: {
     height: verticalScale(200),
-    width: verticalScale(200),
+    width: verticalScale(300),
   },
   badge: {
     position: "absolute",

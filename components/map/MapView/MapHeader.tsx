@@ -1,4 +1,4 @@
-import Typo from "@/components/Typo";
+import Typo from "@/components/text/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
