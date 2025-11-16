@@ -1,24 +1,53 @@
 // components/map/SpotCard/SpotActions.tsx
 import Typo from "@/components/text/Typo";
 import { colors, spacingY } from "@/constants/theme";
+import { openNavigationMenu } from "@/services/navigationService";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 
 type SpotActionsProps = {
   spotId: number;
+  latitude?: number;
+  longitude?: number;
+  spotName?: string;
+  address?: string;
   onViewCourses: () => void;
   hasServices: boolean;
 };
 
 const SpotActions = ({
   spotId,
+  latitude,
+  longitude,
+  spotName,
+  address,
   onViewCourses,
   hasServices,
 }: SpotActionsProps) => {
-  const handleItinerary = () => {
-    Alert.alert("Itinéraire", "Ouverture de Google Maps...");
-    // TODO: Implémenter l'ouverture de Google Maps
+  const handleItinerary = async () => {
+    // Vérifier que les coordonnées sont disponibles
+    if (!latitude || !longitude) {
+      Alert.alert(
+        "Position non disponible",
+        "Les coordonnées de ce spot ne sont pas disponibles."
+      );
+      return;
+    }
+
+    try {
+      // Ouvrir le menu de sélection de l'app de navigation
+      await openNavigationMenu(
+        { latitude, longitude },
+        {
+          destinationName: spotName,
+          address: address,
+        }
+      );
+    } catch (error) {
+      console.error("Erreur lors de l'ouverture de l'itinéraire:", error);
+      Alert.alert("Erreur", "Impossible d'ouvrir l'application de navigation.");
+    }
   };
 
   return (

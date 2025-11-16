@@ -161,6 +161,10 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
           {!isExpanded && (
             <SpotActions
               spotId={spot.id}
+              latitude={spot.latitude}
+              longitude={spot.longitude}
+              spotName={spot.name}
+              address={spot.address}
               onViewCourses={toggleExpanded}
               hasServices={services.length > 0 || !servicesLoaded}
             />

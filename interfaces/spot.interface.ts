@@ -9,7 +9,7 @@ export interface SpotResponse {
   longitude: number;
   isIndoor: boolean;
   isActive: boolean;
-  photos: string[];
+  photos?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
