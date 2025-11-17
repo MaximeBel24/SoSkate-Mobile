@@ -3,15 +3,16 @@ import { colors, spacingX, spacingY } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import React from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 type MapHeaderProps = {
   spotsCount: number;
   topInset: number;
+  onSearchPress: () => void;
 };
 
-const MapHeader = ({ spotsCount, topInset }: MapHeaderProps) => {
+const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
   return (
     <Animated.View
       entering={FadeInDown.delay(200).springify()}
@@ -38,7 +39,8 @@ const MapHeader = ({ spotsCount, topInset }: MapHeaderProps) => {
 
           <TouchableOpacity
             style={styles.searchButton}
-            onPress={() => Alert.alert("Recherche", "Bientôt disponible !")}
+            onPress={onSearchPress}
+            activeOpacity={0.7}
           >
             <Icons.MagnifyingGlassIcon
               size={20}

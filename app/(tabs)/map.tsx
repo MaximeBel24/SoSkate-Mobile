@@ -1,16 +1,17 @@
-import ScreenWrapper from "@/components/screen/ScreenWrapper";
 import ErrorState from "@/components/map/MapLoadingStates/ErrorState";
 import LoadingState from "@/components/map/MapLoadingStates/LoadingState";
 import CustomMarker from "@/components/map/MapView/CustomMarker";
 import MapControls from "@/components/map/MapView/MapControls";
 import MapHeader from "@/components/map/MapView/MapHeader";
+import MapSearchBar from "@/components/map/MapView/MapSearchBar";
 import SpotCard from "@/components/map/SpotCard/SpotCard";
+import ScreenWrapper from "@/components/screen/ScreenWrapper";
 import { darkMapStyle } from "@/constants/mapStyle";
 import { SpotResponse } from "@/interfaces/spot.interface";
-import {getActiveSpots} from "@/services/spotService";
+import { getActiveSpots } from "@/services/spotService";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
+import { Keyboard, StyleSheet } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -24,6 +25,7 @@ const Map = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<SpotResponse | null>(null);
   const [mapType, setMapType] = useState<"standard" | "satellite">("standard");
+  const [showSearch, setShowSearch] = useState(false);
   const [region] = useState<Region>({
     latitude: 48.774159,
     longitude: 2.536275,
@@ -31,7 +33,7 @@ const Map = () => {
     longitudeDelta: 0.0221,
   });
 
-    const NAVBAR_HEIGHT = 80;
+  const NAVBAR_HEIGHT = 80;
   const SPOT_CARD_HEIGHT = 400;
 
   useEffect(() => {
@@ -55,24 +57,52 @@ const Map = () => {
   const handleMarkerPress = (spot: SpotResponse) => {
     setSelectedSpot(spot);
 
-      if (mapRef.current && spot.latitude && spot.longitude) {
+    if (mapRef.current && spot.latitude && spot.longitude) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: spot.latitude + 0.008, // Décalage vers le haut
+          longitude: spot.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        500
+      );
+    }
+  };
 
-          mapRef.current.animateToRegion(
-              {
-                  latitude: spot.latitude + 0.008, // Décalage vers le haut
-                  longitude: spot.longitude,
-                  latitudeDelta: 0.02,
-                  longitudeDelta: 0.02,
-              },
-              500
-          );
-      }
+  const handleSearchSpotSelect = (spot: SpotResponse) => {
+    // Ferme le clavier si ouvert
+    Keyboard.dismiss();
+
+    // Sélectionne le spot
+    setSelectedSpot(spot);
+
+    // Anime la carte vers le spot sélectionné
+    if (mapRef.current && spot.latitude && spot.longitude) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: spot.latitude + 0.008,
+          longitude: spot.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        800
+      );
+    }
   };
 
   const handleRecenterMap = () => {
     if (mapRef.current) {
       mapRef.current.animateToRegion(region, 500);
     }
+  };
+
+  const handleOpenSearch = () => {
+    setShowSearch(true);
+  };
+
+  const handleCloseSearch = () => {
+    setShowSearch(false);
   };
 
   if (loading) {
@@ -84,9 +114,11 @@ const Map = () => {
   }
 
   if (error) {
-    <ScreenWrapper style={styles.container}>
-      <ErrorState error={error} onRetry={loadSpots} />
-    </ScreenWrapper>;
+    return (
+      <ScreenWrapper style={styles.container}>
+        <ErrorState error={error} onRetry={loadSpots} />
+      </ScreenWrapper>
+    );
   }
 
   return (
@@ -99,30 +131,30 @@ const Map = () => {
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={false}
-          // ✅ Cache les contrôles Google Maps natifs
-        toolbarEnabled={false}  // Android
+        // ✅ Cache les contrôles Google Maps natifs
+        toolbarEnabled={false} // Android
         showsIndoors={false}
         showsTraffic={false}
         showsBuildings={false}
         showsPointsOfInterest={false}
-          // ✅ Cache le logo Google et les contrôles de zoom
+        // ✅ Cache le logo Google et les contrôles de zoom
         liteMode={false}
         loadingEnabled={true}
-          // ✅ Désactive les boutons natifs
+        // ✅ Désactive les boutons natifs
         zoomEnabled={true}
-        zoomControlEnabled={false}  // Android
+        zoomControlEnabled={false} // Android
         zoomTapEnabled={true}
         rotateEnabled={true}
         scrollEnabled={true}
         pitchEnabled={true}
         customMapStyle={mapType === "standard" ? darkMapStyle : undefined}
         mapPadding={{
-            top: 0,
-            right: 0,
-            bottom: selectedSpot
-                ? SPOT_CARD_HEIGHT + insets.bottom
-                : NAVBAR_HEIGHT + insets.bottom,
-            left: 0,
+          top: 0,
+          right: 0,
+          bottom: selectedSpot
+            ? SPOT_CARD_HEIGHT + insets.bottom
+            : NAVBAR_HEIGHT + insets.bottom,
+          left: 0,
         }}
       >
         {spots
@@ -141,17 +173,37 @@ const Map = () => {
           ))}
       </MapView>
 
-      <MapHeader spotsCount={spots.length} topInset={insets.top}/>
+      {/* Header avec bouton de recherche */}
+      <MapHeader
+        spotsCount={spots.length}
+        topInset={insets.top}
+        onSearchPress={handleOpenSearch}
+      />
+
+      {/* Contrôles de la carte */}
       <MapControls
         topInset={insets.top}
         onRecenter={handleRecenterMap}
         onRefresh={loadSpots}
       />
-      {selectedSpot && <SpotCard
-        spot={selectedSpot}
-        bottomInset={insets.bottom}
-        onClose={() => setSelectedSpot(null)}
-      />}
+
+      {/* Carte du spot sélectionné */}
+      {selectedSpot && (
+        <SpotCard
+          spot={selectedSpot}
+          bottomInset={insets.bottom}
+          onClose={() => setSelectedSpot(null)}
+        />
+      )}
+
+      {/* Barre de recherche */}
+      {showSearch && (
+        <MapSearchBar
+          spots={spots}
+          onSpotSelect={handleSearchSpotSelect}
+          onClose={handleCloseSearch}
+        />
+      )}
     </ScreenWrapper>
   );
 };
