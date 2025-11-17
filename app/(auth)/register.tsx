@@ -1,6 +1,7 @@
 import AuthFooterLink from "@/components/auth/AuthFooterLink";
 import AuthFormCard from "@/components/auth/AuthFormCard";
 import AuthLayout from "@/components/auth/AuthLayout";
+import PasswordRequirements from "@/components/auth/PasswordRequirements";
 import Button from "@/components/button/Button";
 import FormInputGroup from "@/components/form/FormInputGroup";
 import { SecurityInfoBanner } from "@/components/form/SecurityInfoBanner";
@@ -12,7 +13,7 @@ import { registerCustomer } from "@/services/authService";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Alert } from "react-native";
 
 const Register = () => {
@@ -21,8 +22,28 @@ const Register = () => {
   const passwordConfirmRef = useRef("");
   const firstnameRef = useRef("");
   const lastnameRef = useRef("");
+
+  // États pour la validation
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
+
+  // Callback pour gérer le changement de validation du mot de passe
+  const handlePasswordValidationChange = useCallback((isValid: boolean) => {
+    setIsPasswordValid(isValid);
+  }, []);
+
+  // Vérifier si le formulaire est valide pour activer/désactiver le bouton
+  const isFormValid =
+    emailRef.current &&
+    firstnameRef.current &&
+    lastnameRef.current &&
+    isPasswordValid &&
+    password === passwordConfirm &&
+    password.length > 0;
 
   const handleSubmit = async () => {
     if (
@@ -37,6 +58,14 @@ const Register = () => {
 
     if (passwordRef.current !== passwordConfirmRef.current) {
       Alert.alert("Inscription", "Le mot de passe n'est pas identique");
+      return;
+    }
+
+    if (!isPasswordValid) {
+      Alert.alert(
+        "Inscription",
+        "Le mot de passe ne respecte pas tous les critères de sécurité"
+      );
       return;
     }
 
@@ -123,7 +152,10 @@ const Register = () => {
           <Input
             placeholder="Mot de passe"
             secureTextEntry
-            onChangeText={(value) => (passwordRef.current = value)}
+            onChangeText={(value) => {
+              passwordRef.current = value;
+              setPassword(value);
+            }}
             icon={
               <Icons.LockIcon
                 size={verticalScale(24)}
@@ -132,10 +164,20 @@ const Register = () => {
               />
             }
           />
+
+          {/* Composant de validation du mot de passe */}
+          <PasswordRequirements
+            password={password}
+            onValidationChange={handlePasswordValidationChange}
+          />
+
           <Input
             placeholder="Confirmer le mot de passe"
             secureTextEntry
-            onChangeText={(value) => (passwordConfirmRef.current = value)}
+            onChangeText={(value) => {
+              passwordConfirmRef.current = value;
+              setPasswordConfirm(value);
+            }}
             icon={
               <Icons.LockIcon
                 size={verticalScale(24)}
@@ -148,7 +190,12 @@ const Register = () => {
 
         <SecurityInfoBanner />
 
-        <Button loading={isLoading} onPress={handleSubmit}>
+        <Button
+          loading={isLoading}
+          onPress={handleSubmit}
+          disabled={!isFormValid || isLoading}
+          // style={!isFormValid && { opacity: 0.5 }}
+        >
           <Typo fontWeight="700" color={colors.white} size={17}>
             Créer mon compte
           </Typo>

@@ -8,8 +8,8 @@ const SplashScreen = () => {
   const router = useRouter();
   useEffect(() => {
     setTimeout(() => {
-      // router.replace("/(auth)/welcome");
-      router.replace("/(tabs)");
+      router.replace("/(auth)/welcome");
+      // router.replace("/(tabs)");
     }, 1500);
   }, []);
   return (
