@@ -8,6 +8,7 @@ export const API_CONFIG = {
 export const ENDPOINTS = {
     SPOTS: '/spots',
     SERVICES: '/services',
+    PHOTOS: '/phones',
     AUTH: {
         LOGIN: '/customer/auth/login',
         CUSTOMER_REGISTER: '/customer/auth/register',
