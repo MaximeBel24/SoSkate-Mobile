@@ -1,24 +1,24 @@
 import { ApiError } from "@/api/apiError";
 import apiClient from "@/api/axiosConfig";
 import { API_CONFIG, ENDPOINTS } from "@/constants/constants";
-import { PhotoEntityType, PhotoResponse } from "@/interfaces/photo.interface";
+import { PhotoResponse } from "@/interfaces/photo.interface";
 import { AxiosError } from "axios";
 
 /**
- * Service for fetching photos by entity type and ID.
+ * Get photos for a specific spot.
+ * Uses the dedicated endpoint: GET /api/photos/spots/{spotId}
  */
-export async function getPhotosByEntity(
-    entityType: PhotoEntityType,
-    entityId: number
-): Promise<PhotoResponse[]> {
+export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
     try {
-        const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}`;
-        const { data } = await apiClient.get<PhotoResponse[]>(endpoint, {
-            params: {
-                entityType,
-                entityId,
-            },
-        });
+        // ✅ Endpoint dédié pour les photos de spots
+        const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/spots/${spotId}`;
+
+        console.log("🔍 Fetching photos for spot:", spotId);
+        console.log("📍 Endpoint:", endpoint);
+
+        const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
+
+        console.log("✅ Photos received:", data.length, "photos");
 
         if (!Array.isArray(data)) {
             throw new ApiError("Format de réponse invalide", 500);
@@ -37,6 +37,12 @@ export async function getPhotosByEntity(
 
         const details = backend?.errors ?? backend;
 
+        console.error("❌ Error fetching photos:", {
+            status,
+            backendMessage,
+            details,
+        });
+
         throw new ApiError(
             backendMessage || "Erreur lors de la récupération des photos",
             status,
@@ -46,23 +52,23 @@ export async function getPhotosByEntity(
 }
 
 /**
- * Get photos for a specific spot.
- * Convenience method that wraps getPhotosByEntity.
- */
-export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
-    return getPhotosByEntity(PhotoEntityType.SPOT, spotId);
-}
-
-/**
  * Get photos for a specific instructor.
+ * TODO: Implement when instructor photo endpoint is available.
  */
-export async function getInstructorPhotos(instructorId: number): Promise<PhotoResponse[]> {
-    return getPhotosByEntity(PhotoEntityType.INSTRUCTOR, instructorId);
+export async function getInstructorPhotos(
+    instructorId: number
+): Promise<PhotoResponse[]> {
+    // TODO: Attendre l'implémentation backend
+    console.warn("getInstructorPhotos not yet implemented");
+    return [];
 }
 
 /**
  * Get photos for a specific event.
+ * TODO: Implement when event photo endpoint is available.
  */
 export async function getEventPhotos(eventId: number): Promise<PhotoResponse[]> {
-    return getPhotosByEntity(PhotoEntityType.EVENT, eventId);
+    // TODO: Attendre l'implémentation backend
+    console.warn("getEventPhotos not yet implemented");
+    return [];
 }

@@ -28,6 +28,9 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import {Photo} from "@/interfaces/photo.interface";
+import {getSpotPhotos} from "@/services/photoService";
+import PhotoGallery from "@/components/gallery/PhotoGallery";
 
 type SpotCardProps = {
   spot: SpotResponse;
@@ -36,37 +39,42 @@ type SpotCardProps = {
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const COMPACT_HEIGHT = 400;
+const COMPACT_HEIGHT = 420;
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.96;
 const SWIPE_THRESHOLD = 50;
+const PHOTO_HEIGHT = 180; // ✅ Hauteur fixe pour les photos
 
 const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [services, setServices] = useState<ServiceResponse[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
   const [servicesLoaded, setServicesLoaded] = useState(false);
+    const [photos, setPhotos] = useState<Photo[]>([]);
+    const [loadingPhotos, setLoadingPhotos] = useState(true);
 
   const cardHeight = useSharedValue(
     COMPACT_HEIGHT + bottomInset + spacingY._70
   );
   const translateY = useSharedValue(0);
-  const scrollViewRef = useRef(null);
 
-  const imageUrl =
-    spot.photos && spot.photos.length > 0 ? spot.photos[0] : undefined;
+    // ✅ useEffect pour charger les photos au montage
+    useEffect(() => {
+        loadPhotos();
+    }, [spot.id]);
 
-  useEffect(() => {
-    if (isExpanded && !servicesLoaded) {
-      loadServices();
-    }
-  }, [isExpanded]);
+    // ✅ useEffect pour charger les services uniquement en mode étendu
+    useEffect(() => {
+        if (isExpanded && !servicesLoaded) {
+            loadServices();
+        }
+    }, [isExpanded]);
 
   const loadServices = async () => {
     try {
       setLoadingServices(true);
       const data = await getActiveServices();
-      console.log("✅ Services chargés:", data.length, "services");
-      console.log("📋 Détails services:", JSON.stringify(data, null, 2));
+      // console.log("✅ Services chargés:", data.length, "services");
+      // console.log("📋 Détails services:", JSON.stringify(data, null, 2));
       setServices(data);
       setServicesLoaded(true);
     } catch (error) {
@@ -76,6 +84,29 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       setLoadingServices(false);
     }
   };
+
+    const loadPhotos = async () => {
+        try {
+            setLoadingPhotos(true);
+            const photoResponses = await getSpotPhotos(spot.id);
+            // console.log("✅ Photo chargés:", photoResponses.length, "services");
+            // console.log("📋 Détails photos:", JSON.stringify(photoResponses, null, 2));
+
+            // Transform PhotoResponse[] to Photo[] for PhotoGallery
+            const transformedPhotos: Photo[] = photoResponses.map((photo) => ({
+                id: photo.id,
+                url: photo.url,
+                thumbnailUrl: photo.thumbnailUrl,
+            }));
+
+            setPhotos(transformedPhotos);
+        } catch (error) {
+            console.error("Error loading spot photos:", error);
+            setPhotos([]); // Fallback to empty array
+        } finally {
+            setLoadingPhotos(false);
+        }
+    };
 
   const toggleExpanded = () => {
     const newExpandedState = !isExpanded;
@@ -138,7 +169,19 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
           </GestureDetector>
         )}
 
-        <SpotImage imageUrl={imageUrl} />
+          {/* ✅ Affichage conditionnel avec loading */}
+          {loadingPhotos ? (
+              <View style={styles.photoLoading}>
+                  <ActivityIndicator size="large" color={colors.primary} />
+              </View>
+          ) : (
+              <PhotoGallery
+                  photos={photos}
+                  height={PHOTO_HEIGHT}
+                  borderRadius={0}
+                  showIndicators={true}
+              />
+          )}
 
         {/* Close button */}
         <TouchableOpacity style={styles.closeButton} onPress={handleCloseCard}>
@@ -303,6 +346,13 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.2)",
     zIndex: 10,
   },
+    photoLoading: {
+        width: "100%",
+        height: PHOTO_HEIGHT,
+        backgroundColor: colors.neutral800,
+        alignItems: "center",
+        justifyContent: "center",
+    },
   spotContent: {
     padding: spacingX._20,
     flex: 1,
