@@ -1,12 +1,12 @@
-import Button from "@/components/button/Button";
-import FormInputGroup from "@/components/form/FormInputGroup";
-import FormSection from "@/components/form/FormSection";
-import InfoBox from "@/components/form/InfoBox";
-import Input from "@/components/Input";
-import ProfileAvatar from "@/components/profile/ProfileAvatar";
-import Typo from "@/components/text/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
-import { verticalScale } from "@/utils/styling";
+import Button from "@/src/shared/ui/button/Button";
+import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";
+import FormSection from "@/src/shared/ui/form/FormSection";
+import InfoBox from "@/src/shared/ui/form/InfoBox";
+import Input from "@/src/shared/ui/typography/Input";
+import ProfileAvatar from "@/src/features/profile/ui/ProfileAvatar";
+import Typo from "@/src/shared/ui/typography/Typo";
+import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { verticalScale } from "@/src/shared/utils/styling";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import DatePickerInput from "@/components/form/DatePickerInput";
+import DatePickerInput from "@/src/shared/ui/form/DatePickerInput";
 
 const ProfileModal = () => {
   const router = useRouter();

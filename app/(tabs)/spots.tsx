@@ -1,7 +1,7 @@
 import {Button, StyleSheet, Text, View} from 'react-native'
 import React, {useState} from 'react'
-import ScreenWrapper from "@/components/screen/ScreenWrapper";
-import {spacingY} from "@/constants/theme";
+import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
+import {spacingY} from "@/src/shared/constants/theme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const spots = () => {

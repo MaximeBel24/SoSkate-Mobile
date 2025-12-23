@@ -1,8 +1,8 @@
-import Button from "@/components/button/Button";
-import ScreenWrapper from "@/components/screen/ScreenWrapper";
-import Typo from "@/components/text/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
-import { verticalScale } from "@/utils/styling";
+import Button from "@/src/shared/ui/button/Button";
+import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
+import Typo from "@/src/shared/ui/typography/Typo";
+import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { verticalScale } from "@/src/shared/utils/styling";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";

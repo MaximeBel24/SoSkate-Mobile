@@ -1,5 +1,5 @@
-import CustomTabs from "@/components/navigation/CustomTabs";
-import { NavigationProvider } from "@/contexts/NavigationContext";
+import CustomTabs from "@/src/features/navigation/ui/CustomTabs";
+import { NavigationProvider } from "@/src/shared/contexts/NavigationContext";
 import { Tabs } from "expo-router";
 
 const _layout = () => {
