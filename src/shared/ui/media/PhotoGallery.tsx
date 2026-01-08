@@ -1,4 +1,4 @@
-import { colors } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { Photo } from "@/src/shared/types/photo.interface";
 import { Image } from "expo-image";
 import * as Icons from "phosphor-react-native";
@@ -30,14 +30,25 @@ const PhotoGallery = ({
   showIndicators = true,
   onPhotoPress,
 }: PhotoGalleryProps) => {
+  const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Cas : pas de photos
+  // Cas : pas de photos
   if (!photos || photos.length === 0) {
     return (
-      <View style={[styles.placeholder, { height, borderRadius }]}>
-        <Icons.ImageIcon size={48} color={colors.neutral600} weight="duotone" />
+      <View
+        style={[
+          styles.placeholder,
+          {
+            height,
+            borderRadius,
+            backgroundColor: colors.background.surface,
+          },
+        ]}
+      >
+        <Icons.ImageIcon size={48} color={colors.text.muted} weight="duotone" />
       </View>
     );
   }
@@ -52,7 +63,10 @@ const PhotoGallery = ({
       >
         <Image
           source={{ uri: photos[0].thumbnailUrl || photos[0].url }}
-          style={[styles.image, { height, borderRadius }]}
+          style={[
+            styles.image,
+            { height, borderRadius, backgroundColor: colors.neutral[800] },
+          ]}
           contentFit="cover"
           transition={200}
         />
@@ -76,7 +90,10 @@ const PhotoGallery = ({
     >
       <Image
         source={{ uri: item.thumbnailUrl || item.url }}
-        style={[styles.image, { height, borderRadius }]}
+        style={[
+          styles.image,
+          { height, borderRadius, backgroundColor: colors.neutral[800] },
+        ]}
         contentFit="cover"
         transition={200}
       />
@@ -108,7 +125,10 @@ const PhotoGallery = ({
               key={index}
               style={[
                 styles.indicator,
-                index === currentIndex && styles.indicatorActive,
+                index === currentIndex && [
+                  styles.indicatorActive,
+                  { backgroundColor: colors.accent.primary },
+                ],
               ]}
             />
           ))}
@@ -123,11 +143,9 @@ export default PhotoGallery;
 const styles = StyleSheet.create({
   image: {
     width: "100%",
-    backgroundColor: colors.neutral800,
   },
   placeholder: {
     width: "100%",
-    backgroundColor: colors.neutral800,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -148,6 +166,5 @@ const styles = StyleSheet.create({
   },
   indicatorActive: {
     width: 20,
-    backgroundColor: colors.primary,
   },
 });

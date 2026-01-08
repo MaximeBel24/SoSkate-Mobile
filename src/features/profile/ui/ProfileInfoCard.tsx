@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { verticalScale } from "@/src/shared/utils/styling";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -15,26 +16,15 @@ interface ProfileStats {
 }
 
 interface ProfileInfoCardProps {
-  /** Nom complet de l'utilisateur */
   name: string;
-  /** Email de l'utilisateur */
   email: string;
-  /** URL de l'avatar */
   avatarUri: string;
-  /** Badge vérifié */
   isVerified?: boolean;
-  /** Callback pour éditer le profil */
   onEditPress: () => void;
-  /** Statistiques optionnelles */
   stats?: ProfileStats;
-  /** Délai d'animation */
   animationDelay?: number;
 }
 
-/**
- * Card d'information utilisateur avec gradient, avatar et stats
- * Utilisée dans l'écran de profil
- */
 export const ProfileInfoCard = ({
   name,
   email,
@@ -44,13 +34,15 @@ export const ProfileInfoCard = ({
   stats,
   animationDelay = 100,
 }: ProfileInfoCardProps) => {
+  const { colors } = useTheme();
+
   return (
     <Animated.View
       entering={FadeInDown.delay(animationDelay).springify()}
-      style={styles.userCard}
+      style={[styles.userCard, { shadowColor: colors.accent.primary }]}
     >
       <LinearGradient
-        colors={[colors.primary, colors.primaryDark]}
+        colors={[colors.accent.primary, colors.accent.primaryDark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.userCardGradient}
@@ -65,24 +57,38 @@ export const ProfileInfoCard = ({
             <View style={styles.avatarBorder}>
               <Image
                 source={{ uri: avatarUri }}
-                style={styles.avatar}
+                style={[
+                  styles.avatar,
+                  { backgroundColor: colors.neutral[700] },
+                ]}
                 contentFit="cover"
                 transition={100}
               />
             </View>
 
             {/* Edit button */}
-            <TouchableOpacity style={styles.editButton} onPress={onEditPress}>
+            <TouchableOpacity
+              style={[
+                styles.editButton,
+                { backgroundColor: colors.constant.white },
+              ]}
+              onPress={onEditPress}
+            >
               <Icons.PencilSimpleIcon
                 size={18}
-                color={colors.primary}
+                color={colors.accent.primary}
                 weight="bold"
               />
             </TouchableOpacity>
 
             {/* Badge vérifié */}
             {isVerified && (
-              <View style={styles.verifiedBadge}>
+              <View
+                style={[
+                  styles.verifiedBadge,
+                  { backgroundColor: colors.constant.white },
+                ]}
+              >
                 <Icons.CheckCircleIcon
                   size={24}
                   color="#10b981"
@@ -94,7 +100,7 @@ export const ProfileInfoCard = ({
 
           {/* Name & email */}
           <View style={styles.nameContainer}>
-            <Typo size={26} fontWeight="900" color={colors.white}>
+            <Typo size={26} fontWeight="900" color={colors.constant.white}>
               {name}
             </Typo>
             <Typo size={15} color="rgba(255, 255, 255, 0.8)">
@@ -110,10 +116,14 @@ export const ProfileInfoCard = ({
                   <View style={styles.statItem}>
                     <Icons.CalendarCheckIcon
                       size={20}
-                      color={colors.white}
+                      color={colors.constant.white}
                       weight="duotone"
                     />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
+                    <Typo
+                      size={18}
+                      fontWeight="700"
+                      color={colors.constant.white}
+                    >
                       {stats.coursesCount}
                     </Typo>
                     <Typo size={12} color="rgba(255, 255, 255, 0.7)">
@@ -129,10 +139,14 @@ export const ProfileInfoCard = ({
                   <View style={styles.statItem}>
                     <Icons.HeartIcon
                       size={20}
-                      color={colors.white}
+                      color={colors.constant.white}
                       weight="duotone"
                     />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
+                    <Typo
+                      size={18}
+                      fontWeight="700"
+                      color={colors.constant.white}
+                    >
                       {stats.favoritesCount}
                     </Typo>
                     <Typo size={12} color="rgba(255, 255, 255, 0.7)">
@@ -147,10 +161,14 @@ export const ProfileInfoCard = ({
                 <View style={styles.statItem}>
                   <Icons.TrophyIcon
                     size={20}
-                    color={colors.white}
+                    color={colors.constant.white}
                     weight="duotone"
                   />
-                  <Typo size={18} fontWeight="700" color={colors.white}>
+                  <Typo
+                    size={18}
+                    fontWeight="700"
+                    color={colors.constant.white}
+                  >
                     {stats.level}
                   </Typo>
                   <Typo size={12} color="rgba(255, 255, 255, 0.7)">
@@ -171,7 +189,6 @@ const styles = StyleSheet.create({
     marginTop: spacingY._20,
     borderRadius: 24,
     overflow: "hidden",
-    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -217,13 +234,11 @@ const styles = StyleSheet.create({
     height: verticalScale(120),
     width: verticalScale(120),
     borderRadius: 200,
-    backgroundColor: colors.neutral700,
   },
   editButton: {
     position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: colors.white,
     borderRadius: 50,
     padding: 10,
     shadowColor: "#000",
@@ -236,7 +251,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     right: 0,
-    backgroundColor: colors.white,
     borderRadius: 50,
     padding: 2,
   },

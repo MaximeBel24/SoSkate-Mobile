@@ -1,16 +1,23 @@
+import { spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
 const FormDivider = () => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.divider}>
-      <View style={styles.dividerLine} />
-      <Typo size={12} color={colors.neutral400}>
+      <View
+        style={[styles.dividerLine, { backgroundColor: colors.border.default }]}
+      />
+      <Typo size={12} color={colors.text.muted}>
         OU
       </Typo>
-      <View style={styles.dividerLine} />
+      <View
+        style={[styles.dividerLine, { backgroundColor: colors.border.default }]}
+      />
     </View>
   );
 };
@@ -27,6 +34,5 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
 });

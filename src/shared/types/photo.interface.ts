@@ -3,10 +3,10 @@
  * Maps to PhotoEntityType enum in backend.
  */
 export enum PhotoEntityType {
-    SPOT = "SPOT",
-    INSTRUCTOR = "INSTRUCTOR",
-    EVENT = "EVENT",
-    CUSTOMER = "CUSTOMER",
+  SPOT = "SPOT",
+  INSTRUCTOR = "INSTRUCTOR",
+  EVENT = "EVENT",
+  CUSTOMER = "CUSTOMER",
 }
 
 /**
@@ -14,9 +14,9 @@ export enum PhotoEntityType {
  * Maps to PhotoType enum in backend.
  */
 export enum PhotoType {
-    AVATAR = "AVATAR",
-    GALLERY = "GALLERY",
-    THUMBNAIL = "THUMBNAIL",
+  AVATAR = "AVATAR",
+  GALLERY = "GALLERY",
+  THUMBNAIL = "THUMBNAIL",
 }
 
 /**
@@ -24,20 +24,20 @@ export enum PhotoType {
  * Contains all public photo information.
  */
 export interface PhotoResponse {
-    id: number;
-    url: string;
-    thumbnailUrl: string;
-    entityType: PhotoEntityType;
-    entityId: number;
-    photoType: PhotoType;
-    originalFileName: string;
-    fileSize: number;
-    mimeType: string;
-    width: number;
-    height: number;
-    displayOrder: number;
-    uploadedBy: number;
-    uploadedAt: string; // ISO string format
+  id: number;
+  url: string;
+  thumbnailUrl: string;
+  entityType: PhotoEntityType;
+  entityId: number;
+  photoType: PhotoType;
+  originalFileName: string;
+  fileSize: number;
+  mimeType: string;
+  width: number;
+  height: number;
+  displayOrder: number;
+  uploadedBy: number;
+  uploadedAt: string; // ISO string format
 }
 
 /**
@@ -45,7 +45,7 @@ export interface PhotoResponse {
  * Used in components that don't need full metadata.
  */
 export interface Photo {
-    id: number;
-    url: string;
-    thumbnailUrl?: string;
+  id: number;
+  url: string;
+  thumbnailUrl?: string;
 }

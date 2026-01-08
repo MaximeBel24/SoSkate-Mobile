@@ -1,7 +1,7 @@
-// components/SpotDetails/ServiceCard.tsx
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
+import Typo from "@/src/shared/ui/typography/Typo";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import React from "react";
@@ -13,10 +13,10 @@ type ServiceCardProps = {
 };
 
 const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
-  // Conversion du prix de centimes en euros
+  const { colors, isDark } = useTheme();
+
   const priceInEuros = (service.basePriceCents / 100).toFixed(2);
 
-  // Conversion de la durée en format lisible
   const formatDuration = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -32,12 +32,21 @@ const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
 
   return (
     <View style={styles.cardWrapper}>
-      {/* Glassmorphism background */}
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: isDark
+              ? "rgba(22, 20, 18, 0.8)"
+              : "rgba(255, 255, 255, 0.95)",
+            borderColor: colors.border.default,
+          },
+        ]}
+      >
         {/* Header avec titre et type */}
         <View style={styles.cardHeader}>
           <View style={styles.titleContainer}>
-            <Typo size={18} fontWeight="700" color={colors.white}>
+            <Typo size={18} fontWeight="700" color={colors.text.primary}>
               {service.name}
             </Typo>
           </View>
@@ -47,7 +56,7 @@ const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
         {service.description && (
           <Typo
             size={14}
-            color="rgba(255, 255, 255, 0.7)"
+            color={colors.text.secondary}
             style={styles.description}
           >
             {service.description}
@@ -60,21 +69,30 @@ const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
           <View style={styles.infoItem}>
             <Icons.CurrencyEurIcon
               size={16}
-              color={colors.primary}
+              color={colors.accent.primary}
               weight="bold"
             />
-            <Typo size={15} fontWeight="600" color={colors.white}>
+            <Typo size={15} fontWeight="600" color={colors.text.primary}>
               {priceInEuros}€
             </Typo>
           </View>
 
           {/* Séparateur */}
-          <View style={styles.separator} />
+          <View
+            style={[
+              styles.separator,
+              { backgroundColor: colors.border.default },
+            ]}
+          />
 
           {/* Durée */}
           <View style={styles.infoItem}>
-            <Icons.Clock size={16} color={colors.primary} weight="bold" />
-            <Typo size={15} fontWeight="600" color={colors.white}>
+            <Icons.Clock
+              size={16}
+              color={colors.accent.primary}
+              weight="bold"
+            />
+            <Typo size={15} fontWeight="600" color={colors.text.primary}>
               {formatDuration(service.durationMinutes)}
             </Typo>
           </View>
@@ -87,15 +105,19 @@ const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
           activeOpacity={0.8}
         >
           <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
+            colors={[colors.accent.primary, colors.accent.primaryDark]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.ctaGradient}
           >
-            <Typo size={15} fontWeight="700" color={colors.white}>
+            <Typo size={15} fontWeight="700" color={colors.constant.white}>
               Réserver
             </Typo>
-            <Icons.ArrowRight size={18} color={colors.white} weight="bold" />
+            <Icons.ArrowRight
+              size={18}
+              color={colors.constant.white}
+              weight="bold"
+            />
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -110,18 +132,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   card: {
-    backgroundColor: "rgba(22, 20, 18, 0.8)",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
     padding: spacingX._16,
     gap: 12,
-    // Shadow iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    // Shadow Android
     elevation: 5,
   },
   cardHeader: {
@@ -132,17 +150,6 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
-  },
-  typeBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "rgba(255, 107, 53, 0.15)",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255, 107, 53, 0.3)",
   },
   description: {
     lineHeight: 20,
@@ -160,7 +167,6 @@ const styles = StyleSheet.create({
   separator: {
     width: 1,
     height: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   ctaButton: {
     marginTop: 4,

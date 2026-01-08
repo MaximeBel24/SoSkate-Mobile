@@ -1,4 +1,5 @@
-import { colors, spacingX } from "@/src/shared/constants/theme";
+import { spacingX } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import React from "react";
@@ -10,22 +11,26 @@ type MapControlsProps = {
   onRefresh: () => void;
 };
 
-const MapControls = ({
-  topInset,
-  onRecenter,
-  onRefresh,
-}: MapControlsProps) => {
+const MapControls = ({ topInset, onRecenter, onRefresh }: MapControlsProps) => {
+  const { colors, isDark } = useTheme();
 
   return (
     <View style={[styles.floatingControls, { top: topInset + 100 }]}>
       <TouchableOpacity style={styles.controlButton} onPress={onRecenter}>
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.08)"]}
-          style={styles.controlGradient}
+          colors={
+            isDark
+              ? ["rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.08)"]
+              : ["rgba(0, 0, 0, 0.05)", "rgba(0, 0, 0, 0.1)"]
+          }
+          style={[
+            styles.controlGradient,
+            { borderColor: colors.border.default },
+          ]}
         >
           <Icons.CrosshairSimpleIcon
             size={24}
-            color={colors.white}
+            color={colors.text.primary}
             weight="bold"
           />
         </LinearGradient>
@@ -33,12 +38,19 @@ const MapControls = ({
 
       <TouchableOpacity style={styles.controlButton} onPress={onRefresh}>
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.08)"]}
-          style={styles.controlGradient}
+          colors={
+            isDark
+              ? ["rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.08)"]
+              : ["rgba(0, 0, 0, 0.05)", "rgba(0, 0, 0, 0.1)"]
+          }
+          style={[
+            styles.controlGradient,
+            { borderColor: colors.border.default },
+          ]}
         >
           <Icons.ArrowClockwiseIcon
             size={24}
-            color={colors.white}
+            color={colors.text.primary}
             weight="bold"
           />
         </LinearGradient>
@@ -72,7 +84,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 12,
   },
 });

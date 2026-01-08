@@ -1,30 +1,47 @@
-import { colors, radius, spacingX } from "@/src/shared/constants/theme";
+import { radius, spacingX } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { verticalScale } from "@/src/shared/utils/styling";
 import React, { useState } from "react";
-import {StyleSheet, TextInput, TextInputProps, TextStyle, View, ViewStyle} from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface InputProps extends TextInputProps {
-    icon?: React.ReactNode;
-    containerStyle?: ViewStyle;
-    inputStyle?: TextStyle;
-    inputRef?: React.RefObject<TextInput>;
+  icon?: React.ReactNode;
+  containerStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+  inputRef?: React.RefObject<TextInput>;
 }
 
 const Input = (props: InputProps) => {
+  const { colors, isDark } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+
   return (
     <View
       style={[
         styles.container,
-        props.containerStyle && props.containerStyle,
-        isFocused && styles.primaryBorder,
+        {
+          borderColor: isFocused
+            ? colors.accent.primary
+            : colors.border.default,
+          backgroundColor: isDark
+            ? colors.neutral[100]
+            : colors.background.input,
+        },
+        props.containerStyle,
       ]}
     >
       {props.icon && props.icon}
       <TextInput
-        style={(styles.input, props.inputStyle)}
-        placeholderTextColor={colors.neutral700}
-        ref={props.inputRef && props.inputRef}
+        style={[styles.input, { color: colors.text.primary }, props.inputStyle]}
+        placeholderTextColor={colors.text.muted}
+        ref={props.inputRef}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         {...props}
@@ -42,19 +59,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: colors.neutral900,
     borderRadius: radius.full,
     borderCurve: "continuous",
     paddingHorizontal: spacingX._15,
-    backgroundColor: colors.neutral100,
     gap: spacingX._10,
-  },
-  primaryBorder: {
-    borderColor: colors.primary,
   },
   input: {
     flex: 1,
-    color: colors.neutral100,
     fontSize: verticalScale(14),
   },
 });

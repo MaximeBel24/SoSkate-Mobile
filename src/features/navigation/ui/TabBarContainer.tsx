@@ -1,4 +1,5 @@
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,10 +10,21 @@ type TabBarContainerProps = {
 
 const TabBarContainer = ({ children }: TabBarContainerProps) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <View style={styles.topBorder} />
+    <View
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom,
+          backgroundColor: colors.ui.tabBar,
+        },
+      ]}
+    >
+      <View
+        style={[styles.topBorder, { backgroundColor: colors.accent.primary }]}
+      />
       <View style={styles.tabBar}>{children}</View>
     </View>
   );
@@ -26,7 +38,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.neutral900,
   },
   topBorder: {
     position: "absolute",
@@ -34,7 +45,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: colors.primary,
     opacity: 0.3,
   },
   tabBar: {

@@ -1,6 +1,7 @@
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
+import Typo from "@/src/shared/ui/typography/Typo";
 import * as Icons from "phosphor-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -28,6 +29,7 @@ type MapSearchBarProps = {
 };
 
 const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
 
@@ -35,24 +37,20 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
   const [filteredSpots, setFilteredSpots] = useState<SpotResponse[]>([]);
   const [showResults, setShowResults] = useState(false);
 
-  // Animation values
   const searchBarScale = useSharedValue(0.95);
   const resultsHeight = useSharedValue(0);
 
   useEffect(() => {
-    // Focus automatique à l'ouverture
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
 
-    // Animation d'entrée
     searchBarScale.value = withSpring(1, {
       damping: 15,
       stiffness: 150,
     });
   }, []);
 
-  // Filtrage des spots avec debounce
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim().length > 0) {
@@ -62,7 +60,6 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
         setFilteredSpots(filtered);
         setShowResults(true);
 
-        // Animation de la hauteur des résultats
         resultsHeight.value = withTiming(
           filtered.length > 0 ? Math.min(filtered.length * 70, 300) : 80,
           { duration: 200 }
@@ -72,7 +69,7 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
         setShowResults(false);
         resultsHeight.value = withTiming(0, { duration: 200 });
       }
-    }, 300); // Debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery, spots]);
@@ -106,7 +103,6 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
     }, 100);
   }, [onClose]);
 
-  // Styles animés
   const searchBarAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: searchBarScale.value }],
   }));
@@ -122,20 +118,34 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
       onPress={() => handleSpotSelect(item)}
       activeOpacity={0.7}
     >
-      <View style={styles.resultIconContainer}>
-        <Icons.MapPinIcon size={20} color={colors.primary} weight="duotone" />
+      <View
+        style={[
+          styles.resultIconContainer,
+          {
+            backgroundColor: isDark
+              ? "rgba(255, 255, 255, 0.05)"
+              : "rgba(0, 0, 0, 0.03)",
+            borderColor: colors.border.default,
+          },
+        ]}
+      >
+        <Icons.MapPinIcon
+          size={20}
+          color={colors.accent.primary}
+          weight="duotone"
+        />
       </View>
       <View style={styles.resultContent}>
-        <Typo size={15} fontWeight="600" color={colors.white}>
+        <Typo size={15} fontWeight="600" color={colors.text.primary}>
           {item.name}
         </Typo>
         {item.city && (
-          <Typo size={12} color={colors.neutral400}>
+          <Typo size={12} color={colors.text.muted}>
             {item.city}
           </Typo>
         )}
       </View>
-      <Icons.CaretRightIcon size={16} color={colors.neutral500} />
+      <Icons.CaretRightIcon size={16} color={colors.text.muted} />
     </TouchableOpacity>
   );
 
@@ -143,10 +153,10 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
     <View style={styles.emptyState}>
       <Icons.MagnifyingGlassIcon
         size={32}
-        color={colors.neutral600}
+        color={colors.neutral[600]}
         weight="light"
       />
-      <Typo size={14} color={colors.neutral500} style={{ marginTop: 8 }}>
+      <Typo size={14} color={colors.text.muted} style={{ marginTop: 8 }}>
         Aucun spot trouvé pour "{searchQuery}"
       </Typo>
     </View>
@@ -156,16 +166,14 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}
-      style={[styles.overlay]}
+      style={styles.overlay}
     >
-      {/* Background blur/dim */}
       <TouchableOpacity
         style={styles.backdrop}
         activeOpacity={1}
         onPress={handleClose}
       />
 
-      {/* Search Container */}
       <Animated.View
         style={[
           styles.searchContainer,
@@ -173,24 +181,33 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
           searchBarAnimatedStyle,
         ]}
       >
-        {/* Search Input */}
-        <View style={styles.searchBar}>
+        <View
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: isDark
+                ? "rgba(20, 20, 20, 0.95)"
+                : "rgba(255, 255, 255, 0.98)",
+              borderColor: colors.border.default,
+            },
+          ]}
+        >
           <Icons.MagnifyingGlassIcon
             size={20}
-            color={colors.neutral400}
+            color={colors.text.muted}
             weight="bold"
           />
           <TextInput
             ref={inputRef}
-            style={styles.input}
+            style={[styles.input, { color: colors.text.primary }]}
             placeholder="Rechercher un spot..."
-            placeholderTextColor={colors.neutral500}
+            placeholderTextColor={colors.text.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
-            selectionColor={colors.primary}
+            selectionColor={colors.accent.primary}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity
@@ -200,24 +217,39 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
             >
               <Icons.XCircleIcon
                 size={20}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="fill"
               />
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={handleClose}
-            style={styles.closeButton}
+            style={[
+              styles.closeButton,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "rgba(0, 0, 0, 0.05)",
+              },
+            ]}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Icons.XIcon size={20} color={colors.white} weight="bold" />
+            <Icons.XIcon size={20} color={colors.text.primary} weight="bold" />
           </TouchableOpacity>
         </View>
 
-        {/* Results Dropdown */}
         {showResults && (
           <Animated.View
-            style={[styles.resultsContainer, resultsAnimatedStyle]}
+            style={[
+              styles.resultsContainer,
+              {
+                backgroundColor: isDark
+                  ? "rgba(20, 20, 20, 0.95)"
+                  : "rgba(255, 255, 255, 0.98)",
+                borderColor: colors.border.default,
+              },
+              resultsAnimatedStyle,
+            ]}
           >
             {filteredSpots.length > 0 ? (
               <FlatList
@@ -260,13 +292,11 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(20, 20, 20, 0.95)",
     borderRadius: 16,
     paddingHorizontal: spacingX._16,
     paddingVertical: spacingY._12,
     gap: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -276,8 +306,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: colors.white,
-    fontFamily: "Inter-Medium",
     paddingVertical: 0,
   },
   clearButton: {
@@ -288,15 +316,12 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 8,
   },
   resultsContainer: {
     marginTop: spacingY._12,
-    backgroundColor: "rgba(20, 20, 20, 0.95)",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -319,10 +344,8 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   resultContent: {
     flex: 1,

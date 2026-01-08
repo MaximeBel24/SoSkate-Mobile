@@ -1,5 +1,6 @@
+import { spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
 import React, { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -10,13 +11,15 @@ interface AuthFormCardProps {
 }
 
 const AuthFormCard = ({ title, description, children }: AuthFormCardProps) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.form}>
       <View style={styles.formHeader}>
-        <Typo size={18} fontWeight="700" color={colors.white}>
+        <Typo size={18} fontWeight="700" color={colors.text.primary}>
           {title}
         </Typo>
-        <Typo size={14} color={colors.neutral300}>
+        <Typo size={14} color={colors.text.secondary}>
           {description}
         </Typo>
       </View>

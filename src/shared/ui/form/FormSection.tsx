@@ -1,5 +1,6 @@
+import { spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
 import * as Icons from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
@@ -13,13 +14,18 @@ interface FormSectionProps {
 }
 
 const FormSection = ({ icon, title, children }: FormSectionProps) => {
+  const { colors } = useTheme();
   const IconComponent = Icons[icon] as React.ComponentType<any>;
 
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <IconComponent size={20} color={colors.primary} weight="duotone" />
-        <Typo size={15} fontWeight="700" color={colors.white}>
+        <IconComponent
+          size={20}
+          color={colors.accent.primary}
+          weight="duotone"
+        />
+        <Typo size={15} fontWeight="700" color={colors.text.primary}>
           {title}
         </Typo>
       </View>

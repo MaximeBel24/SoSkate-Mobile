@@ -1,15 +1,17 @@
-// components/map/SpotCard/SpotCard.tsx
 import ServiceList from "@/src/features/spots/ui/SpotCard/ServiceList";
 import SpotActions from "@/src/features/spots/ui/SpotCard/SpotActions";
-import SpotImage from "@/src/features/spots/ui/SpotCard/SpotImage";
 import SpotInfo from "@/src/features/spots/ui/SpotCard/SpotInfo";
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { getSpotPhotos } from "@/src/shared/services/photoService";
+import { getActiveServices } from "@/src/shared/services/serviceService";
+import { useTheme } from "@/src/shared/theme";
+import { Photo } from "@/src/shared/types/photo.interface";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
-import { getActiveServices } from "@/src/shared/services/serviceService";
+import PhotoGallery from "@/src/shared/ui/media/PhotoGallery";
+import Typo from "@/src/shared/ui/typography/Typo";
 import * as Icons from "phosphor-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -28,9 +30,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import {Photo} from "@/src/shared/types/photo.interface";
-import {getSpotPhotos} from "@/src/shared/services/photoService";
-import PhotoGallery from "@/src/shared/ui/media/PhotoGallery";
 
 type SpotCardProps = {
   spot: SpotResponse;
@@ -42,76 +41,68 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const COMPACT_HEIGHT = 420;
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.96;
 const SWIPE_THRESHOLD = 50;
-const PHOTO_HEIGHT = 180; // ✅ Hauteur fixe pour les photos
+const PHOTO_HEIGHT = 180;
 
 const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
+  const { colors, isDark } = useTheme();
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [services, setServices] = useState<ServiceResponse[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
   const [servicesLoaded, setServicesLoaded] = useState(false);
-    const [photos, setPhotos] = useState<Photo[]>([]);
-    const [loadingPhotos, setLoadingPhotos] = useState(true);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(true);
 
   const cardHeight = useSharedValue(
     COMPACT_HEIGHT + bottomInset + spacingY._70
   );
   const translateY = useSharedValue(0);
 
-    // ✅ useEffect pour charger les photos au montage
-    useEffect(() => {
-        loadPhotos();
-    }, [spot.id]);
+  useEffect(() => {
+    loadPhotos();
+  }, [spot.id]);
 
-    // ✅ useEffect pour charger les services uniquement en mode étendu
-    useEffect(() => {
-        if (isExpanded && !servicesLoaded) {
-            loadServices();
-        }
-    }, [isExpanded]);
+  useEffect(() => {
+    if (isExpanded && !servicesLoaded) {
+      loadServices();
+    }
+  }, [isExpanded]);
 
   const loadServices = async () => {
     try {
       setLoadingServices(true);
       const data = await getActiveServices();
-      // console.log("✅ Services chargés:", data.length, "services");
-      // console.log("📋 Détails services:", JSON.stringify(data, null, 2));
       setServices(data);
       setServicesLoaded(true);
     } catch (error) {
-      console.error("❌ Erreur lors du chargement des services:", error);
+      console.error("Erreur lors du chargement des services:", error);
       setServices([]);
     } finally {
       setLoadingServices(false);
     }
   };
 
-    const loadPhotos = async () => {
-        try {
-            setLoadingPhotos(true);
-            const photoResponses = await getSpotPhotos(spot.id);
-            // console.log("✅ Photo chargés:", photoResponses.length, "services");
-            // console.log("📋 Détails photos:", JSON.stringify(photoResponses, null, 2));
-
-            // Transform PhotoResponse[] to Photo[] for PhotoGallery
-            const transformedPhotos: Photo[] = photoResponses.map((photo) => ({
-                id: photo.id,
-                url: photo.url,
-                thumbnailUrl: photo.thumbnailUrl,
-            }));
-
-            setPhotos(transformedPhotos);
-        } catch (error) {
-            console.error("Error loading spot photos:", error);
-            setPhotos([]); // Fallback to empty array
-        } finally {
-            setLoadingPhotos(false);
-        }
-    };
+  const loadPhotos = async () => {
+    try {
+      setLoadingPhotos(true);
+      const photoResponses = await getSpotPhotos(spot.id);
+      const transformedPhotos: Photo[] = photoResponses.map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        thumbnailUrl: photo.thumbnailUrl,
+      }));
+      setPhotos(transformedPhotos);
+    } catch (error) {
+      console.error("Error loading spot photos:", error);
+      setPhotos([]);
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
 
   const toggleExpanded = () => {
     const newExpandedState = !isExpanded;
     setIsExpanded(newExpandedState);
-
     cardHeight.value = withSpring(
       newExpandedState
         ? EXPANDED_HEIGHT
@@ -119,11 +110,9 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
     );
   };
 
-  // Gesture pour swipe down to close - UNIQUEMENT sur la swipe bar
   const panGesture = Gesture.Pan()
     .enabled(isExpanded)
     .onUpdate((event) => {
-      // Seulement si on swipe vers le bas
       if (event.translationY > 0) {
         translateY.value = event.translationY;
       }
@@ -144,7 +133,6 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
 
   const handleServicePress = (serviceId: number) => {
     console.log("Service sélectionné:", serviceId);
-    // TODO: Navigation vers booking
   };
 
   const handleCloseCard = () => {
@@ -157,40 +145,64 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
 
   return (
     <GestureHandlerRootView style={styles.gestureRoot}>
-      <Animated.View style={[styles.spotCard, animatedCardStyle]}>
-        {/* Swipe indicator - AVEC gesture pour fermer */}
+      <Animated.View
+        style={[
+          styles.spotCard,
+          {
+            backgroundColor: isDark ? "#161412" : "#ffffff",
+          },
+          animatedCardStyle,
+        ]}
+      >
+        {/* Swipe indicator */}
         {isExpanded && (
           <GestureDetector gesture={panGesture}>
             <View style={styles.swipeIndicatorContainer}>
               <View style={styles.swipeIndicator}>
-                <View style={styles.swipeBar} />
+                <View
+                  style={[
+                    styles.swipeBar,
+                    {
+                      backgroundColor: isDark
+                        ? "rgba(255, 255, 255, 0.3)"
+                        : "rgba(0, 0, 0, 0.2)",
+                    },
+                  ]}
+                />
               </View>
             </View>
           </GestureDetector>
         )}
 
-          {/* ✅ Affichage conditionnel avec loading */}
-          {loadingPhotos ? (
-              <View style={styles.photoLoading}>
-                  <ActivityIndicator size="large" color={colors.primary} />
-              </View>
-          ) : (
-              <PhotoGallery
-                  photos={photos}
-                  height={PHOTO_HEIGHT}
-                  borderRadius={0}
-                  showIndicators={true}
-              />
-          )}
+        {/* Photos */}
+        {loadingPhotos ? (
+          <View
+            style={[
+              styles.photoLoading,
+              { backgroundColor: colors.neutral[800] },
+            ]}
+          >
+            <ActivityIndicator size="large" color={colors.accent.primary} />
+          </View>
+        ) : (
+          <PhotoGallery
+            photos={photos}
+            height={PHOTO_HEIGHT}
+            borderRadius={0}
+            showIndicators={true}
+          />
+        )}
 
         {/* Close button */}
-        <TouchableOpacity style={styles.closeButton} onPress={handleCloseCard}>
-          <Icons.XIcon size={20} color={colors.white} weight="bold" />
+        <TouchableOpacity
+          style={[styles.closeButton, { borderColor: colors.border.default }]}
+          onPress={handleCloseCard}
+        >
+          <Icons.XIcon size={20} color={colors.text.primary} weight="bold" />
         </TouchableOpacity>
 
-        {/* Content - SANS gesture detector pour permettre le scroll */}
+        {/* Content */}
         <View style={styles.spotContent}>
-          {/* Info du spot (toujours visible) */}
           <SpotInfo
             name={spot.name}
             address={spot.address}
@@ -200,7 +212,6 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
             description={spot.description}
           />
 
-          {/* Actions - Bouton toggle pour voir les cours */}
           {!isExpanded && (
             <SpotActions
               spotId={spot.id}
@@ -213,29 +224,27 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
             />
           )}
 
-          {/* Section étendue avec les services - SANS gesture */}
           {isExpanded && (
             <View style={styles.expandedSection}>
-              {/* Header section services */}
               <View style={styles.servicesHeader}>
-                <Typo size={18} fontWeight="700" color={colors.white}>
+                <Typo size={18} fontWeight="700" color={colors.text.primary}>
                   Services disponibles
                 </Typo>
               </View>
 
-              {/* Zone scrollable pour le contenu */}
               <View style={styles.servicesScrollContainer}>
-                {/* Loading state */}
                 {loadingServices && (
                   <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Typo size={14} color="rgba(255, 255, 255, 0.6)">
+                    <ActivityIndicator
+                      size="large"
+                      color={colors.accent.primary}
+                    />
+                    <Typo size={14} color={colors.text.muted}>
                       Chargement des services...
                     </Typo>
                   </View>
                 )}
 
-                {/* Services list or empty state */}
                 {!loadingServices && services.length > 0 && (
                   <ServiceList
                     services={services}
@@ -248,24 +257,34 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                   services.length === 0 &&
                   servicesLoaded && (
                     <View style={styles.emptyContainer}>
-                      <View style={styles.emptyIconContainer}>
+                      <View
+                        style={[
+                          styles.emptyIconContainer,
+                          {
+                            backgroundColor: isDark
+                              ? "rgba(255, 255, 255, 0.05)"
+                              : "rgba(0, 0, 0, 0.03)",
+                            borderColor: colors.border.default,
+                          },
+                        ]}
+                      >
                         <Icons.CalendarXIcon
                           size={48}
-                          color="rgba(255, 255, 255, 0.2)"
+                          color={colors.text.muted}
                           weight="thin"
                         />
                       </View>
                       <Typo
                         size={16}
                         fontWeight="600"
-                        color={colors.white}
+                        color={colors.text.primary}
                         style={styles.emptyTitle}
                       >
                         Aucun service disponible
                       </Typo>
                       <Typo
                         size={14}
-                        color="rgba(255, 255, 255, 0.6)"
+                        color={colors.text.muted}
                         style={styles.emptyText}
                       >
                         Ce spot n'a pas encore de prestations actives.
@@ -274,18 +293,27 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                   )}
               </View>
 
-              {/* Bouton pour replier */}
               <TouchableOpacity
-                style={styles.collapseButton}
+                style={[
+                  styles.collapseButton,
+                  {
+                    backgroundColor: isDark
+                      ? "rgba(255, 107, 53, 0.15)"
+                      : "rgba(234, 88, 12, 0.1)",
+                    borderColor: isDark
+                      ? "rgba(255, 107, 53, 0.3)"
+                      : "rgba(234, 88, 12, 0.2)",
+                  },
+                ]}
                 onPress={toggleExpanded}
                 activeOpacity={0.8}
               >
                 <Icons.CaretDownIcon
                   size={20}
-                  color={colors.primary}
+                  color={colors.accent.primary}
                   weight="bold"
                 />
-                <Typo size={15} fontWeight="600" color={colors.primary}>
+                <Typo size={15} fontWeight="600" color={colors.accent.primary}>
                   Masquer les services
                 </Typo>
               </TouchableOpacity>
@@ -310,7 +338,6 @@ const styles = StyleSheet.create({
   spotCard: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    backgroundColor: "#161412",
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
@@ -319,7 +346,6 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   swipeIndicatorContainer: {
-    // Container pour le GestureDetector
     width: "100%",
   },
   swipeIndicator: {
@@ -330,7 +356,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   closeButton: {
     position: "absolute",
@@ -343,16 +368,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
     zIndex: 10,
   },
-    photoLoading: {
-        width: "100%",
-        height: PHOTO_HEIGHT,
-        backgroundColor: colors.neutral800,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+  photoLoading: {
+    width: "100%",
+    height: 180,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   spotContent: {
     padding: spacingX._20,
     flex: 1,
@@ -386,12 +409,10 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   emptyTitle: {
     textAlign: "center",
@@ -407,9 +428,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: spacingY._14,
     marginTop: spacingY._16,
-    backgroundColor: "rgba(255, 107, 53, 0.15)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 107, 53, 0.3)",
   },
 });

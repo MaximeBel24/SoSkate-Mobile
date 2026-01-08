@@ -5,10 +5,11 @@ import MapControls from "@/src/features/map/ui/MapView/MapControls";
 import MapHeader from "@/src/features/map/ui/MapView/MapHeader";
 import MapSearchBar from "@/src/features/map/ui/MapView/MapSearchBar";
 import SpotCard from "@/src/features/spots/ui/SpotCard/SpotCard";
-import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
-import { darkMapStyle } from "@/src/features/map/constants/mapStyle";
-import { SpotResponse } from "@/src/shared/types/spot.interface";
 import { getActiveSpots } from "@/src/shared/services/spotService";
+import { useTheme } from "@/src/shared/theme";
+import { getMapStyle } from "@/src/shared/theme/mapStyles";
+import { SpotResponse } from "@/src/shared/types/spot.interface";
+import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Keyboard, StyleSheet } from "react-native";
@@ -19,6 +20,7 @@ const Map = () => {
   const router = useRouter();
   const mapRef = useRef<MapView>(null);
   const insets = useSafeAreaInsets();
+  const { isDark } = useTheme();
 
   const [spots, setSpots] = useState<SpotResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ const Map = () => {
     if (mapRef.current && spot.latitude && spot.longitude) {
       mapRef.current.animateToRegion(
         {
-          latitude: spot.latitude + 0.008, // Décalage vers le haut
+          latitude: spot.latitude + 0.008,
           longitude: spot.longitude,
           latitudeDelta: 0.02,
           longitudeDelta: 0.02,
@@ -71,13 +73,9 @@ const Map = () => {
   };
 
   const handleSearchSpotSelect = (spot: SpotResponse) => {
-    // Ferme le clavier si ouvert
     Keyboard.dismiss();
-
-    // Sélectionne le spot
     setSelectedSpot(spot);
 
-    // Anime la carte vers le spot sélectionné
     if (mapRef.current && spot.latitude && spot.longitude) {
       mapRef.current.animateToRegion(
         {
@@ -131,23 +129,22 @@ const Map = () => {
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={false}
-        // ✅ Cache les contrôles Google Maps natifs
-        toolbarEnabled={false} // Android
+        toolbarEnabled={false}
         showsIndoors={false}
         showsTraffic={false}
         showsBuildings={false}
         showsPointsOfInterest={false}
-        // ✅ Cache le logo Google et les contrôles de zoom
         liteMode={false}
         loadingEnabled={true}
-        // ✅ Désactive les boutons natifs
         zoomEnabled={true}
-        zoomControlEnabled={false} // Android
+        zoomControlEnabled={false}
         zoomTapEnabled={true}
         rotateEnabled={true}
         scrollEnabled={true}
         pitchEnabled={true}
-        customMapStyle={mapType === "standard" ? darkMapStyle : undefined}
+        customMapStyle={
+          mapType === "standard" ? getMapStyle(isDark) : undefined
+        }
         mapPadding={{
           top: 0,
           right: 0,
@@ -173,21 +170,18 @@ const Map = () => {
           ))}
       </MapView>
 
-      {/* Header avec bouton de recherche */}
       <MapHeader
         spotsCount={spots.length}
         topInset={insets.top}
         onSearchPress={handleOpenSearch}
       />
 
-      {/* Contrôles de la carte */}
       <MapControls
         topInset={insets.top}
         onRecenter={handleRecenterMap}
         onRefresh={loadSpots}
       />
 
-      {/* Carte du spot sélectionné */}
       {selectedSpot && (
         <SpotCard
           spot={selectedSpot}
@@ -196,7 +190,6 @@ const Map = () => {
         />
       )}
 
-      {/* Barre de recherche */}
       {showSearch && (
         <MapSearchBar
           spots={spots}

@@ -1,5 +1,6 @@
+import { spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
 import React, { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -9,13 +10,15 @@ interface FormInputGroupProps {
 }
 
 const FormInputGroup = ({ label, children }: FormInputGroupProps) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
       {label && (
         <Typo
           size={13}
           fontWeight="600"
-          color={colors.neutral300}
+          color={colors.text.secondary}
           style={styles.label}
         >
           {label}

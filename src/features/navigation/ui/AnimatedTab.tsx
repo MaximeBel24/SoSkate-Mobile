@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -32,6 +33,8 @@ const AnimatedTab = ({
   onPress,
   onLongPress,
 }: AnimatedTabProps) => {
+  const { colors } = useTheme();
+
   const animatedBackgroundStyle = useAnimatedStyle(() => ({
     opacity: withSpring(isFocused ? 1 : 0, { damping: 15 }),
     transform: [{ scale: withSpring(isFocused ? 1 : 0.8, { damping: 15 }) }],
@@ -54,7 +57,7 @@ const AnimatedTab = ({
           style={[styles.activeBackground, animatedBackgroundStyle]}
         >
           <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
+            colors={[colors.accent.primary, colors.accent.primaryDark]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.activeGradient}
@@ -72,12 +75,17 @@ const AnimatedTab = ({
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200)}
           >
-            <Typo size={12} fontWeight="700" color={colors.primary}>
+            <Typo size={12} fontWeight="700" color={colors.accent.primary}>
               {displayLabel}
             </Typo>
           </Animated.View>
         ) : (
-          <View style={styles.dotIndicator} />
+          <View
+            style={[
+              styles.dotIndicator,
+              { backgroundColor: colors.neutral[600] },
+            ]}
+          />
         )}
       </View>
     </TouchableOpacity>
@@ -119,7 +127,6 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.neutral600,
     marginTop: 4,
   },
 });

@@ -2,14 +2,14 @@ import AuthFooterLink from "@/src/features/auth/ui/AuthFooterLink";
 import AuthFormCard from "@/src/features/auth/ui/AuthFormCard";
 import AuthLayout from "@/src/features/auth/ui/AuthLayout";
 import PasswordRequirements from "@/src/features/auth/ui/PasswordRequirements";
+import { registerCustomer } from "@/src/shared/services/authService";
+import { useTheme } from "@/src/shared/theme";
+import { CustomerRegisterRequest } from "@/src/shared/types/auth.interface";
 import Button from "@/src/shared/ui/button/Button";
 import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";
 import { SecurityInfoBanner } from "@/src/shared/ui/form/SecurityInfoBanner";
 import Input from "@/src/shared/ui/typography/Input";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors } from "@/src/shared/constants/theme";
-import { CustomerRegisterRequest } from "@/src/shared/types/auth.interface";
-import { registerCustomer } from "@/src/shared/services/authService";
 import { verticalScale } from "@/src/shared/utils/styling";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
@@ -17,13 +17,13 @@ import React, { useCallback, useRef, useState } from "react";
 import { Alert } from "react-native";
 
 const Register = () => {
+  const { colors } = useTheme();
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const passwordConfirmRef = useRef("");
   const firstnameRef = useRef("");
   const lastnameRef = useRef("");
 
-  // États pour la validation
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -31,12 +31,10 @@ const Register = () => {
 
   const router = useRouter();
 
-  // Callback pour gérer le changement de validation du mot de passe
   const handlePasswordValidationChange = useCallback((isValid: boolean) => {
     setIsPasswordValid(isValid);
   }, []);
 
-  // Vérifier si le formulaire est valide pour activer/désactiver le bouton
   const isFormValid =
     emailRef.current &&
     firstnameRef.current &&
@@ -116,7 +114,7 @@ const Register = () => {
             icon={
               <Icons.UserIcon
                 size={verticalScale(24)}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="duotone"
               />
             }
@@ -128,7 +126,7 @@ const Register = () => {
             icon={
               <Icons.UserIcon
                 size={verticalScale(24)}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="duotone"
               />
             }
@@ -144,7 +142,7 @@ const Register = () => {
             icon={
               <Icons.AtIcon
                 size={verticalScale(24)}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="duotone"
               />
             }
@@ -159,13 +157,12 @@ const Register = () => {
             icon={
               <Icons.LockIcon
                 size={verticalScale(24)}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="duotone"
               />
             }
           />
 
-          {/* Composant de validation du mot de passe */}
           <PasswordRequirements
             password={password}
             onValidationChange={handlePasswordValidationChange}
@@ -181,7 +178,7 @@ const Register = () => {
             icon={
               <Icons.LockIcon
                 size={verticalScale(24)}
-                color={colors.neutral400}
+                color={colors.text.muted}
                 weight="duotone"
               />
             }
@@ -194,9 +191,8 @@ const Register = () => {
           loading={isLoading}
           onPress={handleSubmit}
           disabled={!isFormValid || isLoading}
-          // style={!isFormValid && { opacity: 0.5 }}
         >
-          <Typo fontWeight="700" color={colors.white} size={17}>
+          <Typo fontWeight="700" color={colors.constant.white} size={17}>
             Créer mon compte
           </Typo>
         </Button>

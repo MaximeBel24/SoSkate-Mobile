@@ -1,7 +1,8 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import BackButton from "@/src/shared/ui/button/BackButton";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { ReactNode } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -25,6 +26,7 @@ const AuthLayout = ({
   scrollable = false,
   showLogo = false,
 }: AuthLayoutProps) => {
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
 
   const content = (
@@ -42,41 +44,26 @@ const AuthLayout = ({
       >
         <BackButton iconSize={28} />
         <View style={styles.headerTextContainer}>
-          <Typo size={32} fontWeight="900" color={colors.white}>
+          <Typo size={32} fontWeight="900" color={colors.text.primary}>
             {title}
           </Typo>
-          <Typo size={15} fontWeight="500" color={colors.neutral300}>
+          <Typo size={15} fontWeight="500" color={colors.text.secondary}>
             {subtitle}
           </Typo>
         </View>
       </Animated.View>
 
-      {/*/!* Logo compact (optionnel) *!/*/}
-      {/*{showLogo && (*/}
-      {/*  <Animated.View*/}
-      {/*    entering={FadeInDown.delay(200).springify()}*/}
-      {/*    style={styles.logoContainer}*/}
-      {/*  >*/}
-      {/*    <View style={styles.logoBadge}>*/}
-      {/*      <Typo size={20} fontWeight="900" color={colors.white}>*/}
-      {/*        So*/}
-      {/*        <Typo size={20} fontWeight="900" color={colors.primary}>*/}
-      {/*          Skate*/}
-      {/*        </Typo>*/}
-      {/*      </Typo>*/}
-      {/*    </View>*/}
-      {/*  </Animated.View>*/}
-      {/*)}*/}
-
-      {/*{showLogo && <View style={styles.spacer} />}*/}
-
       {/* Form Card */}
       <Animated.View
         entering={FadeInUp.delay(showLogo ? 300 : 200).springify()}
-        style={styles.formCard}
+        style={[styles.formCard, { borderColor: colors.border.default }]}
       >
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
+          colors={
+            isDark
+              ? ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]
+              : ["rgba(0, 0, 0, 0.02)", "rgba(0, 0, 0, 0.04)"]
+          }
           style={styles.formGradient}
         >
           {children}
@@ -113,7 +100,10 @@ const AuthLayout = ({
 
       {/* Gradient bottom */}
       <LinearGradient
-        colors={["transparent", "rgba(0, 0, 0, 0.3)"]}
+        colors={[
+          "transparent",
+          isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.6)",
+        ]}
         style={[styles.bottomGradient, { height: insets.bottom + 50 }]}
         pointerEvents="none"
       />
@@ -138,26 +128,10 @@ const styles = StyleSheet.create({
   headerTextContainer: {
     gap: 4,
   },
-  logoContainer: {
-    alignItems: "center",
-    marginVertical: spacingY._12,
-  },
-  logoBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
-    paddingHorizontal: spacingX._20,
-    paddingVertical: spacingY._10,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-  },
-  spacer: {
-    flex: 0.3,
-  },
   formCard: {
     borderRadius: 24,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,

@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Icons from "phosphor-react-native";
 import React, { useState } from "react";
@@ -25,6 +26,7 @@ const DatePickerInput = ({
       year: "numeric",
     }),
 }: DatePickerInputProps) => {
+  const { colors, isDark } = useTheme();
   const [showPicker, setShowPicker] = useState(false);
 
   const handleChange = (event: any, selectedDate?: Date) => {
@@ -39,20 +41,28 @@ const DatePickerInput = ({
   return (
     <View>
       <TouchableOpacity
-        style={styles.datePickerButton}
+        style={[
+          styles.datePickerButton,
+          {
+            backgroundColor: isDark
+              ? "rgba(255, 255, 255, 0.05)"
+              : "rgba(0, 0, 0, 0.03)",
+            borderColor: colors.border.default,
+          },
+        ]}
         onPress={() => setShowPicker(true)}
       >
         <Icons.CalendarIcon
           size={24}
-          color={colors.neutral400}
+          color={colors.text.muted}
           weight="duotone"
         />
-        <Typo size={16} color={colors.white} style={{ flex: 1 }}>
+        <Typo size={16} color={colors.text.primary} style={{ flex: 1 }}>
           {formatDate(value)}
         </Typo>
         <Icons.CaretDownIcon
           size={20}
-          color={colors.neutral400}
+          color={colors.text.muted}
           weight="bold"
         />
       </TouchableOpacity>
@@ -65,9 +75,9 @@ const DatePickerInput = ({
           onChange={handleChange}
           maximumDate={maximumDate}
           minimumDate={minimumDate}
-          accentColor={colors.primary}
-          textColor={colors.white}
-          themeVariant="dark"
+          accentColor={colors.accent.primary}
+          textColor={colors.text.primary}
+          themeVariant={isDark ? "dark" : "light"}
         />
       )}
     </View>
@@ -83,9 +93,7 @@ const styles = StyleSheet.create({
     gap: spacingX._12,
     paddingHorizontal: spacingX._16,
     paddingVertical: spacingY._14,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 });

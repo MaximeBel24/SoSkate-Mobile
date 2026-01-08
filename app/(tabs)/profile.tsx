@@ -1,11 +1,12 @@
-import { SectionHeader } from "@/src/shared/ui/layout/SectionHeader";
-import Header from "@/src/shared/ui/typography/Header";
 import { ProfileInfoCard } from "@/src/features/profile/ui/ProfileInfoCard";
-import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import SettingsList from "@/src/features/profile/ui/SettingsList";
 import SettingsListItem from "@/src/features/profile/ui/SettingsListItem";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
+import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
+import { SectionHeader } from "@/src/shared/ui/layout/SectionHeader";
+import Header from "@/src/shared/ui/typography/Header";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
@@ -24,22 +25,27 @@ type SettingsOption = {
 const Profile = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors, isDark } = useTheme();
 
   const settingsOptions: SettingsOption[] = [
     {
       title: "Éditer le profil",
       icon: (
-        <Icons.UserCircleIcon size={24} color={colors.white} weight="duotone" />
+        <Icons.UserCircleIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       routeName: "/(modals)/profileModal",
-      bgColor: colors.primary,
+      bgColor: colors.accent.primary,
     },
     {
       title: "Mes réservations",
       icon: (
         <Icons.CalendarCheckIcon
           size={24}
-          color={colors.white}
+          color={colors.constant.white}
           weight="duotone"
         />
       ),
@@ -48,8 +54,13 @@ const Profile = () => {
     {
       title: "Paramètres",
       icon: (
-        <Icons.GearSixIcon size={24} color={colors.white} weight="duotone" />
+        <Icons.GearSixIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
+      routeName: "/(modals)/settingsModal",
       bgColor: "#06b6d4",
     },
     {
@@ -57,7 +68,7 @@ const Profile = () => {
       icon: (
         <Icons.ShieldCheckIcon
           size={24}
-          color={colors.white}
+          color={colors.constant.white}
           weight="duotone"
         />
       ),
@@ -66,14 +77,22 @@ const Profile = () => {
     {
       title: "Aide & Support",
       icon: (
-        <Icons.QuestionIcon size={24} color={colors.white} weight="duotone" />
+        <Icons.QuestionIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       bgColor: "#f59e0b",
     },
     {
       title: "Déconnexion",
       icon: (
-        <Icons.SignOutIcon size={24} color={colors.white} weight="duotone" />
+        <Icons.SignOutIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       bgColor: "#ef4444",
       isDanger: true,
@@ -81,7 +100,6 @@ const Profile = () => {
   ];
 
   const handleLogout = async () => {
-    // await signOut(auth);
     router.replace("/(auth)/login");
   };
 
@@ -117,7 +135,7 @@ const Profile = () => {
   };
 
   return (
-    <ScreenWrapper showPattern={true} bgOpacity={0.2}>
+    <ScreenWrapper>
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + spacingY._20 }}
         showsVerticalScrollIndicator={false}
@@ -125,28 +143,20 @@ const Profile = () => {
         <View style={[styles.container, { paddingTop: insets.top }]}>
           <Header title="Profil" style={{ marginVertical: spacingY._10 }} />
 
-          {/* User Info Card */}
           <ProfileInfoCard
             name="Jean Dupont"
             email="jean.dupont@email.com"
             avatarUri="https://i.pravatar.cc/300?img=12"
             isVerified={true}
             onEditPress={() => router.push("/(modals)/profileModal")}
-            // stats={{
-            //   coursesCount: 12,
-            //   favoritesCount: 8,
-            //   level: 5,
-            // }}
           />
 
-          {/* Section Header */}
           <SectionHeader
             title="Mon compte"
             description="Gérez vos paramètres et préférences"
             animationDelay={200}
           />
 
-          {/* Settings List */}
           <SettingsList animationDelay={300}>
             {settingsOptions.map((option, index) => (
               <SettingsListItem
@@ -162,18 +172,17 @@ const Profile = () => {
             ))}
           </SettingsList>
 
-          {/* Version info */}
           <View style={styles.versionContainer}>
             <Typo
               size={12}
-              color={colors.neutral500}
+              color={colors.text.muted}
               style={{ textAlign: "center" }}
             >
               SoSkate v1.0.0
             </Typo>
             <Typo
               size={12}
-              color={colors.neutral500}
+              color={colors.text.muted}
               style={{ textAlign: "center" }}
             >
               Made with 🛹 in France
@@ -182,9 +191,11 @@ const Profile = () => {
         </View>
       </ScrollView>
 
-      {/* Gradient bottom */}
       <LinearGradient
-        colors={["transparent", "rgba(0, 0, 0, 0.3)"]}
+        colors={[
+          "transparent",
+          isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.6)",
+        ]}
         style={[styles.bottomGradient, { height: insets.bottom + 50 }]}
         pointerEvents="none"
       />

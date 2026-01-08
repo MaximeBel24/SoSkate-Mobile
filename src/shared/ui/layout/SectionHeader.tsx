@@ -1,34 +1,30 @@
+import { spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
 interface SectionHeaderProps {
-  /** Titre principal de la section */
   title: string;
-  /** Description optionnelle */
   description?: string;
-  /** Délai d'animation */
   animationDelay?: number;
 }
 
-/**
- * Header de section avec titre et description optionnelle
- * Utilisé pour structurer visuellement les écrans
- */
 export const SectionHeader = ({
   title,
   description,
   animationDelay = 0,
 }: SectionHeaderProps) => {
+  const { colors } = useTheme();
+
   const content = (
     <View style={styles.container}>
-      <Typo size={18} fontWeight="700" color={colors.white}>
+      <Typo size={18} fontWeight="700" color={colors.text.primary}>
         {title}
       </Typo>
       {description && (
-        <Typo size={14} color={colors.neutral400}>
+        <Typo size={14} color={colors.text.muted}>
           {description}
         </Typo>
       )}

@@ -1,4 +1,4 @@
-import { colors } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { ScreenWrapperProps } from "@/src/shared/utils/types";
 import {
   Dimensions,
@@ -6,9 +6,8 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
-  View,
 } from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { height } = Dimensions.get("window");
 
@@ -19,6 +18,8 @@ const ScreenWrapper = ({
   isModal = false,
   bgOpacity = 1,
 }: ScreenWrapperProps) => {
+  const { colors, isDark } = useTheme();
+
   let paddingTop = Platform.OS === "android" ? 0.06 : 40;
   let paddingBottom = 0;
 
@@ -31,13 +32,20 @@ const ScreenWrapper = ({
     <ImageBackground
       style={{
         flex: 1,
-        backgroundColor: isModal ? colors.white : colors.neutral900,
+        backgroundColor: isModal
+          ? colors.background.surface
+          : colors.background.primary,
       }}
       imageStyle={{ opacity: showPattern ? bgOpacity : 0 }}
-      // source={require("../assets/images/bgPattern.png")}
     >
-      <SafeAreaView edges={['bottom', 'top']} style={[{ paddingTop, paddingBottom, flex: 1}, style]}>
-        <StatusBar barStyle={"light-content"} backgroundColor={"transparent"} />
+      <SafeAreaView
+        edges={["bottom", "top"]}
+        style={[{ paddingTop, paddingBottom, flex: 1 }, style]}
+      >
+        <StatusBar
+          barStyle={isDark ? "light-content" : "dark-content"}
+          backgroundColor="transparent"
+        />
         {children}
       </SafeAreaView>
     </ImageBackground>

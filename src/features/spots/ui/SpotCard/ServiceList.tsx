@@ -1,7 +1,7 @@
-// components/SpotDetails/ServiceList.tsx
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
+import Typo from "@/src/shared/ui/typography/Typo";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import ServiceCard from "./ServiceCard";
@@ -9,7 +9,7 @@ import ServiceCard from "./ServiceCard";
 type ServiceListProps = {
   services: ServiceResponse[];
   onServicePress: (serviceId: number) => void;
-  compact?: boolean; // Mode compact pour l'affichage dans la SpotCard
+  compact?: boolean;
 };
 
 const ServiceList = ({
@@ -17,12 +17,20 @@ const ServiceList = ({
   onServicePress,
   compact = false,
 }: ServiceListProps) => {
+  const { colors } = useTheme();
+
   return (
-    <View style={[styles.container, compact && styles.compactContainer]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.background.primary },
+        compact && styles.compactContainer,
+      ]}
+    >
       {/* Section header (seulement si pas en mode compact) */}
       {!compact && (
         <View style={styles.header}>
-          <Typo size={20} fontWeight="700" color={colors.white}>
+          <Typo size={20} fontWeight="700" color={colors.text.primary}>
             Services disponibles
           </Typo>
         </View>
@@ -46,7 +54,6 @@ const ServiceList = ({
           />
         ))}
 
-        {/* Espace en bas pour le scroll */}
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </View>
@@ -58,7 +65,6 @@ export default ServiceList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0A0908",
   },
   compactContainer: {
     backgroundColor: "transparent",

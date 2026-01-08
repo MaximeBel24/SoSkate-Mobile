@@ -1,7 +1,7 @@
-// components/map/SpotCard/SpotActions.tsx
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingY } from "@/src/shared/constants/theme";
+import { spacingY } from "@/src/shared/constants/theme";
 import { openNavigationMenu } from "@/src/shared/services/navigationService";
+import { useTheme } from "@/src/shared/theme";
+import Typo from "@/src/shared/ui/typography/Typo";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -25,8 +25,9 @@ const SpotActions = ({
   onViewCourses,
   hasServices,
 }: SpotActionsProps) => {
+  const { colors, isDark } = useTheme();
+
   const handleItinerary = async () => {
-    // Vérifier que les coordonnées sont disponibles
     if (!latitude || !longitude) {
       Alert.alert(
         "Position non disponible",
@@ -36,7 +37,6 @@ const SpotActions = ({
     }
 
     try {
-      // Ouvrir le menu de sélection de l'app de navigation
       await openNavigationMenu(
         { latitude, longitude },
         {
@@ -54,24 +54,30 @@ const SpotActions = ({
     <View style={styles.actions}>
       {/* Bouton principal - Voir les cours */}
       <TouchableOpacity
-        style={[styles.primaryButton, !hasServices && styles.disabledButton]}
+        style={[
+          styles.primaryButton,
+          !hasServices && [
+            styles.disabledButton,
+            { borderColor: colors.border.default },
+          ],
+        ]}
         onPress={onViewCourses}
         disabled={!hasServices}
         activeOpacity={0.8}
       >
         {hasServices ? (
           <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
+            colors={[colors.accent.primary, colors.accent.primaryDark]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.primaryButtonGradient}
           >
             <Icons.CalendarCheckIcon
               size={20}
-              color={colors.white}
+              color={colors.constant.white}
               weight="bold"
             />
-            <Typo size={16} fontWeight="700" color={colors.white}>
+            <Typo size={16} fontWeight="700" color={colors.constant.white}>
               Voir les cours
             </Typo>
           </LinearGradient>
@@ -79,10 +85,10 @@ const SpotActions = ({
           <View style={styles.disabledContent}>
             <Icons.CalendarXIcon
               size={20}
-              color="rgba(255, 255, 255, 0.4)"
+              color={colors.text.muted}
               weight="bold"
             />
-            <Typo size={16} fontWeight="700" color="rgba(255, 255, 255, 0.4)">
+            <Typo size={16} fontWeight="700" color={colors.text.muted}>
               Aucun cours disponible
             </Typo>
           </View>
@@ -91,16 +97,24 @@ const SpotActions = ({
 
       {/* Bouton secondaire - Itinéraire */}
       <TouchableOpacity
-        style={styles.secondaryButton}
+        style={[
+          styles.secondaryButton,
+          {
+            backgroundColor: isDark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(0, 0, 0, 0.05)",
+            borderColor: colors.border.default,
+          },
+        ]}
         onPress={handleItinerary}
         activeOpacity={0.8}
       >
         <Icons.NavigationArrowIcon
           size={20}
-          color={colors.primary}
+          color={colors.accent.primary}
           weight="bold"
         />
-        <Typo size={15} fontWeight="600" color={colors.primary}>
+        <Typo size={15} fontWeight="600" color={colors.accent.primary}>
           Itinéraire
         </Typo>
       </TouchableOpacity>
@@ -129,9 +143,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacingY._14,
   },
   disabledButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   disabledContent: {
     flexDirection: "row",
@@ -147,9 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: spacingY._14,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
   },
 });

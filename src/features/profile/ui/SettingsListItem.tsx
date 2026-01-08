@@ -1,31 +1,21 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import * as Icons from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
 interface SettingsListItemProps {
-  /** Titre de l'item */
   title: string;
-  /** Icône (ReactNode pour flexibilité) */
   icon: ReactNode;
-  /** Couleur de fond de l'icône */
   bgColor: string;
-  /** Callback au clic */
   onPress: () => void;
-  /** Est-ce le dernier item ? (pas de bordure en bas) */
   isLast?: boolean;
-  /** Style danger (rouge, pour déconnexion) */
   isDanger?: boolean;
-  /** Délai d'animation */
   animationDelay?: number;
 }
 
-/**
- * Item de liste pour les paramètres/options du profil
- * Avec icône colorée, titre et flèche
- */
 const SettingsListItem = ({
   title,
   icon,
@@ -35,12 +25,22 @@ const SettingsListItem = ({
   isDanger = false,
   animationDelay = 0,
 }: SettingsListItemProps) => {
+  const { colors, isDark } = useTheme();
+
+  const borderColor = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : "rgba(0, 0, 0, 0.06)";
+
+  const dangerBgColor = isDark
+    ? "rgba(239, 68, 68, 0.05)"
+    : "rgba(239, 68, 68, 0.08)";
+
   const content = (
     <TouchableOpacity
       style={[
         styles.listItem,
-        isDanger && styles.dangerItem,
-        !isLast && styles.listItemBorder,
+        isDanger && { backgroundColor: dangerBgColor },
+        !isLast && { borderBottomWidth: 1, borderBottomColor: borderColor },
       ]}
       onPress={onPress}
       activeOpacity={0.7}
@@ -55,7 +55,7 @@ const SettingsListItem = ({
         size={16}
         style={styles.listTitle}
         fontWeight="600"
-        color={isDanger ? "#ef4444" : colors.white}
+        color={isDanger ? colors.semantic.danger : colors.text.primary}
       >
         {title}
       </Typo>
@@ -64,7 +64,7 @@ const SettingsListItem = ({
       <Icons.CaretRightIcon
         size={20}
         weight="bold"
-        color={isDanger ? "#ef4444" : colors.neutral400}
+        color={isDanger ? colors.semantic.danger : colors.text.muted}
       />
     </TouchableOpacity>
   );
@@ -89,13 +89,6 @@ const styles = StyleSheet.create({
     gap: spacingX._14,
     paddingVertical: spacingY._16,
     paddingHorizontal: spacingX._16,
-  },
-  listItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.08)",
-  },
-  dangerItem: {
-    backgroundColor: "rgba(239, 68, 68, 0.05)",
   },
   listIcon: {
     height: 48,

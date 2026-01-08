@@ -1,6 +1,6 @@
-import Typo from "@/src/shared/ui/typography/Typo";
-import { colors } from "@/src/shared/constants/theme";
 import { usePasswordValidation } from "@/src/features/auth/hooks/usePasswordValidation";
+import { useTheme } from "@/src/shared/theme";
+import Typo from "@/src/shared/ui/typography/Typo";
 import { verticalScale } from "@/src/shared/utils/styling";
 import * as Icons from "phosphor-react-native";
 import React, { useEffect } from "react";
@@ -21,20 +21,16 @@ interface CriterionItemProps {
   label: string;
 }
 
-/**
- * Composant individuel pour afficher un critère de validation
- */
 const CriterionItem: React.FC<CriterionItemProps> = ({ isValid, label }) => {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0.5);
 
   useEffect(() => {
     if (isValid) {
-      // Animation quand le critère devient valide
       scale.value = withSpring(1, { damping: 10, stiffness: 100 });
       opacity.value = withSpring(1, { damping: 10 });
     } else {
-      // Reset quand le critère devient invalide
       opacity.value = withSpring(0.5, { damping: 10 });
     }
   }, [isValid]);
@@ -44,8 +40,8 @@ const CriterionItem: React.FC<CriterionItemProps> = ({ isValid, label }) => {
     opacity: opacity.value,
   }));
 
-  const iconColor = isValid ? colors.success : colors.neutral400;
-  const textColor = isValid ? colors.success : colors.neutral500;
+  const iconColor = isValid ? colors.semantic.success : colors.text.muted;
+  const textColor = isValid ? colors.semantic.success : colors.text.muted;
 
   return (
     <Animated.View style={[styles.criterionItem, animatedStyle]}>
@@ -69,24 +65,18 @@ const CriterionItem: React.FC<CriterionItemProps> = ({ isValid, label }) => {
   );
 };
 
-/**
- * Composant affichant les critères de validation du mot de passe
- * Validation en temps réel avec animations
- */
 const PasswordRequirements: React.FC<PasswordRequirementsProps> = ({
   password,
   onValidationChange,
 }) => {
   const { criteria, isValid } = usePasswordValidation(password);
 
-  // Notifier le parent du changement de validation
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(isValid);
     }
   }, [isValid, onValidationChange]);
 
-  // N'afficher le composant que si l'utilisateur a commencé à taper
   if (!password) {
     return null;
   }

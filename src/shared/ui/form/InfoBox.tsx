@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import * as Icons from "phosphor-react-native";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -10,17 +11,29 @@ interface InfoBoxProps {
 }
 
 const InfoBox = ({ message, variant = "info" }: InfoBoxProps) => {
+  const { colors, isDark } = useTheme();
+
   const iconColor =
     variant === "warning"
-      ? colors.warning
+      ? colors.semantic.warning
       : variant === "success"
-      ? colors.success
-      : colors.primary;
+      ? colors.semantic.success
+      : colors.accent.primary;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isDark
+            ? "rgba(255, 255, 255, 0.03)"
+            : "rgba(0, 0, 0, 0.02)",
+          borderColor: colors.border.subtle,
+        },
+      ]}
+    >
       <Icons.InfoIcon size={16} color={iconColor} weight="fill" />
-      <Typo size={12} color={colors.neutral400} style={{ flex: 1 }}>
+      <Typo size={12} color={colors.text.muted} style={{ flex: 1 }}>
         {message}
       </Typo>
     </View>
@@ -36,9 +49,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: spacingX._12,
     paddingVertical: spacingY._10,
-    backgroundColor: "rgba(255, 255, 255, 0.03)",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.06)",
   },
 });

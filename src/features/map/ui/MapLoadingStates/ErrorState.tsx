@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import * as Icons from "phosphor-react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -10,6 +11,8 @@ type ErrorStateProps = {
 };
 
 const ErrorState = ({ error, onRetry }: ErrorStateProps) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.centerContent}>
       <View style={styles.errorContainer}>
@@ -17,25 +20,31 @@ const ErrorState = ({ error, onRetry }: ErrorStateProps) => {
         <Typo
           size={18}
           fontWeight="700"
-          color={colors.white}
+          color={colors.text.primary}
           style={{ marginTop: 16 }}
         >
           Oups !
         </Typo>
         <Typo
           size={14}
-          color={colors.neutral400}
+          color={colors.text.muted}
           style={{ marginTop: 8, textAlign: "center" }}
         >
           {error}
         </Typo>
-        <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
+        <TouchableOpacity
+          style={[
+            styles.retryButton,
+            { backgroundColor: colors.accent.primary },
+          ]}
+          onPress={onRetry}
+        >
           <Icons.ArrowClockwiseIcon
             size={20}
-            color={colors.white}
+            color={colors.constant.white}
             weight="bold"
           />
-          <Typo size={15} fontWeight="600" color={colors.white}>
+          <Typo size={15} fontWeight="600" color={colors.constant.white}>
             Réessayer
           </Typo>
         </TouchableOpacity>
@@ -64,7 +73,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: spacingY._12,
     paddingHorizontal: spacingX._24,
-    backgroundColor: colors.primary,
     borderRadius: 12,
   },
 });

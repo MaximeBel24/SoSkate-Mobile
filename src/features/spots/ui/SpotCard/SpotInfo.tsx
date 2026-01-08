@@ -1,6 +1,5 @@
-// components/map/SpotCard/SpotInfo.tsx
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors } from "@/src/shared/constants/theme";
 import * as Icons from "phosphor-react-native";
 import { StyleSheet, View } from "react-native";
 
@@ -21,21 +20,23 @@ const SpotInfo = ({
   isIndoor,
   description,
 }: SpotInfoProps) => {
+  const { colors, isDark } = useTheme();
+
   return (
     <>
       {/* Title & rating */}
       <View style={styles.spotHeader}>
         <View style={{ flex: 1 }}>
-          <Typo size={22} fontWeight="900" color={colors.white}>
+          <Typo size={22} fontWeight="900" color={colors.text.primary}>
             {name}
           </Typo>
           <View style={styles.addressRow}>
             <Icons.MapPinIcon
               size={14}
-              color={colors.neutral400}
+              color={colors.text.muted}
               weight="fill"
             />
-            <Typo size={13} color={colors.neutral400}>
+            <Typo size={13} color={colors.text.muted}>
               {address}, {zipCode} {city}
             </Typo>
           </View>
@@ -44,16 +45,30 @@ const SpotInfo = ({
 
       {/* Description */}
       {description && (
-        <Typo size={14} color={colors.neutral300} style={{ marginTop: 12 }}>
+        <Typo size={14} color={colors.text.secondary} style={{ marginTop: 12 }}>
           {description}
         </Typo>
       )}
 
       {/* Tags */}
       <View style={styles.tags}>
-        <View style={styles.tag}>
-          <Icons.MapPinIcon size={14} color={colors.primary} weight="duotone" />
-          <Typo size={12} fontWeight="600" color={colors.primary}>
+        <View
+          style={[
+            styles.tag,
+            {
+              backgroundColor: isDark
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.03)",
+              borderColor: colors.border.default,
+            },
+          ]}
+        >
+          <Icons.MapPinIcon
+            size={14}
+            color={colors.accent.primary}
+            weight="duotone"
+          />
+          <Typo size={12} fontWeight="600" color={colors.accent.primary}>
             {isIndoor ? "Intérieur" : "Extérieur"}
           </Typo>
         </View>
@@ -77,15 +92,6 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 4,
   },
-  ratingBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "rgba(251, 191, 36, 0.15)",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-  },
   tags: {
     flexDirection: "row",
     gap: 8,
@@ -95,11 +101,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 });

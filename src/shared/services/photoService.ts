@@ -9,46 +9,46 @@ import { AxiosError } from "axios";
  * Uses the dedicated endpoint: GET /api/photos/spots/{spotId}
  */
 export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
-    try {
-        // ✅ Endpoint dédié pour les photos de spots
-        const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/spots/${spotId}`;
+  try {
+    // ✅ Endpoint dédié pour les photos de spots
+    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/spots/${spotId}`;
 
-        console.log("🔍 Fetching photos for spot:", spotId);
-        console.log("📍 Endpoint:", endpoint);
+    console.log("🔍 Fetching photos for spot:", spotId);
+    console.log("📍 Endpoint:", endpoint);
 
-        const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
+    const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
 
-        console.log("✅ Photos received:", data.length, "photos");
+    console.log("✅ Photos received:", data.length, "photos");
 
-        if (!Array.isArray(data)) {
-            throw new ApiError("Format de réponse invalide", 500);
-        }
-
-        return data;
-    } catch (err) {
-        const error = err as AxiosError<any>;
-
-        const status = error.response?.status;
-        const backend = error.response?.data;
-
-        const backendMessage =
-            (backend && (backend.message || backend.error || backend.title)) ??
-            error.message;
-
-        const details = backend?.errors ?? backend;
-
-        console.error("❌ Error fetching photos:", {
-            status,
-            backendMessage,
-            details,
-        });
-
-        throw new ApiError(
-            backendMessage || "Erreur lors de la récupération des photos",
-            status,
-            details
-        );
+    if (!Array.isArray(data)) {
+      throw new ApiError("Format de réponse invalide", 500);
     }
+
+    return data;
+  } catch (err) {
+    const error = err as AxiosError<any>;
+
+    const status = error.response?.status;
+    const backend = error.response?.data;
+
+    const backendMessage =
+      (backend && (backend.message || backend.error || backend.title)) ??
+      error.message;
+
+    const details = backend?.errors ?? backend;
+
+    console.error("❌ Error fetching photos:", {
+      status,
+      backendMessage,
+      details,
+    });
+
+    throw new ApiError(
+      backendMessage || "Erreur lors de la récupération des photos",
+      status,
+      details
+    );
+  }
 }
 
 /**
@@ -56,19 +56,21 @@ export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
  * TODO: Implement when instructor photo endpoint is available.
  */
 export async function getInstructorPhotos(
-    instructorId: number
+  instructorId: number
 ): Promise<PhotoResponse[]> {
-    // TODO: Attendre l'implémentation backend
-    console.warn("getInstructorPhotos not yet implemented");
-    return [];
+  // TODO: Attendre l'implémentation backend
+  console.warn("getInstructorPhotos not yet implemented");
+  return [];
 }
 
 /**
  * Get photos for a specific event.
  * TODO: Implement when event photo endpoint is available.
  */
-export async function getEventPhotos(eventId: number): Promise<PhotoResponse[]> {
-    // TODO: Attendre l'implémentation backend
-    console.warn("getEventPhotos not yet implemented");
-    return [];
+export async function getEventPhotos(
+  eventId: number
+): Promise<PhotoResponse[]> {
+  // TODO: Attendre l'implémentation backend
+  console.warn("getEventPhotos not yet implemented");
+  return [];
 }

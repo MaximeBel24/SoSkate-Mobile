@@ -1,11 +1,13 @@
+import ProfileAvatar from "@/src/features/profile/ui/ProfileAvatar";
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Button from "@/src/shared/ui/button/Button";
+import DatePickerInput from "@/src/shared/ui/form/DatePickerInput";
 import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";
 import FormSection from "@/src/shared/ui/form/FormSection";
 import InfoBox from "@/src/shared/ui/form/InfoBox";
 import Input from "@/src/shared/ui/typography/Input";
-import ProfileAvatar from "@/src/features/profile/ui/ProfileAvatar";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { verticalScale } from "@/src/shared/utils/styling";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -20,13 +22,12 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import DatePickerInput from "@/src/shared/ui/form/DatePickerInput";
 
 const ProfileModal = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors, isDark } = useTheme();
 
-  // États
   const [isLoading, setIsLoading] = useState(false);
   const [birthDate, setBirthDate] = useState(new Date(1990, 0, 1));
   const [firstname, setFirstname] = useState("Jean");
@@ -43,14 +44,12 @@ const ProfileModal = () => {
       return;
     }
 
-    // Validation email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert("Email invalide", "Veuillez entrer un email valide");
       return;
     }
 
-    // Validation téléphone (format français)
     const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/;
     const cleanPhone = phone.replace(/\s/g, "");
     if (phone && !phoneRegex.test(cleanPhone)) {
@@ -63,8 +62,6 @@ const ProfileModal = () => {
 
     try {
       setIsLoading(true);
-
-      // Simuler un appel API
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const payload = {
@@ -102,7 +99,12 @@ const ProfileModal = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top, backgroundColor: colors.background.primary },
+      ]}
+    >
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).springify()}
@@ -110,16 +112,20 @@ const ProfileModal = () => {
       >
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backButton}
+          style={[styles.backButton, { borderColor: colors.border.default }]}
         >
-          <Icons.CaretLeftIcon size={28} color={colors.white} weight="bold" />
+          <Icons.CaretLeftIcon
+            size={28}
+            color={colors.text.primary}
+            weight="bold"
+          />
         </TouchableOpacity>
 
         <View style={styles.headerTextContainer}>
-          <Typo size={24} fontWeight="900" color={colors.white}>
+          <Typo size={24} fontWeight="900" color={colors.text.primary}>
             Éditer le profil
           </Typo>
-          <Typo size={14} color={colors.neutral400}>
+          <Typo size={14} color={colors.text.muted}>
             Mettez à jour vos informations
           </Typo>
         </View>
@@ -141,10 +147,14 @@ const ProfileModal = () => {
         {/* Form Card */}
         <Animated.View
           entering={FadeInUp.delay(300).springify()}
-          style={styles.formCard}
+          style={[styles.formCard, { borderColor: colors.border.subtle }]}
         >
           <LinearGradient
-            colors={["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.04)"]}
+            colors={
+              isDark
+                ? ["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.04)"]
+                : ["rgba(0, 0, 0, 0.02)", "rgba(0, 0, 0, 0.04)"]
+            }
             style={styles.formGradient}
           >
             <View style={styles.form}>
@@ -158,7 +168,7 @@ const ProfileModal = () => {
                     icon={
                       <Icons.UserIcon
                         size={verticalScale(24)}
-                        color={colors.neutral400}
+                        color={colors.text.muted}
                         weight="duotone"
                       />
                     }
@@ -170,7 +180,7 @@ const ProfileModal = () => {
                     icon={
                       <Icons.UserIcon
                         size={verticalScale(24)}
-                        color={colors.neutral400}
+                        color={colors.text.muted}
                         weight="duotone"
                       />
                     }
@@ -195,7 +205,7 @@ const ProfileModal = () => {
                     icon={
                       <Icons.AtIcon
                         size={verticalScale(24)}
-                        color={colors.neutral400}
+                        color={colors.text.muted}
                         weight="duotone"
                       />
                     }
@@ -208,7 +218,7 @@ const ProfileModal = () => {
                     icon={
                       <Icons.PhoneIcon
                         size={verticalScale(24)}
-                        color={colors.neutral400}
+                        color={colors.text.muted}
                         weight="duotone"
                       />
                     }
@@ -219,8 +229,13 @@ const ProfileModal = () => {
               </FormSection>
 
               {/* Champs obligatoires */}
-              <View style={styles.requiredNote}>
-                <Typo size={12} color={colors.neutral500}>
+              <View
+                style={[
+                  styles.requiredNote,
+                  { borderTopColor: colors.border.subtle },
+                ]}
+              >
+                <Typo size={12} color={colors.text.muted}>
                   * Champs obligatoires
                 </Typo>
               </View>
@@ -236,9 +251,9 @@ const ProfileModal = () => {
           <Button
             loading={isLoading}
             onPress={handleSubmit}
-            style={styles.saveButton}
+            style={[styles.saveButton, { shadowColor: colors.accent.primary }]}
           >
-            <Typo fontWeight="700" color={colors.white} size={17}>
+            <Typo fontWeight="700" color={colors.constant.white} size={17}>
               Enregistrer les modifications
             </Typo>
           </Button>
@@ -247,7 +262,7 @@ const ProfileModal = () => {
             onPress={() => router.back()}
             style={styles.cancelButton}
           >
-            <Typo fontWeight="600" color={colors.neutral400} size={15}>
+            <Typo fontWeight="600" color={colors.text.muted} size={15}>
               Annuler
             </Typo>
           </TouchableOpacity>
@@ -256,7 +271,10 @@ const ProfileModal = () => {
 
       {/* Gradient fade */}
       <LinearGradient
-        colors={["transparent", "rgba(0, 0, 0, 0.3)"]}
+        colors={[
+          "transparent",
+          isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.6)",
+        ]}
         style={[styles.bottomGradient, { height: insets.bottom + 50 }]}
         pointerEvents="none"
       />
@@ -269,7 +287,6 @@ export default ProfileModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.neutral900,
   },
   header: {
     paddingHorizontal: spacingX._20,
@@ -281,10 +298,9 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backgroundColor: "rgba(128, 128, 128, 0.1)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   headerTextContainer: {
     gap: 4,
@@ -296,7 +312,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   formGradient: {
     padding: spacingX._20,
@@ -307,14 +322,12 @@ const styles = StyleSheet.create({
   requiredNote: {
     paddingTop: spacingY._8,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.06)",
   },
   buttonContainer: {
     gap: spacingY._12,
     marginTop: spacingY._24,
   },
   saveButton: {
-    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

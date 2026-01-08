@@ -1,5 +1,6 @@
+import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { colors, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import React from "react";
@@ -13,38 +14,62 @@ type MapHeaderProps = {
 };
 
 const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
+  const { colors, isDark } = useTheme();
+
   return (
     <Animated.View
       entering={FadeInDown.delay(200).springify()}
       style={[styles.header, { paddingTop: topInset }]}
     >
       <LinearGradient
-        colors={["rgba(10, 10, 10, 0.9)", "transparent"]}
+        colors={
+          isDark
+            ? ["rgba(10, 10, 10, 0.9)", "transparent"]
+            : ["rgba(255, 255, 255, 0.95)", "transparent"]
+        }
         style={styles.headerGradient}
       >
         <View style={styles.headerContent}>
-          <View style={styles.statsCard}>
+          <View
+            style={[
+              styles.statsCard,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "rgba(0, 0, 0, 0.05)",
+                borderColor: colors.border.default,
+              },
+            ]}
+          >
             <Icons.MapPinIcon
               size={20}
-              color={colors.primary}
+              color={colors.accent.primary}
               weight="duotone"
             />
-            <Typo size={16} fontWeight="700" color={colors.white}>
+            <Typo size={16} fontWeight="700" color={colors.text.primary}>
               {spotsCount}
             </Typo>
-            <Typo size={12} color={colors.neutral400}>
+            <Typo size={12} color={colors.text.muted}>
               spots
             </Typo>
           </View>
 
           <TouchableOpacity
-            style={styles.searchButton}
+            style={[
+              styles.searchButton,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "rgba(0, 0, 0, 0.05)",
+                borderColor: colors.border.default,
+              },
+            ]}
             onPress={onSearchPress}
             activeOpacity={0.7}
           >
             <Icons.MagnifyingGlassIcon
               size={20}
-              color={colors.white}
+              color={colors.text.primary}
               weight="bold"
             />
           </TouchableOpacity>
@@ -78,21 +103,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     paddingVertical: spacingY._10,
     paddingHorizontal: spacingX._16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
   },
   searchButton: {
     width: 44,
     height: 44,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
   },
 });
