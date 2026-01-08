@@ -13,6 +13,9 @@ export const ENDPOINTS = {
     LOGIN: "/customer/auth/login",
     CUSTOMER_REGISTER: "/customer/auth/register",
   },
+  ADMIN: {
+    INSTRUCTOR: "/admin/instructors",
+  }
 };
 
 // Configuration de la carte
