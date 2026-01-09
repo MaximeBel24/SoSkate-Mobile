@@ -139,7 +139,7 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
         <Typo size={15} fontWeight="600" color={colors.text.primary}>
           {item.name}
         </Typo>
-        {item.city && (
+        {!item.city && (
           <Typo size={12} color={colors.text.muted}>
             {item.city}
           </Typo>

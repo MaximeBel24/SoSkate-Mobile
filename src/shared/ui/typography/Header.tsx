@@ -10,7 +10,7 @@ const Header = ({ title = "", leftIcon, style }: HeaderProps) => {
   return (
     <View style={[styles.container, style]}>
       {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
-      {title && (
+      {!title && (
         <Typo
           size={22}
           fontWeight="600"

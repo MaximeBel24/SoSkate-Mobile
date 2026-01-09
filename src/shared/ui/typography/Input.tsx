@@ -37,7 +37,7 @@ const Input = (props: InputProps) => {
         props.containerStyle,
       ]}
     >
-      {props.icon && props.icon}
+      {props.icon}
       <TextInput
         style={[styles.input, { color: colors.text.primary }, props.inputStyle]}
         placeholderTextColor={colors.text.muted}

@@ -1,8 +1,3 @@
-// ============================================
-// 🛹 SOSKATE - THEME SELECTOR
-// ============================================
-// Beautiful theme selector with 3 options: Dark, Light, Auto
-
 import { ThemeMode, useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { scale, verticalScale } from "@/src/shared/utils/styling";
@@ -19,9 +14,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// ============================================
-// TYPES
-// ============================================
 type ThemeOption = {
   mode: ThemeMode;
   label: string;
@@ -29,14 +21,8 @@ type ThemeOption = {
   description: string;
 };
 
-// ============================================
-// ANIMATED PRESSABLE
-// ============================================
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-// ============================================
-// THEME OPTION CARD
-// ============================================
 type ThemeOptionCardProps = {
   option: ThemeOption;
   isSelected: boolean;
@@ -152,9 +138,6 @@ const ThemeOptionCard: React.FC<ThemeOptionCardProps> = ({
   );
 };
 
-// ============================================
-// THEME SELECTOR COMPONENT
-// ============================================
 type ThemeSelectorProps = {
   title?: string;
   showDescription?: boolean;
@@ -203,7 +186,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   return (
     <View style={styles.container}>
       {/* Section title */}
-      {title && (
+      {!title && (
         <View style={styles.header}>
           <Typo size={18} fontWeight="700" color={colors.text.primary}>
             {title}

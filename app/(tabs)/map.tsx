@@ -16,7 +16,7 @@ import { Keyboard, StyleSheet } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Map = () => {
+const MapScreen = () => {
   const router = useRouter();
   const mapRef = useRef<MapView>(null);
   const insets = useSafeAreaInsets();
@@ -201,7 +201,7 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default MapScreen;
 
 const styles = StyleSheet.create({
   container: {

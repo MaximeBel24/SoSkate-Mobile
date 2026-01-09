@@ -107,7 +107,7 @@ const InstructorDetailsModal = () => {
                         style={[styles.closeButton, { backgroundColor: colors.ui.badge }]}
                         onPress={handleClose}
                     >
-                        <Icons.X size={20} color={colors.text.primary} weight="bold" />
+                        <Icons.XIcon size={20} color={colors.text.primary} weight="bold" />
                     </TouchableOpacity>
                     <Typo size={18} fontWeight="700" color={colors.text.primary}>
                         Profil instructeur
@@ -125,7 +125,7 @@ const InstructorDetailsModal = () => {
                             },
                         ]}
                     >
-                        <Icons.Warning
+                        <Icons.WarningIcon
                             size={48}
                             color={colors.semantic.danger}
                             weight="duotone"
@@ -148,7 +148,7 @@ const InstructorDetailsModal = () => {
                         ]}
                         onPress={loadInstructor}
                     >
-                        <Icons.ArrowClockwise
+                        <Icons.ArrowClockwiseIcon
                             size={18}
                             color={colors.constant.white}
                             weight="bold"
@@ -183,7 +183,7 @@ const InstructorDetailsModal = () => {
                     style={[styles.closeButton, { backgroundColor: colors.ui.badge }]}
                     onPress={handleClose}
                 >
-                    <Icons.X size={20} color={colors.text.primary} weight="bold" />
+                    <Icons.XIcon size={20} color={colors.text.primary} weight="bold" />
                 </TouchableOpacity>
                 <Typo size={18} fontWeight="700" color={colors.text.primary}>
                     Profil instructeur
@@ -219,7 +219,7 @@ const InstructorDetailsModal = () => {
                                 { backgroundColor: colors.ui.badge },
                             ]}
                         >
-                            <Icons.Medal
+                            <Icons.MedalIcon
                                 size={16}
                                 color={colors.accent.primary}
                                 weight="fill"
@@ -251,7 +251,7 @@ const InstructorDetailsModal = () => {
                                     { backgroundColor: colors.ui.badge },
                                 ]}
                             >
-                                <Icons.Timer
+                                <Icons.TimerIcon
                                     size={24}
                                     color={colors.accent.primary}
                                     weight="fill"
@@ -271,7 +271,7 @@ const InstructorDetailsModal = () => {
                 {instructor.bio && (
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <Icons.User size={20} color={colors.accent.primary} weight="fill" />
+                            <Icons.UserIcon size={20} color={colors.accent.primary} weight="fill" />
                             <Typo size={16} fontWeight="700" color={colors.text.primary}>
                                 À propos
                             </Typo>
@@ -305,7 +305,7 @@ const InstructorDetailsModal = () => {
                 {(instructor.instagramHandle || instructor.youtubeChannel) && (
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <Icons.ShareNetwork
+                            <Icons.ShareNetworkIcon
                                 size={20}
                                 color={colors.accent.primary}
                                 weight="fill"
@@ -335,7 +335,7 @@ const InstructorDetailsModal = () => {
                                             { backgroundColor: "rgba(225, 48, 108, 0.1)" },
                                         ]}
                                     >
-                                        <Icons.InstagramLogo
+                                        <Icons.InstagramLogoIcon
                                             size={22}
                                             color="#E1306C"
                                             weight="fill"
@@ -349,7 +349,7 @@ const InstructorDetailsModal = () => {
                                             @{instructor.instagramHandle.replace("@", "")}
                                         </Typo>
                                     </View>
-                                    <Icons.ArrowSquareOut
+                                    <Icons.ArrowSquareOutIcon
                                         size={18}
                                         color={colors.text.muted}
                                     />
@@ -375,7 +375,7 @@ const InstructorDetailsModal = () => {
                                             { backgroundColor: "rgba(255, 0, 0, 0.1)" },
                                         ]}
                                     >
-                                        <Icons.YoutubeLogo
+                                        <Icons.YoutubeLogoIcon
                                             size={22}
                                             color="#FF0000"
                                             weight="fill"
@@ -389,7 +389,7 @@ const InstructorDetailsModal = () => {
                                             Voir la chaîne
                                         </Typo>
                                     </View>
-                                    <Icons.ArrowSquareOut
+                                    <Icons.ArrowSquareOutIcon
                                         size={18}
                                         color={colors.text.muted}
                                     />
@@ -413,7 +413,7 @@ const InstructorDetailsModal = () => {
                         },
                     ]}
                 >
-                    <Icons.VideoCamera
+                    <Icons.VideoCameraIcon
                         size={36}
                         color={colors.accent.primary}
                         weight="duotone"
@@ -435,8 +435,6 @@ const InstructorDetailsModal = () => {
         </View>
     );
 };
-
-export default InstructorDetailsModal;
 
 const styles = StyleSheet.create({
     container: {

@@ -146,10 +146,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       StatusBar.setBarStyle(isDark ? "light-content" : "dark-content", true);
 
       if (Platform.OS === "android") {
-        StatusBar.setBackgroundColor(
-          isDark ? colors.background.primary : colors.background.primary,
-          true
-        );
+        StatusBar.setBackgroundColor(colors.background.primary, true);
       }
     }
   }, [isDark, isThemeLoaded, colors.background.primary]);

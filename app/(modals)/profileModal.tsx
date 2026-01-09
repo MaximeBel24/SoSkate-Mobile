@@ -51,7 +51,7 @@ const ProfileModal = () => {
     }
 
     const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/;
-    const cleanPhone = phone.replace(/\s/g, "");
+    const cleanPhone = phone.replaceAll(/\s/g, "");
     if (phone && !phoneRegex.test(cleanPhone)) {
       Alert.alert(
         "Téléphone invalide",

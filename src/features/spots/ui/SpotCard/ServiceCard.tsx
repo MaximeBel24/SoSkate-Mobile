@@ -53,7 +53,7 @@ const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
         </View>
 
         {/* Description */}
-        {service.description && (
+        {!service.description && (
           <Typo
             size={14}
             color={colors.text.secondary}
