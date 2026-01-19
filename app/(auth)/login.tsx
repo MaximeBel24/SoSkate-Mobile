@@ -1,10 +1,16 @@
+// ============================================
+// 🛹 SOSKATE - LOGIN SCREEN
+// ============================================
+// Écran de connexion unifié Customer/Instructor
+
 import AuthFooterLink from "@/src/features/auth/ui/AuthFooterLink";
 import AuthFormCard from "@/src/features/auth/ui/AuthFormCard";
 import AuthLayout from "@/src/features/auth/ui/AuthLayout";
 import SocialAuthButtons from "@/src/features/auth/ui/SocialAuthButtons";
+import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
-import { LoginRequest } from "@/src/shared/types/auth.interface";
+import { LoginRequest } from "@/src/shared/types/auth.types";
 import Button from "@/src/shared/ui/button/Button";
 import FormDivider from "@/src/shared/ui/form/FormDivider";
 import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";
@@ -14,34 +20,52 @@ import { verticalScale } from "@/src/shared/utils/styling";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React, { useRef, useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert } from "react-native";
 
 const Login = () => {
   const { colors } = useTheme();
+  const { login: authLogin } = useAuth();
+  const router = useRouter();
+
+  // === Form State ===
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
+  // === Handlers ===
   const handleSubmit = async () => {
+    // Validation des champs
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Connexion", "Veuillez remplir tous les champs");
       return;
     }
 
     const payload: LoginRequest = {
-      email: emailRef.current,
+      email: emailRef.current.trim().toLowerCase(),
       password: passwordRef.current,
     };
 
     try {
       setIsLoading(true);
-      await login(payload);
-      router.push("/(tabs)");
+
+      // 1. Appel API avec le nouvel endpoint unifié
+      const response = await login(payload);
+
+      // 2. Sauvegarder dans le contexte (et AsyncStorage)
+      await authLogin(response);
+
+      // 3. Log du rôle pour debug
+      console.log(`✅ Connexion réussie - Rôle: ${response.role}`);
+
+      // 4. Navigation vers l'écran principal
+      // Le router remplace la stack pour éviter le retour arrière
+      router.replace("/(tabs)");
     } catch (error: any) {
+      console.error("❌ Erreur de connexion:", error);
+
       Alert.alert(
         "Erreur de connexion",
-        error?.message || "Une erreur est survenue."
+        error?.message || "Une erreur est survenue. Veuillez réessayer.",
       );
     } finally {
       setIsLoading(false);
@@ -49,9 +73,20 @@ const Login = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    Alert.alert(`Connexion ${provider}`, "Fonctionnalité bientôt disponible");
+    Alert.alert(
+      `Connexion ${provider}`,
+      "Cette fonctionnalité sera bientôt disponible !",
+    );
   };
 
+  const handleForgotPassword = () => {
+    Alert.alert(
+      "Mot de passe oublié",
+      "Cette fonctionnalité sera bientôt disponible !",
+    );
+  };
+
+  // === Render ===
   return (
     <AuthLayout
       title="Connexion"
@@ -69,10 +104,12 @@ const Login = () => {
         title="Accédez à votre compte"
         description="Entrez vos identifiants"
       >
+        {/* === Champs du formulaire === */}
         <FormInputGroup>
           <Input
             placeholder="Email"
             autoComplete="email"
+            autoCapitalize="none"
             keyboardType="email-address"
             onChangeText={(value) => (emailRef.current = value)}
             icon={
@@ -86,6 +123,7 @@ const Login = () => {
           <Input
             placeholder="Mot de passe"
             secureTextEntry
+            autoComplete="password"
             onChangeText={(value) => (passwordRef.current = value)}
             icon={
               <Icons.LockIcon
@@ -97,28 +135,28 @@ const Login = () => {
           />
         </FormInputGroup>
 
-        <TouchableOpacity
+        {/* === Mot de passe oublié === */}
+        <Typo
+          size={14}
+          color={colors.accent.primary}
+          fontWeight="600"
           style={{ alignSelf: "flex-end" }}
-          onPress={() =>
-            Alert.alert(
-              "Mot de passe oublié",
-              "Fonctionnalité bientôt disponible"
-            )
-          }
+          onPress={handleForgotPassword}
         >
-          <Typo size={14} color={colors.accent.primary} fontWeight="600">
-            Mot de passe oublié ?
-          </Typo>
-        </TouchableOpacity>
+          Mot de passe oublié ?
+        </Typo>
 
+        {/* === Bouton de connexion === */}
         <Button loading={isLoading} onPress={handleSubmit}>
           <Typo fontWeight="700" color={colors.constant.white} size={17}>
             Se connecter
           </Typo>
         </Button>
 
+        {/* === Séparateur === */}
         <FormDivider />
 
+        {/* === Connexion sociale === */}
         <SocialAuthButtons
           onGooglePress={() => handleSocialLogin("Google")}
           onApplePress={() => handleSocialLogin("Apple")}

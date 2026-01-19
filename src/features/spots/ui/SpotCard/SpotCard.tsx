@@ -1,22 +1,22 @@
-import ServiceList from "@/src/features/spots/ui/SpotCard/ServiceList";
+import HorizontalCardList from "@/src/features/spots/ui/SpotCard/HorizontalCardList";
+import InstructorCard from "@/src/features/spots/ui/SpotCard/InstructorCard";
+import ServiceCard from "@/src/features/spots/ui/SpotCard/ServiceCard";
 import SpotActions from "@/src/features/spots/ui/SpotCard/SpotActions";
 import SpotInfo from "@/src/features/spots/ui/SpotCard/SpotInfo";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { getAllInstructors } from "@/src/shared/services/instructorService";
 import { getSpotPhotos } from "@/src/shared/services/photoService";
 import { getActiveServices } from "@/src/shared/services/serviceService";
-import { getAllInstructors } from "@/src/shared/services/instructorService";
 import { useTheme } from "@/src/shared/theme";
+import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import { Photo } from "@/src/shared/types/photo.interface";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
-import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import PhotoGallery from "@/src/shared/ui/media/PhotoGallery";
 import Typo from "@/src/shared/ui/typography/Typo";
+import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
-import InstructorList from "./InstructorList";
-import ServiceCard from "./ServiceCard";
 import {
   ActivityIndicator,
   Dimensions,
@@ -36,6 +36,14 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+
+// ============================================
+// 🛹 SOSKATE - SPOT CARD (REFACTORED)
+// ============================================
+// Carte de spot avec:
+// - Galerie photo fixe en haut
+// - Tout le contenu (nom, description, instructeurs, services)
+//   dans un seul ScrollView vertical
 
 type SpotCardProps = {
   spot: SpotResponse;
@@ -62,10 +70,15 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
   const [instructors, setInstructors] = useState<InstructorResponse[]>([]);
   const [loadingInstructors, setLoadingInstructors] = useState(false);
   const [instructorsLoaded, setInstructorsLoaded] = useState(false);
-  const [selectedInstructorId, setSelectedInstructorId] = useState<string | null>(null);
+  const [selectedInstructorId, setSelectedInstructorId] = useState<
+    string | null
+  >(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null,
+  );
 
   const cardHeight = useSharedValue(
-      COMPACT_HEIGHT + bottomInset + spacingY._70
+    COMPACT_HEIGHT + bottomInset + spacingY._70,
   );
   const translateY = useSharedValue(0);
 
@@ -130,27 +143,27 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
     const newExpandedState = !isExpanded;
     setIsExpanded(newExpandedState);
     cardHeight.value = withSpring(
-        newExpandedState
-            ? EXPANDED_HEIGHT
-            : COMPACT_HEIGHT + bottomInset + spacingY._70
+      newExpandedState
+        ? EXPANDED_HEIGHT
+        : COMPACT_HEIGHT + bottomInset + spacingY._70,
     );
   };
 
   const panGesture = Gesture.Pan()
-      .enabled(isExpanded)
-      .onUpdate((event) => {
-        if (event.translationY > 0) {
-          translateY.value = event.translationY;
-        }
-      })
-      .onEnd((event) => {
-        if (event.translationY > SWIPE_THRESHOLD) {
-          runOnJS(toggleExpanded)();
-          translateY.value = withSpring(0);
-        } else {
-          translateY.value = withSpring(0);
-        }
-      });
+    .enabled(isExpanded)
+    .onUpdate((event) => {
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
+      }
+    })
+    .onEnd((event) => {
+      if (event.translationY > SWIPE_THRESHOLD) {
+        runOnJS(toggleExpanded)();
+        translateY.value = withSpring(0);
+      } else {
+        translateY.value = withSpring(0);
+      }
+    });
 
   const animatedCardStyle = useAnimatedStyle(() => ({
     height: cardHeight.value,
@@ -172,6 +185,15 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
     }
   };
 
+  const handleSelectService = (service: ServiceResponse) => {
+    // Toggle selection
+    if (selectedServiceId === Number(service.id)) {
+      setSelectedServiceId(null);
+    } else {
+      setSelectedServiceId(Number(service.id));
+    }
+  };
+
   const handleViewInstructorDetails = (instructorId: string) => {
     router.push(`/(modals)/instructor/${instructorId}`);
   };
@@ -188,263 +210,344 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
   const hasContent = instructors.length > 0 || services.length > 0;
 
   return (
-      <GestureHandlerRootView style={styles.gestureRoot}>
-        <Animated.View
-            style={[
-              styles.spotCard,
-              {
-                backgroundColor: isDark ? "#161412" : "#ffffff",
-              },
-              animatedCardStyle,
-            ]}
-        >
-          {/* Swipe indicator */}
-          {isExpanded && (
-              <GestureDetector gesture={panGesture}>
-                <View style={styles.swipeIndicatorContainer}>
-                  <View style={styles.swipeIndicator}>
-                    <View
-                        style={[
-                          styles.swipeBar,
-                          {
-                            backgroundColor: isDark
-                                ? "rgba(255, 255, 255, 0.3)"
-                                : "rgba(0, 0, 0, 0.2)",
-                          },
-                        ]}
-                    />
-                  </View>
-                </View>
-              </GestureDetector>
-          )}
-
-          {/* Photos */}
-          {loadingPhotos ? (
-              <View
+    <GestureHandlerRootView style={styles.gestureRoot}>
+      <Animated.View
+        style={[
+          styles.spotCard,
+          {
+            backgroundColor: isDark ? "#161412" : "#ffffff",
+          },
+          animatedCardStyle,
+        ]}
+      >
+        {/* Swipe indicator (seulement en mode expanded) */}
+        {isExpanded && (
+          <GestureDetector gesture={panGesture}>
+            <View style={styles.swipeIndicatorContainer}>
+              <View style={styles.swipeIndicator}>
+                <View
                   style={[
-                    styles.photoLoading,
-                    { backgroundColor: colors.neutral[800] },
+                    styles.swipeBar,
+                    {
+                      backgroundColor: isDark
+                        ? "rgba(255, 255, 255, 0.3)"
+                        : "rgba(0, 0, 0, 0.2)",
+                    },
                   ]}
-              >
-                <ActivityIndicator size="large" color={colors.accent.primary} />
+                />
               </View>
-          ) : (
-              <PhotoGallery
-                  photos={photos}
-                  height={PHOTO_HEIGHT}
-                  borderRadius={0}
-                  showIndicators={true}
+            </View>
+          </GestureDetector>
+        )}
+
+        {/* Photos - Fixe en haut */}
+        {loadingPhotos ? (
+          <View
+            style={[
+              styles.photoLoading,
+              { backgroundColor: colors.neutral[800] },
+            ]}
+          >
+            <ActivityIndicator size="large" color={colors.accent.primary} />
+          </View>
+        ) : (
+          <PhotoGallery
+            photos={photos}
+            height={PHOTO_HEIGHT}
+            borderRadius={0}
+            showIndicators={true}
+          />
+        )}
+
+        {/* Close button */}
+        <TouchableOpacity
+          style={[styles.closeButton, { borderColor: colors.border.subtle }]}
+          onPress={handleCloseCard}
+        >
+          <Icons.XIcon size={20} color={colors.text.primary} weight="bold" />
+        </TouchableOpacity>
+
+        {/* === CONTENU SCROLLABLE === */}
+        <ScrollView
+          style={styles.mainScrollView}
+          contentContainerStyle={styles.mainScrollContent}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+          scrollEnabled={isExpanded}
+        >
+          {/* SpotInfo - Nom, adresse, description */}
+          <View style={styles.spotInfoSection}>
+            <SpotInfo
+              name={spot.name}
+              address={spot.address}
+              zipCode={spot.zipCode}
+              city={spot.city}
+              isIndoor={spot.isIndoor}
+              description={spot.description}
+            />
+          </View>
+
+          {/* Actions (seulement en mode compact) */}
+          {!isExpanded && (
+            <View style={styles.actionsSection}>
+              <SpotActions
+                spotId={spot.id}
+                latitude={spot.latitude}
+                longitude={spot.longitude}
+                spotName={spot.name}
+                address={spot.address}
+                onViewCourses={toggleExpanded}
+                hasServices={services.length > 0 || !servicesLoaded}
               />
+            </View>
           )}
 
-          {/* Close button */}
-          <TouchableOpacity
-              style={[styles.closeButton, { borderColor: colors.border.default }]}
-              onPress={handleCloseCard}
-          >
-            <Icons.X size={20} color={colors.text.primary} weight="bold" />
-          </TouchableOpacity>
+          {/* === SECTIONS EXPANDED === */}
+          {isExpanded && (
+            <View style={styles.expandedContent}>
+              {/* Loading state */}
+              {isLoading && !hasContent && (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator
+                    size="large"
+                    color={colors.accent.primary}
+                  />
+                  <Typo size={14} color={colors.text.muted}>
+                    Chargement...
+                  </Typo>
+                </View>
+              )}
 
-          {/* Content */}
-          <View style={styles.spotContent}>
-            <SpotInfo
-                name={spot.name}
-                address={spot.address}
-                zipCode={spot.zipCode}
-                city={spot.city}
-                isIndoor={spot.isIndoor}
-                description={spot.description}
-            />
-
-            {!isExpanded && (
-                <SpotActions
-                    spotId={spot.id}
-                    latitude={spot.latitude}
-                    longitude={spot.longitude}
-                    spotName={spot.name}
-                    address={spot.address}
-                    onViewCourses={toggleExpanded}
-                    hasServices={services.length > 0 || !servicesLoaded}
-                />
-            )}
-
-            {isExpanded && (
-                <View style={styles.expandedSection}>
-                  {/* Loading state */}
-                  {isLoading && !hasContent && (
-                      <View style={styles.loadingContainer}>
-                        <ActivityIndicator
-                            size="large"
-                            color={colors.accent.primary}
-                        />
-                        <Typo size={14} color={colors.text.muted}>
-                          Chargement...
+              {/* Section Instructeurs */}
+              {(!isLoading || hasContent) && (
+                <>
+                  {instructors.length > 0 && (
+                    <View style={styles.section}>
+                      <View style={styles.sectionHeader}>
+                        <Typo
+                          size={18}
+                          fontWeight="700"
+                          color={colors.text.primary}
+                        >
+                          Choisir un moniteur
+                        </Typo>
+                        <Typo size={13} color={colors.text.muted}>
+                          {instructors.length} disponible
+                          {instructors.length > 1 ? "s" : ""}
                         </Typo>
                       </View>
+
+                      {selectedInstructorId && (
+                        <View
+                          style={[
+                            styles.selectionBadge,
+                            { backgroundColor: colors.semantic.successBg },
+                          ]}
+                        >
+                          <Icons.CheckCircleIcon
+                            size={14}
+                            color={colors.semantic.success}
+                            weight="fill"
+                          />
+                          <Typo size={12} color={colors.semantic.success}>
+                            Instructeur sélectionné
+                          </Typo>
+                        </View>
+                      )}
+
+                      {/* Liste horizontale des instructeurs */}
+                      <HorizontalCardList
+                        data={instructors}
+                        keyExtractor={(instructor) => instructor.id}
+                        renderItem={(instructor) => (
+                          <InstructorCard
+                            instructor={instructor}
+                            isSelected={selectedInstructorId === instructor.id}
+                            onSelect={handleSelectInstructor}
+                            onViewDetails={handleViewInstructorDetails}
+                          />
+                        )}
+                        compact
+                      />
+                    </View>
                   )}
 
-                  {/* Unified ScrollView */}
-                  {(!isLoading || hasContent) && (
-                      <ScrollView
-                          style={styles.unifiedScrollView}
-                          contentContainerStyle={styles.unifiedScrollContent}
-                          showsVerticalScrollIndicator={false}
-                          nestedScrollEnabled
+                  {!loadingInstructors &&
+                    instructors.length === 0 &&
+                    instructorsLoaded && (
+                      <View style={styles.emptyInstructorsContainer}>
+                        <Typo size={14} color={colors.text.muted}>
+                          Aucun instructeur disponible
+                        </Typo>
+                      </View>
+                    )}
+
+                  {/* Section Services */}
+                  <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                      <Typo
+                        size={18}
+                        fontWeight="700"
+                        color={colors.text.primary}
                       >
-                        {/* Section Instructeurs */}
-                        {instructors.length > 0 && (
-                            <View style={styles.section}>
-                              <View style={styles.sectionHeader}>
-                                <Typo size={18} fontWeight="700" color={colors.text.primary}>
-                                  Choisir un instructeur
-                                </Typo>
-                                <Typo size={13} color={colors.text.muted}>
-                                  {instructors.length} disponible{instructors.length > 1 ? "s" : ""}
-                                </Typo>
-                              </View>
+                        Choisir une prestation
+                      </Typo>
+                      {services.length > 0 && (
+                        <Typo size={13} color={colors.text.muted}>
+                          {services.length} disponible
+                          {services.length > 1 ? "s" : ""}
+                        </Typo>
+                      )}
+                    </View>
 
-                              {selectedInstructorId && (
-                                  <View
-                                      style={[
-                                        styles.selectionBadge,
-                                        { backgroundColor: colors.semantic.successBg },
-                                      ]}
-                                  >
-                                    <Icons.CheckCircle
-                                        size={14}
-                                        color={colors.semantic.success}
-                                        weight="fill"
-                                    />
-                                    <Typo size={12} color={colors.semantic.success}>
-                                      Instructeur sélectionné
-                                    </Typo>
-                                  </View>
-                              )}
+                    {loadingServices && (
+                      <View style={styles.sectionLoadingContainer}>
+                        <ActivityIndicator
+                          size="small"
+                          color={colors.accent.primary}
+                        />
+                      </View>
+                    )}
 
-                              <InstructorList
-                                  instructors={instructors}
-                                  selectedInstructorId={selectedInstructorId}
-                                  onSelectInstructor={handleSelectInstructor}
-                                  onViewInstructorDetails={handleViewInstructorDetails}
-                                  compact
-                              />
-                            </View>
-                        )}
-
-                        {!loadingInstructors &&
-                            instructors.length === 0 &&
-                            instructorsLoaded && (
-                                <View style={styles.emptyInstructorsContainer}>
-                                  <Typo size={14} color={colors.text.muted}>
-                                    Aucun instructeur disponible
-                                  </Typo>
-                                </View>
-                            )}
-
-                        {/* Section Services */}
-                        <View style={styles.section}>
-                          <View style={styles.sectionHeader}>
-                            <Typo size={18} fontWeight="700" color={colors.text.primary}>
-                              Services disponibles
+                    {!loadingServices && services.length > 0 && (
+                      <>
+                        {selectedServiceId && (
+                          <View
+                            style={[
+                              styles.selectionBadge,
+                              { backgroundColor: colors.semantic.successBg },
+                            ]}
+                          >
+                            <Icons.CheckCircleIcon
+                              size={14}
+                              color={colors.semantic.success}
+                              weight="fill"
+                            />
+                            <Typo size={12} color={colors.semantic.success}>
+                              Service sélectionné
                             </Typo>
                           </View>
+                        )}
 
-                          {loadingServices && (
-                              <View style={styles.sectionLoadingContainer}>
-                                <ActivityIndicator
-                                    size="small"
-                                    color={colors.accent.primary}
-                                />
-                              </View>
+                        {/* Liste horizontale des services */}
+                        <HorizontalCardList
+                          data={services}
+                          keyExtractor={(service) => service.id}
+                          renderItem={(service) => (
+                            <ServiceCard
+                              service={service}
+                              isSelected={
+                                selectedServiceId === Number(service.id)
+                              }
+                              onSelect={handleSelectService}
+                              onPress={handleServicePress}
+                            />
                           )}
+                          compact
+                        />
+                      </>
+                    )}
 
-                          {!loadingServices && services.length > 0 && (
-                              <View style={styles.servicesGrid}>
-                                {services.map((service) => (
-                                    <ServiceCard
-                                        key={service.id}
-                                        service={service}
-                                        onPress={handleServicePress}
-                                    />
-                                ))}
-                              </View>
-                          )}
-
-                          {!loadingServices &&
-                              services.length === 0 &&
-                              servicesLoaded && (
-                                  <View style={styles.emptyContainer}>
-                                    <View
-                                        style={[
-                                          styles.emptyIconContainer,
-                                          {
-                                            backgroundColor: isDark
-                                                ? "rgba(255, 255, 255, 0.05)"
-                                                : "rgba(0, 0, 0, 0.03)",
-                                            borderColor: colors.border.default,
-                                          },
-                                        ]}
-                                    >
-                                      <Icons.CalendarX
-                                          size={48}
-                                          color={colors.text.muted}
-                                          weight="thin"
-                                      />
-                                    </View>
-                                    <Typo
-                                        size={16}
-                                        fontWeight="600"
-                                        color={colors.text.primary}
-                                        style={styles.emptyTitle}
-                                    >
-                                      Aucun service disponible
-                                    </Typo>
-                                    <Typo
-                                        size={14}
-                                        color={colors.text.muted}
-                                        style={styles.emptyText}
-                                    >
-                                      Ce spot n'a pas encore de prestations actives.
-                                    </Typo>
-                                  </View>
-                              )}
+                    {!loadingServices &&
+                      services.length === 0 &&
+                      servicesLoaded && (
+                        <View style={styles.emptyContainer}>
+                          <View
+                            style={[
+                              styles.emptyIconContainer,
+                              {
+                                backgroundColor: isDark
+                                  ? "rgba(255, 255, 255, 0.05)"
+                                  : "rgba(0, 0, 0, 0.03)",
+                                borderColor: colors.border.default,
+                              },
+                            ]}
+                          >
+                            <Icons.CalendarXIcon
+                              size={48}
+                              color={colors.text.muted}
+                              weight="thin"
+                            />
+                          </View>
+                          <Typo
+                            size={16}
+                            fontWeight="600"
+                            color={colors.text.primary}
+                            style={styles.emptyTitle}
+                          >
+                            Aucun service disponible
+                          </Typo>
+                          <Typo
+                            size={14}
+                            color={colors.text.muted}
+                            style={styles.emptyText}
+                          >
+                            Ce spot n'a pas encore de prestations actives.
+                          </Typo>
                         </View>
+                      )}
+                  </View>
 
-                        {/* Bottom spacer */}
-                        <View style={{ height: 20 }} />
-                      </ScrollView>
-                  )}
-
-                  {/* Collapse button */}
-                  <TouchableOpacity
+                  {/* Bouton de réservation (si instructeur ET service sélectionnés) */}
+                  {selectedInstructorId && selectedServiceId && (
+                    <TouchableOpacity
                       style={[
-                        styles.collapseButton,
-                        {
-                          backgroundColor: isDark
-                              ? "rgba(255, 107, 53, 0.15)"
-                              : "rgba(234, 88, 12, 0.1)",
-                          borderColor: isDark
-                              ? "rgba(255, 107, 53, 0.3)"
-                              : "rgba(234, 88, 12, 0.2)",
-                        },
+                        styles.bookingButton,
+                        { backgroundColor: colors.accent.primary },
                       ]}
-                      onPress={toggleExpanded}
+                      onPress={() => handleServicePress(selectedServiceId)}
                       activeOpacity={0.8}
-                  >
-                    <Icons.CaretDown
+                    >
+                      <Icons.CalendarPlusIcon
                         size={20}
-                        color={colors.accent.primary}
+                        color={colors.constant.white}
                         weight="bold"
-                    />
-                    <Typo size={15} fontWeight="600" color={colors.accent.primary}>
-                      Masquer
-                    </Typo>
-                  </TouchableOpacity>
-                </View>
-            )}
-          </View>
-        </Animated.View>
-      </GestureHandlerRootView>
+                      />
+                      <Typo
+                        size={16}
+                        fontWeight="700"
+                        color={colors.constant.white}
+                      >
+                        Réserver un cours
+                      </Typo>
+                    </TouchableOpacity>
+                  )}
+                </>
+              )}
+
+              {/* Collapse button */}
+              <TouchableOpacity
+                style={[
+                  styles.collapseButton,
+                  {
+                    backgroundColor: isDark
+                      ? "rgba(255, 107, 53, 0.15)"
+                      : "rgba(234, 88, 12, 0.1)",
+                    borderColor: isDark
+                      ? "rgba(255, 107, 53, 0.3)"
+                      : "rgba(234, 88, 12, 0.2)",
+                  },
+                ]}
+                onPress={toggleExpanded}
+                activeOpacity={0.8}
+              >
+                <Icons.CaretDownIcon
+                  size={20}
+                  color={colors.accent.primary}
+                  weight="bold"
+                />
+                <Typo size={15} fontWeight="600" color={colors.accent.primary}>
+                  Masquer
+                </Typo>
+              </TouchableOpacity>
+
+              {/* Bottom spacer */}
+              <View style={{ height: 30 }} />
+            </View>
+          )}
+        </ScrollView>
+      </Animated.View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -482,7 +585,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: 12,
+    top: 21,
     right: 12,
     width: 36,
     height: 36,
@@ -499,25 +602,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  spotContent: {
-    padding: spacingX._20,
+  // === SCROLL PRINCIPAL ===
+  mainScrollView: {
     flex: 1,
   },
-  expandedSection: {
-    marginTop: spacingY._12,
-    flex: 1,
+  mainScrollContent: {
+    paddingHorizontal: spacingX._20,
+    paddingTop: spacingY._16,
+    paddingBottom: spacingY._20,
   },
-  loadingContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 40,
-    gap: 12,
+  // === SECTIONS ===
+  spotInfoSection: {
+    marginBottom: spacingY._8,
   },
-  unifiedScrollView: {
-    flex: 1,
+  actionsSection: {
+    marginTop: spacingY._8,
   },
-  unifiedScrollContent: {
+  expandedContent: {
     gap: 20,
+    marginTop: spacingY._12,
   },
   section: {
     gap: 12,
@@ -536,6 +639,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
   },
+  // === LOADING & EMPTY STATES ===
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    gap: 12,
+  },
   sectionLoadingContainer: {
     paddingVertical: 20,
     alignItems: "center",
@@ -543,9 +653,6 @@ const styles = StyleSheet.create({
   emptyInstructorsContainer: {
     paddingVertical: 16,
     alignItems: "center",
-  },
-  servicesGrid: {
-    gap: 12,
   },
   emptyContainer: {
     alignItems: "center",
@@ -568,6 +675,16 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: "center",
     lineHeight: 20,
+  },
+  // === BUTTONS ===
+  bookingButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: spacingY._16,
+    borderRadius: 14,
+    marginTop: spacingY._8,
   },
   collapseButton: {
     flexDirection: "row",

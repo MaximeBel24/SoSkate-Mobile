@@ -1,37 +1,105 @@
+// ============================================
+// 🛹 SOSKATE - PROFILE SCREEN
+// ============================================
+// Écran profil avec données réelles, avatar et options selon le rôle
+
 import { ProfileInfoCard } from "@/src/features/profile/ui/ProfileInfoCard";
 import SettingsList from "@/src/features/profile/ui/SettingsList";
 import SettingsListItem from "@/src/features/profile/ui/SettingsListItem";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useAuth } from "@/src/shared/contexts/AuthContext";
+import {
+  getCustomerAvatar,
+  getInstructorAvatar,
+} from "@/src/shared/services/photoService";
 import { useTheme } from "@/src/shared/theme";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import { SectionHeader } from "@/src/shared/ui/layout/SectionHeader";
 import Header from "@/src/shared/ui/typography/Header";
 import Typo from "@/src/shared/ui/typography/Typo";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// ============================================
+// TYPES
+// ============================================
 type SettingsOption = {
+  id: string;
   title: string;
   icon: React.ReactNode;
   bgColor: string;
   routeName?: string;
   isDanger?: boolean;
+  roles?: ("CUSTOMER" | "INSTRUCTOR")[];
 };
 
+// ============================================
+// COMPONENT
+// ============================================
 const Profile = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
+  const { user, logout, isCustomer, isInstructor } = useAuth();
 
-  const settingsOptions: SettingsOption[] = [
+  // === Avatar State ===
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [isLoadingAvatar, setIsLoadingAvatar] = useState(true);
+
+  // === Nom complet de l'utilisateur ===
+  const fullName = useMemo(() => {
+    if (!user) return "Utilisateur";
+    return `${user.firstName} ${user.lastName}`;
+  }, [user?.firstName, user?.lastName]);
+
+  // === Charger l'avatar (et recharger quand l'écran reprend le focus) ===
+  const loadAvatar = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setIsLoadingAvatar(true);
+
+      let avatar = null;
+
+      if (isCustomer && user.customerId) {
+        avatar = await getCustomerAvatar(user.customerId);
+      } else if (isInstructor && user.instructorId) {
+        avatar = await getInstructorAvatar(user.instructorId);
+      }
+
+      if (avatar) {
+        setAvatarUri(avatar.url);
+      } else {
+        setAvatarUri(null);
+      }
+    } catch (error) {
+      console.error("Error loading avatar:", error);
+      setAvatarUri(null);
+    } finally {
+      setIsLoadingAvatar(false);
+    }
+  }, [user, isCustomer, isInstructor]);
+
+  // Recharger l'avatar quand l'écran reprend le focus (après édition par exemple)
+  useFocusEffect(
+    useCallback(() => {
+      loadAvatar();
+    }, [loadAvatar]),
+  );
+
+  // === Options de paramètres (dynamiques selon le rôle) ===
+  const allSettingsOptions: SettingsOption[] = [
+    // === Options communes ===
     {
+      id: "edit-profile",
       title: "Éditer le profil",
       icon: (
-        <Icons.UserCircleIcon
+        <Icons.UserCircle
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -40,21 +108,78 @@ const Profile = () => {
       routeName: "/(modals)/profileModal",
       bgColor: colors.accent.primary,
     },
+
+    // === Options CUSTOMER uniquement ===
     {
+      id: "my-bookings",
       title: "Mes réservations",
       icon: (
-        <Icons.CalendarCheckIcon
+        <Icons.CalendarCheck
           size={24}
           color={colors.constant.white}
           weight="duotone"
         />
       ),
       bgColor: "#8b5cf6",
+      roles: ["CUSTOMER"],
     },
     {
+      id: "my-favorites",
+      title: "Mes favoris",
+      icon: (
+        <Icons.Heart size={24} color={colors.constant.white} weight="duotone" />
+      ),
+      bgColor: "#ec4899",
+      roles: ["CUSTOMER"],
+    },
+
+    // === Options INSTRUCTOR uniquement ===
+    {
+      id: "my-schedule",
+      title: "Mon planning",
+      icon: (
+        <Icons.CalendarDots
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
+      ),
+      bgColor: "#8b5cf6",
+      roles: ["INSTRUCTOR"],
+    },
+    {
+      id: "my-courses",
+      title: "Mes cours",
+      icon: (
+        <Icons.ChalkboardTeacher
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
+      ),
+      bgColor: "#6366f1",
+      roles: ["INSTRUCTOR"],
+    },
+    {
+      id: "my-stats",
+      title: "Mes statistiques",
+      icon: (
+        <Icons.ChartLineUp
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
+      ),
+      bgColor: "#14b8a6",
+      roles: ["INSTRUCTOR"],
+    },
+
+    // === Options communes (suite) ===
+    {
+      id: "settings",
       title: "Paramètres",
       icon: (
-        <Icons.GearSixIcon
+        <Icons.GearSix
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -64,9 +189,10 @@ const Profile = () => {
       bgColor: "#06b6d4",
     },
     {
+      id: "privacy",
       title: "Politique de confidentialité",
       icon: (
-        <Icons.ShieldCheckIcon
+        <Icons.ShieldCheck
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -75,9 +201,10 @@ const Profile = () => {
       bgColor: "#10b981",
     },
     {
+      id: "help",
       title: "Aide & Support",
       icon: (
-        <Icons.QuestionIcon
+        <Icons.Question
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -86,9 +213,10 @@ const Profile = () => {
       bgColor: "#f59e0b",
     },
     {
+      id: "logout",
       title: "Déconnexion",
       icon: (
-        <Icons.SignOutIcon
+        <Icons.SignOut
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -99,22 +227,34 @@ const Profile = () => {
     },
   ];
 
+  // === Filtrer les options selon le rôle ===
+  const settingsOptions = useMemo(() => {
+    return allSettingsOptions.filter((option) => {
+      if (!option.roles) return true;
+      if (isCustomer && option.roles.includes("CUSTOMER")) return true;
+      if (isInstructor && option.roles.includes("INSTRUCTOR")) return true;
+      return false;
+    });
+  }, [isCustomer, isInstructor, colors]);
+
+  // === Handlers ===
   const handleLogout = async () => {
-    router.replace("/(auth)/login");
+    try {
+      await logout();
+      router.replace("/(auth)/welcome");
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      Alert.alert(
+        "Erreur",
+        "Impossible de se déconnecter. Veuillez réessayer.",
+      );
+    }
   };
 
   const showLogoutAlert = () => {
     Alert.alert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", [
-      {
-        text: "Annuler",
-        onPress: () => console.log("Cancel logout"),
-        style: "cancel",
-      },
-      {
-        text: "Se déconnecter",
-        onPress: () => handleLogout(),
-        style: "destructive",
-      },
+      { text: "Annuler", style: "cancel" },
+      { text: "Se déconnecter", onPress: handleLogout, style: "destructive" },
     ]);
   };
 
@@ -129,10 +269,36 @@ const Profile = () => {
     } else {
       Alert.alert(
         "Bientôt disponible",
-        "Cette fonctionnalité arrive prochainement !"
+        "Cette fonctionnalité arrive prochainement !",
       );
     }
   };
+
+  // === Section header dynamique ===
+  const sectionDescription = isInstructor
+    ? "Gérez votre activité de professeur"
+    : "Gérez vos paramètres et préférences";
+
+  // === Stats selon le rôle ===
+  const profileStats = useMemo(() => {
+    if (isCustomer) {
+      return {
+        // TODO: Remplacer par les vraies stats depuis l'API
+        coursesCount: 0,
+        favoritesCount: 0,
+      };
+    }
+
+    if (isInstructor) {
+      return {
+        // TODO: Remplacer par les vraies stats depuis l'API
+        coursesCount: 0, // Nombre de cours donnés
+        level: 5, // Note moyenne ou niveau
+      };
+    }
+
+    return undefined;
+  }, [isCustomer, isInstructor]);
 
   return (
     <ScreenWrapper>
@@ -143,24 +309,49 @@ const Profile = () => {
         <View style={[styles.container, { paddingTop: insets.top }]}>
           <Header title="Profil" style={{ marginVertical: spacingY._10 }} />
 
+          {/* === Carte profil avec Avatar dynamique === */}
           <ProfileInfoCard
-            name="Jean Dupont"
-            email="jean.dupont@email.com"
-            avatarUri="https://i.pravatar.cc/300?img=12"
-            isVerified={true}
+            name={fullName}
+            email={user?.email || "email@example.com"}
+            avatarUri={avatarUri}
+            isVerified={isInstructor}
             onEditPress={() => router.push("/(modals)/profileModal")}
+            isLoadingAvatar={isLoadingAvatar}
+            stats={profileStats}
           />
+
+          {/* === Badge rôle pour les instructeurs === */}
+          {isInstructor && (
+            <View
+              style={[
+                styles.roleBadge,
+                {
+                  backgroundColor: colors.semantic.infoBg,
+                  borderColor: colors.accent.primary,
+                },
+              ]}
+            >
+              <Icons.CertificateIcon
+                size={18}
+                color={colors.accent.primary}
+                weight="duotone"
+              />
+              <Typo size={13} fontWeight="600" color={colors.accent.primary}>
+                Compte Professeur
+              </Typo>
+            </View>
+          )}
 
           <SectionHeader
             title="Mon compte"
-            description="Gérez vos paramètres et préférences"
+            description={sectionDescription}
             animationDelay={200}
           />
 
           <SettingsList animationDelay={300}>
             {settingsOptions.map((option, index) => (
               <SettingsListItem
-                key={index}
+                key={option.id}
                 title={option.title}
                 icon={option.icon}
                 bgColor={option.bgColor}
@@ -172,6 +363,7 @@ const Profile = () => {
             ))}
           </SettingsList>
 
+          {/* === Version === */}
           <View style={styles.versionContainer}>
             <Typo
               size={12}
@@ -187,6 +379,16 @@ const Profile = () => {
             >
               Made with 🛹 in France
             </Typo>
+            {/* Debug: afficher le rôle en dev */}
+            {__DEV__ && user && (
+              <Typo
+                size={10}
+                color={colors.text.muted}
+                style={{ textAlign: "center", marginTop: 8 }}
+              >
+                [DEV] Rôle: {user.role} | ID: {user.id}
+              </Typo>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -205,10 +407,24 @@ const Profile = () => {
 
 export default Profile;
 
+// ============================================
+// STYLES
+// ============================================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: spacingX._20,
+  },
+  roleBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: 6,
+    marginTop: spacingY._12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
   },
   versionContainer: {
     marginTop: spacingY._30,

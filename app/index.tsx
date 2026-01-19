@@ -1,39 +1,48 @@
+// ============================================
+// 🛹 SOSKATE - INDEX (ENTRY POINT)
+// ============================================
+// Point d'entrée avec redirection intelligente basée sur l'état d'auth
+
+import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { useTheme } from "@/src/shared/theme";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import { Redirect } from "expo-router";
+import React from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 
-const SplashScreen = () => {
-  const { colors, isDark } = useTheme();
-  const router = useRouter();
+export default function Index() {
+  const { isLoading, isAuthenticated } = useAuth();
+  const { colors } = useTheme();
 
-  useEffect(() => {
-    setTimeout(() => {
-      // router.replace("/(tabs)");
-      router.replace("/(auth)/welcome");
-    }, 1500);
-  }, []);
+  // === Loading State ===
+  // Pendant que l'AuthContext charge les données depuis AsyncStorage
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: colors.background.primary },
+        ]}
+      >
+        <Animated.View
+          entering={FadeIn.duration(500)}
+          style={styles.loaderContainer}
+        >
+          <ActivityIndicator size="large" color={colors.accent.primary} />
+        </Animated.View>
+      </View>
+    );
+  }
 
-  return (
-    <View
-      style={[styles.container, { backgroundColor: colors.background.primary }]}
-    >
-      <StatusBar
-        barStyle={isDark ? "light-content" : "dark-content"}
-        backgroundColor={colors.background.primary}
-      />
-      <Animated.Image
-        source={require("../assets/images/logo.png")}
-        entering={FadeInDown}
-        style={styles.logo}
-        resizeMethod="scale"
-      />
-    </View>
-  );
-};
+  // === Redirection Logic ===
+  // Si authentifié → aller directement aux tabs (home)
+  // Sinon → aller au welcome screen
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
 
-export default SplashScreen;
+  return <Redirect href="/(auth)/welcome" />;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -41,8 +50,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  logo: {
-    height: "23%",
-    aspectRatio: 1,
+  loaderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

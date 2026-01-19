@@ -31,7 +31,7 @@ const SpotActions = ({
     if (!latitude || !longitude) {
       Alert.alert(
         "Position non disponible",
-        "Les coordonnées de ce spot ne sont pas disponibles."
+        "Les coordonnées de ce spot ne sont pas disponibles.",
       );
       return;
     }
@@ -42,7 +42,7 @@ const SpotActions = ({
         {
           destinationName: spotName,
           address: address,
-        }
+        },
       );
     } catch (error) {
       console.error("Erreur lors de l'ouverture de l'itinéraire:", error);
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: 12,
-    marginTop: 20,
+    marginTop: 10,
   },
   primaryButton: {
     flex: 2,

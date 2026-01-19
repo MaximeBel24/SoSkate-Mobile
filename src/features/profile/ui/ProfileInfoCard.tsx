@@ -1,14 +1,15 @@
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useTheme } from "@/src/shared/theme";
+import Avatar from "@/src/shared/ui/media/Avatar";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { verticalScale } from "@/src/shared/utils/styling";
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Icons from "phosphor-react-native";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+// ============================================
+// TYPES
+// ============================================
 interface ProfileStats {
   coursesCount?: number;
   favoritesCount?: number;
@@ -16,15 +17,27 @@ interface ProfileStats {
 }
 
 interface ProfileInfoCardProps {
+  /** Nom complet de l'utilisateur */
   name: string;
+  /** Email de l'utilisateur */
   email: string;
-  avatarUri: string;
+  /** URL de l'avatar ou null pour placeholder */
+  avatarUri: string | null;
+  /** Afficher le badge vérifié (instructeurs) */
   isVerified?: boolean;
+  /** Callback quand on clique sur le bouton d'édition */
   onEditPress: () => void;
+  /** Statistiques optionnelles */
   stats?: ProfileStats;
+  /** Délai d'animation */
   animationDelay?: number;
+  /** Avatar en cours de chargement */
+  isLoadingAvatar?: boolean;
 }
 
+// ============================================
+// COMPONENT
+// ============================================
 export const ProfileInfoCard = ({
   name,
   email,
@@ -33,6 +46,7 @@ export const ProfileInfoCard = ({
   onEditPress,
   stats,
   animationDelay = 100,
+  isLoadingAvatar = false,
 }: ProfileInfoCardProps) => {
   const { colors } = useTheme();
 
@@ -52,51 +66,16 @@ export const ProfileInfoCard = ({
         <View style={styles.decorativeCircle2} />
 
         <View style={styles.userInfo}>
-          {/* Avatar avec bordure animée */}
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarBorder}>
-              <Image
-                source={{ uri: avatarUri }}
-                style={[
-                  styles.avatar,
-                  { backgroundColor: colors.neutral[700] },
-                ]}
-                contentFit="cover"
-                transition={100}
-              />
-            </View>
-
-            {/* Edit button */}
-            <TouchableOpacity
-              style={[
-                styles.editButton,
-                { backgroundColor: colors.constant.white },
-              ]}
-              onPress={onEditPress}
-            >
-              <Icons.PencilSimpleIcon
-                size={18}
-                color={colors.accent.primary}
-                weight="bold"
-              />
-            </TouchableOpacity>
-
-            {/* Badge vérifié */}
-            {isVerified && (
-              <View
-                style={[
-                  styles.verifiedBadge,
-                  { backgroundColor: colors.constant.white },
-                ]}
-              >
-                <Icons.CheckCircleIcon
-                  size={24}
-                  color="#10b981"
-                  weight="fill"
-                />
-              </View>
-            )}
-          </View>
+          {/* Avatar avec composant réutilisable */}
+          <Avatar
+            imageUri={avatarUri}
+            name={name}
+            size="xl"
+            editable
+            onEditPress={onEditPress}
+            loading={isLoadingAvatar}
+            verified={isVerified}
+          />
 
           {/* Name & email */}
           <View style={styles.nameContainer}>
@@ -109,81 +88,84 @@ export const ProfileInfoCard = ({
           </View>
 
           {/* Stats (optionnel) */}
-          {stats && (
-            <View style={styles.statsContainer}>
-              {stats.coursesCount !== undefined && (
-                <>
-                  <View style={styles.statItem}>
-                    <Icons.CalendarCheckIcon
-                      size={20}
-                      color={colors.constant.white}
-                      weight="duotone"
-                    />
-                    <Typo
-                      size={18}
-                      fontWeight="700"
-                      color={colors.constant.white}
-                    >
-                      {stats.coursesCount}
-                    </Typo>
-                    <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                      Cours suivis
-                    </Typo>
-                  </View>
-                  <View style={styles.statDivider} />
-                </>
-              )}
+          {/*{stats && (*/}
+          {/*    <View style={styles.statsContainer}>*/}
+          {/*      {stats.coursesCount !== undefined && (*/}
+          {/*          <>*/}
+          {/*            <View style={styles.statItem}>*/}
+          {/*              <Icons.CalendarCheck*/}
+          {/*                  size={20}*/}
+          {/*                  color={colors.constant.white}*/}
+          {/*                  weight="duotone"*/}
+          {/*              />*/}
+          {/*              <Typo*/}
+          {/*                  size={18}*/}
+          {/*                  fontWeight="700"*/}
+          {/*                  color={colors.constant.white}*/}
+          {/*              >*/}
+          {/*                {stats.coursesCount}*/}
+          {/*              </Typo>*/}
+          {/*              <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+          {/*                Cours suivis*/}
+          {/*              </Typo>*/}
+          {/*            </View>*/}
+          {/*            <View style={styles.statDivider} />*/}
+          {/*          </>*/}
+          {/*      )}*/}
 
-              {stats.favoritesCount !== undefined && (
-                <>
-                  <View style={styles.statItem}>
-                    <Icons.HeartIcon
-                      size={20}
-                      color={colors.constant.white}
-                      weight="duotone"
-                    />
-                    <Typo
-                      size={18}
-                      fontWeight="700"
-                      color={colors.constant.white}
-                    >
-                      {stats.favoritesCount}
-                    </Typo>
-                    <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                      Spots favoris
-                    </Typo>
-                  </View>
-                  <View style={styles.statDivider} />
-                </>
-              )}
+          {/*      {stats.favoritesCount !== undefined && (*/}
+          {/*          <>*/}
+          {/*            <View style={styles.statItem}>*/}
+          {/*              <Icons.Heart*/}
+          {/*                  size={20}*/}
+          {/*                  color={colors.constant.white}*/}
+          {/*                  weight="duotone"*/}
+          {/*              />*/}
+          {/*              <Typo*/}
+          {/*                  size={18}*/}
+          {/*                  fontWeight="700"*/}
+          {/*                  color={colors.constant.white}*/}
+          {/*              >*/}
+          {/*                {stats.favoritesCount}*/}
+          {/*              </Typo>*/}
+          {/*              <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+          {/*                Spots favoris*/}
+          {/*              </Typo>*/}
+          {/*            </View>*/}
+          {/*            <View style={styles.statDivider} />*/}
+          {/*          </>*/}
+          {/*      )}*/}
 
-              {stats.level !== undefined && (
-                <View style={styles.statItem}>
-                  <Icons.TrophyIcon
-                    size={20}
-                    color={colors.constant.white}
-                    weight="duotone"
-                  />
-                  <Typo
-                    size={18}
-                    fontWeight="700"
-                    color={colors.constant.white}
-                  >
-                    {stats.level}
-                  </Typo>
-                  <Typo size={12} color="rgba(255, 255, 255, 0.7)">
-                    Niveau
-                  </Typo>
-                </View>
-              )}
-            </View>
-          )}
+          {/*      {stats.level !== undefined && (*/}
+          {/*          <View style={styles.statItem}>*/}
+          {/*            <Icons.Trophy*/}
+          {/*                size={20}*/}
+          {/*                color={colors.constant.white}*/}
+          {/*                weight="duotone"*/}
+          {/*            />*/}
+          {/*            <Typo*/}
+          {/*                size={18}*/}
+          {/*                fontWeight="700"*/}
+          {/*                color={colors.constant.white}*/}
+          {/*            >*/}
+          {/*              {stats.level}*/}
+          {/*            </Typo>*/}
+          {/*            <Typo size={12} color="rgba(255, 255, 255, 0.7)">*/}
+          {/*              Niveau*/}
+          {/*            </Typo>*/}
+          {/*          </View>*/}
+          {/*      )}*/}
+          {/*    </View>*/}
+          {/*)}*/}
         </View>
       </LinearGradient>
     </Animated.View>
   );
 };
 
+// ============================================
+// STYLES
+// ============================================
 const styles = StyleSheet.create({
   userCard: {
     marginTop: spacingY._20,
@@ -222,38 +204,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacingY._20,
   },
-  avatarContainer: {
-    position: "relative",
-  },
-  avatarBorder: {
-    padding: 4,
-    borderRadius: 200,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-  },
-  avatar: {
-    height: verticalScale(120),
-    width: verticalScale(120),
-    borderRadius: 200,
-  },
-  editButton: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    borderRadius: 50,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  verifiedBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    borderRadius: 50,
-    padding: 2,
-  },
   nameContainer: {
     alignItems: "center",
     gap: 4,
@@ -279,3 +229,5 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
 });
+
+export default ProfileInfoCard;

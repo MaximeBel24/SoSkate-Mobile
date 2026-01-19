@@ -1,4 +1,10 @@
+// ============================================
+// 🛹 SOSKATE - WELCOME SCREEN
+// ============================================
+// Écran d'accueil avec bouton intelligent basé sur l'historique
+
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { useTheme } from "@/src/shared/theme";
 import Button from "@/src/shared/ui/button/Button";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
@@ -17,8 +23,26 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Welcome = () => {
   const { colors, isDark } = useTheme();
+  const { hasLoggedBefore, isLoading } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  // === Navigation intelligente ===
+  // Si l'utilisateur s'est déjà connecté avant → Login
+  // Sinon → Register (nouveau utilisateur)
+  const handleMainAction = () => {
+    if (hasLoggedBefore) {
+      router.push("/(auth)/login");
+    } else {
+      router.push("/(auth)/register");
+    }
+  };
+
+  // Texte du bouton basé sur l'historique
+  const buttonText = hasLoggedBefore ? "Se connecter" : "Commencer maintenant";
+  const subtitleText = hasLoggedBefore
+    ? "Ravi de vous revoir !"
+    : "Gratuit • Sans engagement";
 
   return (
     <ScreenWrapper showPattern={true} bgOpacity={0.7}>
@@ -31,7 +55,7 @@ const Welcome = () => {
           },
         ]}
       >
-        {/* Header compact avec login */}
+        {/* Header compact avec logo */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={styles.header}
@@ -44,9 +68,21 @@ const Welcome = () => {
               </Typo>
             </Typo>
           </View>
+
+          {/* Lien de connexion secondaire pour les nouveaux users */}
+          {!hasLoggedBefore && !isLoading && (
+            <Typo
+              color={colors.accent.primary}
+              size={14}
+              fontWeight="600"
+              onPress={() => router.push("/(auth)/login")}
+            >
+              Déjà inscrit ?
+            </Typo>
+          )}
         </Animated.View>
 
-        {/* Hero Image plus compact */}
+        {/* Hero Image */}
         <Animated.View
           entering={FadeIn.duration(800).delay(300)}
           style={styles.imageContainer}
@@ -75,9 +111,9 @@ const Welcome = () => {
           </Animated.View>
         </Animated.View>
 
-        {/* Contenu principal optimisé */}
+        {/* Contenu principal */}
         <View style={styles.content}>
-          {/* Titre principal condensé */}
+          {/* Titre principal */}
           <Animated.View
             entering={FadeInUp.delay(400).springify()}
             style={styles.titleContainer}
@@ -108,7 +144,7 @@ const Welcome = () => {
             </View>
           </Animated.View>
 
-          {/* Sous-titre plus court */}
+          {/* Sous-titre */}
           <Animated.View entering={FadeInUp.delay(600).springify()}>
             <Typo
               color={colors.text.secondary}
@@ -120,7 +156,7 @@ const Welcome = () => {
             </Typo>
           </Animated.View>
 
-          {/* Features en ligne compacte */}
+          {/* Features en ligne */}
           <Animated.View
             entering={FadeInUp.delay(700).springify()}
             style={[
@@ -176,19 +212,21 @@ const Welcome = () => {
           </Animated.View>
         </View>
 
-        {/* CTA avec effet spacer intelligent */}
+        {/* Spacer flexible */}
         <View style={styles.spacer} />
 
+        {/* CTA Section */}
         <Animated.View
           entering={FadeInUp.delay(800).springify()}
           style={styles.ctaContainer}
         >
           <Button
-            onPress={() => router.push("/(auth)/register")}
+            onPress={handleMainAction}
             style={[styles.ctaButton, { shadowColor: colors.accent.primary }]}
+            loading={isLoading}
           >
             <Typo size={17} fontWeight="700" color={colors.constant.white}>
-              Commencer maintenant
+              {buttonText}
             </Typo>
           </Button>
 
@@ -198,7 +236,7 @@ const Welcome = () => {
             fontWeight="500"
             style={styles.ctaSubtext}
           >
-            Gratuit • Sans engagement
+            {subtitleText}
           </Typo>
         </Animated.View>
       </View>

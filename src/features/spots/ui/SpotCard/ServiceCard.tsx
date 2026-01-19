@@ -1,183 +1,135 @@
-import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { spacingX } from "@/src/shared/constants/theme";
 import { useTheme } from "@/src/shared/theme";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
+// ============================================
+// 🛹 SOSKATE - SERVICE CARD (SIMPLIFIED)
+// ============================================
+// Carte de service minimaliste
+// - Titre du service
+// - Prix par heure
+// - Sélection visuelle
+
 type ServiceCardProps = {
   service: ServiceResponse;
-  onPress: (serviceId: number) => void;
+  isSelected?: boolean;
+  onSelect?: (service: ServiceResponse) => void;
 };
 
-const ServiceCard = ({ service, onPress }: ServiceCardProps) => {
+const ServiceCard = ({
+  service,
+  isSelected = false,
+  onSelect,
+}: ServiceCardProps) => {
   const { colors, isDark } = useTheme();
 
-  const priceInEuros = (service.basePriceCents / 100).toFixed(2);
+  // === Calcul du prix par heure ===
+  const pricePerHour =
+    service.durationMinutes > 0
+      ? (service.basePriceCents / service.durationMinutes) * 60
+      : service.basePriceCents;
 
-  const formatDuration = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
+  const pricePerHourInEuros = (pricePerHour / 100).toFixed(0);
 
-    if (hours > 0 && remainingMinutes > 0) {
-      return `${hours}h${remainingMinutes}`;
-    } else if (hours > 0) {
-      return `${hours}h`;
-    } else {
-      return `${minutes}min`;
-    }
+  const handleCardPress = () => {
+    onSelect?.(service);
   };
 
   return (
-    <View style={styles.cardWrapper}>
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: isDark
-              ? "rgba(22, 20, 18, 0.8)"
-              : "rgba(255, 255, 255, 0.95)",
-            borderColor: colors.border.default,
-          },
-        ]}
-      >
-        {/* Header avec titre et type */}
-        <View style={styles.cardHeader}>
-          <View style={styles.titleContainer}>
-            <Typo size={18} fontWeight="700" color={colors.text.primary}>
-              {service.name}
-            </Typo>
-          </View>
-        </View>
-
-        {/* Description */}
-        {!service.description && (
-          <Typo
-            size={14}
-            color={colors.text.secondary}
-            style={styles.description}
-          >
-            {service.description}
-          </Typo>
-        )}
-
-        {/* Infos (Prix + Durée) */}
-        <View style={styles.infoRow}>
-          {/* Prix */}
-          <View style={styles.infoItem}>
-            <Icons.CurrencyEurIcon
-              size={16}
-              color={colors.accent.primary}
-              weight="bold"
-            />
-            <Typo size={15} fontWeight="600" color={colors.text.primary}>
-              {priceInEuros}€
-            </Typo>
-          </View>
-
-          {/* Séparateur */}
-          <View
-            style={[
-              styles.separator,
-              { backgroundColor: colors.border.default },
-            ]}
-          />
-
-          {/* Durée */}
-          <View style={styles.infoItem}>
-            <Icons.Clock
-              size={16}
-              color={colors.accent.primary}
-              weight="bold"
-            />
-            <Typo size={15} fontWeight="600" color={colors.text.primary}>
-              {formatDuration(service.durationMinutes)}
-            </Typo>
-          </View>
-        </View>
-
-        {/* Bouton CTA */}
-        <TouchableOpacity
-          style={styles.ctaButton}
-          onPress={() => onPress(Number(service.id))}
-          activeOpacity={0.8}
+    <TouchableOpacity
+      style={[
+        styles.card,
+        {
+          backgroundColor: isDark
+            ? "rgba(22, 20, 18, 0.8)"
+            : "rgba(255, 255, 255, 0.95)",
+          borderColor: isSelected
+            ? colors.accent.primary
+            : colors.border.default,
+          borderWidth: isSelected ? 2 : 1,
+        },
+      ]}
+      onPress={handleCardPress}
+      activeOpacity={0.8}
+    >
+      {/* Selection indicator */}
+      {isSelected && (
+        <View
+          style={[
+            styles.selectionIndicator,
+            { backgroundColor: colors.semantic.success },
+          ]}
         >
-          <LinearGradient
-            colors={[colors.accent.primary, colors.accent.primaryDark]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.ctaGradient}
-          >
-            <Typo size={15} fontWeight="700" color={colors.constant.white}>
-              Réserver
-            </Typo>
-            <Icons.ArrowRight
-              size={18}
-              color={colors.constant.white}
-              weight="bold"
-            />
-          </LinearGradient>
-        </TouchableOpacity>
+          <Icons.Check size={10} color={colors.constant.white} weight="bold" />
+        </View>
+      )}
+
+      {/* Titre du service */}
+      <Typo
+        size={14}
+        fontWeight="600"
+        color={colors.text.primary}
+        numberOfLines={2}
+        style={styles.serviceName}
+      >
+        {service.name}
+      </Typo>
+
+      {/* Prix par heure */}
+      <View style={styles.priceRow}>
+        <Typo
+          size={18}
+          fontWeight="700"
+          color={isSelected ? colors.accent.primary : colors.text.primary}
+        >
+          {pricePerHourInEuros}€
+        </Typo>
+        <Typo size={12} color={colors.text.muted}>
+          /heure
+        </Typo>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 export default ServiceCard;
 
 const styles = StyleSheet.create({
-  cardWrapper: {
-    marginBottom: 12,
-  },
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: spacingX._16,
-    gap: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    width: 130,
+    minHeight: 90,
+    borderRadius: 14,
+    padding: spacingX._12,
     justifyContent: "space-between",
-    gap: 12,
+    gap: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  titleContainer: {
-    flex: 1,
-  },
-  description: {
-    lineHeight: 20,
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  infoItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  separator: {
-    width: 1,
-    height: 16,
-  },
-  ctaButton: {
-    marginTop: 4,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  ctaGradient: {
-    flexDirection: "row",
+  selectionIndicator: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingVertical: spacingY._12,
+    zIndex: 10,
+  },
+  serviceName: {
+    lineHeight: 18,
+    paddingRight: 20, // Espace pour l'indicateur de sélection
+  },
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 2,
   },
 });

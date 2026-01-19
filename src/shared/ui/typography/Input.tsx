@@ -31,7 +31,7 @@ const Input = (props: InputProps) => {
             ? colors.accent.primary
             : colors.border.default,
           backgroundColor: isDark
-            ? colors.neutral[100]
+            ? colors.neutral[800]
             : colors.background.input,
         },
         props.containerStyle,

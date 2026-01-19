@@ -26,7 +26,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Intercepteur de réponse - Gestion des erreurs
@@ -53,7 +53,14 @@ apiClient.interceptors.response.use(
           break;
 
         case 404:
-          console.error("Ressource non trouvée");
+          // Les 404 sur certains endpoints sont normaux (avatar, etc.)
+          const silentEndpoints = ["/avatar", "/photos/"];
+          const isSilent = silentEndpoints.some((ep) =>
+            error.config?.url?.includes(ep),
+          );
+          if (!isSilent) {
+            console.warn("Ressource non trouvée:", error.config?.url);
+          }
           break;
 
         case 500:
@@ -72,7 +79,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

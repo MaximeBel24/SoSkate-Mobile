@@ -1,0 +1,102 @@
+// ============================================
+// 🛹 SOSKATE - AUTH TYPES
+// ============================================
+// Types pour l'authentification unifiée Customer/Instructor
+
+/**
+ * Rôles possibles dans l'application
+ */
+export type UserRole = "CUSTOMER" | "INSTRUCTOR";
+
+/**
+ * Requête de connexion
+ */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+/**
+ * Requête d'inscription Customer
+ */
+export interface CustomerRegisterRequest {
+  email: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+  phone?: string;
+  birthDate?: string;
+}
+
+/**
+ * Réponse de connexion unifiée (nouveau endpoint /api/auth/login)
+ * Supporte Customer et Instructor
+ */
+export interface UnifiedLoginResponse {
+  // Identifiants
+  id: number;
+  customerId: number | null;
+  instructorId: number | null;
+
+  // Infos utilisateur
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+
+  // Rôle
+  role: UserRole;
+
+  // Message
+  message: string;
+}
+
+/**
+ * Données utilisateur stockées localement (AsyncStorage)
+ */
+export interface StoredUser {
+  id: number;
+  customerId: number | null;
+  instructorId: number | null;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  role: UserRole;
+}
+
+/**
+ * État de l'authentification dans le contexte
+ */
+export interface AuthState {
+  user: StoredUser | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+}
+
+// ============================================
+// LEGACY TYPES (pour rétrocompatibilité)
+// À supprimer après migration complète
+// ============================================
+
+/**
+ * @deprecated Utiliser UnifiedLoginResponse à la place
+ */
+export interface LoginResponse {
+  customer: CustomerResponse;
+  message: string;
+}
+
+/**
+ * Réponse Customer (utilisé par register et l'ancien login)
+ */
+export interface CustomerResponse {
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+  phone: string | null;
+  birthDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

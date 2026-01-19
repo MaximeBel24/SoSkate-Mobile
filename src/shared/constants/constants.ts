@@ -10,12 +10,17 @@ export const ENDPOINTS = {
   SERVICES: "/services",
   PHOTOS: "/photos",
   AUTH: {
-    LOGIN: "/customer/auth/login",
+    // Nouvel endpoint unifié (Customer + Instructor)
+    UNIFIED_LOGIN: "/auth/login",
+    EMAIL_EXISTS: "/auth/email-exists",
+
+    // Endpoints Customer spécifiques
     CUSTOMER_REGISTER: "/customer/auth/register",
+    CUSTOMER_LOGIN: "/customer/auth/login", // Legacy, gardé pour rétrocompat
   },
   ADMIN: {
     INSTRUCTOR: "/admin/instructors",
-  }
+  },
 };
 
 // Configuration de la carte

@@ -17,18 +17,20 @@ export async function getAllInstructors(): Promise<InstructorResponse[]> {
     const status = error.response?.status;
     const backend = error.response?.data;
     const backendMessage =
-        (backend && (backend.message || backend.error || backend.title)) ??
-        error.message;
+      (backend && (backend.message || backend.error || backend.title)) ??
+      error.message;
     const details = backend?.errors ?? backend;
     throw new ApiError(
-        backendMessage || "Erreur lors de la récupération des instructeurs",
-        status,
-        details
+      backendMessage || "Erreur lors de la récupération des instructeurs",
+      status,
+      details,
     );
   }
 }
 
-export async function getInstructorById(id: string): Promise<InstructorResponse> {
+export async function getInstructorById(
+  id: number,
+): Promise<InstructorResponse> {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.ADMIN.INSTRUCTOR}/${id}`;
     const { data } = await apiClient.get<InstructorResponse>(endpoint);
@@ -38,19 +40,21 @@ export async function getInstructorById(id: string): Promise<InstructorResponse>
     const status = error.response?.status;
     const backend = error.response?.data;
     const backendMessage =
-        (backend && (backend.message || backend.error || backend.title)) ??
-        error.message;
+      (backend && (backend.message || backend.error || backend.title)) ??
+      error.message;
     const details = backend?.errors ?? backend;
     throw new ApiError(
-        backendMessage || "Erreur lors de la récupération de l'instructeur",
-        status,
-        details
+      backendMessage || "Erreur lors de la récupération de l'instructeur",
+      status,
+      details,
     );
   }
 }
 
 // TODO: À utiliser plus tard quand le backend supportera le filtrage par spot
-export async function getInstructorsBySpot(spotId: number): Promise<InstructorResponse[]> {
+export async function getInstructorsBySpot(
+  spotId: number,
+): Promise<InstructorResponse[]> {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.ADMIN.INSTRUCTOR}/spot/${spotId}`;
     const { data } = await apiClient.get<InstructorResponse[]>(endpoint);
@@ -63,13 +67,14 @@ export async function getInstructorsBySpot(spotId: number): Promise<InstructorRe
     const status = error.response?.status;
     const backend = error.response?.data;
     const backendMessage =
-        (backend && (backend.message || backend.error || backend.title)) ??
-        error.message;
+      (backend && (backend.message || backend.error || backend.title)) ??
+      error.message;
     const details = backend?.errors ?? backend;
     throw new ApiError(
-        backendMessage || "Erreur lors de la récupération des instructeurs du spot",
-        status,
-        details
+      backendMessage ||
+        "Erreur lors de la récupération des instructeurs du spot",
+      status,
+      details,
     );
   }
 }
