@@ -156,23 +156,23 @@ const InstructorCard = ({
           {instructor.firstname} {instructor.lastname}
         </Typo>
 
-        {instructor.specialty && (
-          <View style={styles.infoRow}>
-            <Icons.MedalIcon
-              size={11}
-              color={colors.accent.primary}
-              weight="fill"
-            />
-            <Typo
-              size={11}
-              color={colors.text.secondary}
-              numberOfLines={1}
-              style={styles.infoText}
-            >
-              {instructor.specialty}
-            </Typo>
-          </View>
-        )}
+        {/*{instructor.specialty && (*/}
+        {/*  <View style={styles.infoRow}>*/}
+        {/*    <Icons.MedalIcon*/}
+        {/*      size={11}*/}
+        {/*      color={colors.accent.primary}*/}
+        {/*      weight="fill"*/}
+        {/*    />*/}
+        {/*    <Typo*/}
+        {/*      size={11}*/}
+        {/*      color={colors.text.secondary}*/}
+        {/*      numberOfLines={1}*/}
+        {/*      style={styles.infoText}*/}
+        {/*    >*/}
+        {/*      {instructor.specialty}*/}
+        {/*    </Typo>*/}
+        {/*  </View>*/}
+        {/*)}*/}
 
         {instructor.yearsOfExperience && instructor.yearsOfExperience > 0 && (
           <View style={styles.infoRow}>

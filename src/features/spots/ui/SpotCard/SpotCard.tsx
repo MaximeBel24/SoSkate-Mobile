@@ -36,6 +36,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import {getInstructorsBySpot} from "@/src/shared/services/instructorSpotService";
 
 // ============================================
 // 🛹 SOSKATE - SPOT CARD (REFACTORED)
@@ -128,7 +129,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
   const loadInstructors = async () => {
     try {
       setLoadingInstructors(true);
-      const data = await getAllInstructors();
+      const data = await getInstructorsBySpot(spot.id);
       setInstructors(data);
       setInstructorsLoaded(true);
     } catch (err) {
@@ -171,9 +172,37 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
   }));
 
   const handleServicePress = (serviceId: number) => {
-    console.log("Service sélectionné:", serviceId);
-    console.log("Instructeur sélectionné:", selectedInstructorId);
-    // TODO: Navigation vers la réservation avec serviceId et selectedInstructorId
+    const selectedInstructor = instructors.find(
+        (i) => String(i.id) === String(selectedInstructorId)
+    );
+    const selectedService = services.find((s) => Number(s.id) === serviceId);
+
+    if (!selectedInstructor || !selectedService) {
+      console.error("Instructeur ou service non trouvé", {
+        selectedInstructorId,
+        serviceId,
+        instructorFound: !!selectedInstructor,
+        serviceFound: !!selectedService,
+      });
+      return;
+    }
+
+    router.push({
+      pathname: "/(modals)/booking/[spotId]",
+      params: {
+        spotId: String(spot.id),
+        spotName: spot.name || "",
+        spotAddress: spot.address || "",
+        instructorId: String(selectedInstructor.id),
+        instructorFirstName: selectedInstructor.firstname || "",
+        instructorLastName: selectedInstructor.lastname || "",
+        serviceId: String(selectedService.id),
+        serviceName: selectedService.name || "",
+        // ⚠️ ADAPTE CES NOMS selon ton API réelle
+        basePriceCents: String(selectedService.basePriceCents ?? selectedService.price ?? 0),
+        maxParticipants: String(selectedService.maxParticipants ?? 1),
+      },
+    });
   };
 
   const handleSelectInstructor = (instructor: InstructorResponse) => {
@@ -440,7 +469,6 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                                 selectedServiceId === Number(service.id)
                               }
                               onSelect={handleSelectService}
-                              onPress={handleServicePress}
                             />
                           )}
                           compact
@@ -515,34 +543,8 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                 </>
               )}
 
-              {/* Collapse button */}
-              <TouchableOpacity
-                style={[
-                  styles.collapseButton,
-                  {
-                    backgroundColor: isDark
-                      ? "rgba(255, 107, 53, 0.15)"
-                      : "rgba(234, 88, 12, 0.1)",
-                    borderColor: isDark
-                      ? "rgba(255, 107, 53, 0.3)"
-                      : "rgba(234, 88, 12, 0.2)",
-                  },
-                ]}
-                onPress={toggleExpanded}
-                activeOpacity={0.8}
-              >
-                <Icons.CaretDownIcon
-                  size={20}
-                  color={colors.accent.primary}
-                  weight="bold"
-                />
-                <Typo size={15} fontWeight="600" color={colors.accent.primary}>
-                  Masquer
-                </Typo>
-              </TouchableOpacity>
-
               {/* Bottom spacer */}
-              <View style={{ height: 30 }} />
+              <View style={{ height: 100 }} />
             </View>
           )}
         </ScrollView>
@@ -685,15 +687,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacingY._16,
     borderRadius: 14,
     marginTop: spacingY._8,
-  },
-  collapseButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: spacingY._14,
-    marginTop: spacingY._12,
-    borderRadius: 12,
-    borderWidth: 1,
   },
 });

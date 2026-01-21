@@ -16,7 +16,7 @@ export const ENDPOINTS = {
 
     // Endpoints Customer spécifiques
     CUSTOMER_REGISTER: "/customer/auth/register",
-    CUSTOMER_LOGIN: "/customer/auth/login", // Legacy, gardé pour rétrocompat
+    CUSTOMER_LOGIN: "/customer/auth/login",
   },
   ADMIN: {
     INSTRUCTOR: "/admin/instructors",
@@ -33,3 +33,4 @@ export const MAP_CONFIG = {
   },
   MARKER_SIZE: 40,
 };
+

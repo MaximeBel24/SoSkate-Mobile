@@ -99,7 +99,7 @@ const Profile = () => {
       id: "edit-profile",
       title: "Éditer le profil",
       icon: (
-        <Icons.UserCircle
+        <Icons.UserCircleIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -114,13 +114,14 @@ const Profile = () => {
       id: "my-bookings",
       title: "Mes réservations",
       icon: (
-        <Icons.CalendarCheck
+        <Icons.CalendarCheckIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
         />
       ),
       bgColor: "#8b5cf6",
+      routeName: "/(modals)/my-bookings/",
       roles: ["CUSTOMER"],
     },
     {
@@ -138,7 +139,7 @@ const Profile = () => {
       id: "my-schedule",
       title: "Mon planning",
       icon: (
-        <Icons.CalendarDots
+        <Icons.CalendarDotsIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -151,7 +152,7 @@ const Profile = () => {
       id: "my-courses",
       title: "Mes cours",
       icon: (
-        <Icons.ChalkboardTeacher
+        <Icons.ChalkboardTeacherIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -164,7 +165,7 @@ const Profile = () => {
       id: "my-stats",
       title: "Mes statistiques",
       icon: (
-        <Icons.ChartLineUp
+        <Icons.ChartLineUpIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
@@ -179,7 +180,7 @@ const Profile = () => {
       id: "settings",
       title: "Paramètres",
       icon: (
-        <Icons.GearSix
+        <Icons.GearSixIcon
           size={24}
           color={colors.constant.white}
           weight="duotone"
