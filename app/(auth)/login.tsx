@@ -10,7 +10,7 @@ import SocialAuthButtons from "@/src/features/auth/ui/SocialAuthButtons";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
-import { LoginRequest } from "@/src/shared/types/auth.types";
+import { LoginRequest } from "@/src/features/auth/types/auth.types";
 import Button from "@/src/shared/ui/button/Button";
 import FormDivider from "@/src/shared/ui/form/FormDivider";
 import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";

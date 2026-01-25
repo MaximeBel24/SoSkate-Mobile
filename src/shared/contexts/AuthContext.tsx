@@ -17,7 +17,7 @@ import {
   AuthState,
   StoredUser,
   UnifiedLoginResponse,
-} from "../types/auth.types";
+} from "../../features/auth/types/auth.types";
 
 // ============================================
 // STORAGE KEYS

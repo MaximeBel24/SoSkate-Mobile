@@ -11,7 +11,7 @@ import {
   CustomerResponse,
   LoginRequest,
   UnifiedLoginResponse,
-} from "@/src/shared/types/auth.types";
+} from "@/src/features/auth/types/auth.types";
 import { AxiosError } from "axios";
 
 // ============================================
