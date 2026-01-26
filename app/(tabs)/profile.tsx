@@ -139,13 +139,14 @@ const Profile = () => {
       id: "my-schedule",
       title: "Mon planning",
       icon: (
-        <Icons.CalendarDotsIcon
-          size={24}
-          color={colors.constant.white}
-          weight="duotone"
-        />
+          <Icons.CalendarDotsIcon
+              size={24}
+              color={colors.constant.white}
+              weight="duotone"
+          />
       ),
       bgColor: "#8b5cf6",
+      routeName: "/(modals)/instructor/planning",  // ← AJOUTER
       roles: ["INSTRUCTOR"],
     },
     {

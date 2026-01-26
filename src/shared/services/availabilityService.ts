@@ -20,66 +20,93 @@ export const getInstructorAvailabilities = async (
 };
 
 /**
- * Récupère les disponibilités d'un instructeur pour une période donnée
+ * Récupère les disponibilités d'un instructeur avec filtres from/to
+ * GET /instructors/{id}/availabilities?from=&to=
  */
-export const getInstructorAvailabilitiesForPeriod = async (
+export const getAvailabilitiesWithFilters = async (
     instructorId: number,
-    startDate: string,
-    endDate: string
+    from: string,
+    to: string
 ): Promise<AvailabilityResponse[]> => {
     const response = await apiClient.get<AvailabilityResponse[]>(
-        `/instructors/${instructorId}/availabilities`,
+        `/instructors/${instructorId}/planning-slots`,
         {
-            params: {
-                startDate,
-                endDate,
-            },
+            params: { from, to },
         }
     );
     return response.data;
 };
 
 /**
- * Récupère les disponibilités d'un instructeur pour une date spécifique
+ * Crée une nouvelle disponibilité
+ * POST /instructors/{id}/availabilities
  */
-export const getInstructorAvailabilitiesForDate = async (
+export const createAvailability = async (
     instructorId: number,
-    date: string
-): Promise<AvailabilityResponse[]> => {
-    const allAvailabilities = await getInstructorAvailabilities(instructorId);
-
-    // Filtrer par date et statut AVAILABLE
-    return allAvailabilities.filter(
-        (availability) =>
-            availability.date === date && availability.status === "AVAILABLE"
+    data: {
+        date: string;
+        startTime: string;
+        endTime: string;
+    }
+): Promise<AvailabilityResponse> => {
+    const response = await apiClient.post<AvailabilityResponse>(
+        `/instructors/${instructorId}/availabilities`,
+        data
     );
+    return response.data;
 };
 
 /**
- * Vérifie si un instructeur a des disponibilités pour une semaine donnée
+ * Modifie une disponibilité existante
+ * PUT /instructors/{id}/availabilities/{availabilityId}
  */
-export const getWeekAvailabilities = async (
+export const updateAvailability = async (
     instructorId: number,
-    weekStartDate: string
-): Promise<Map<string, boolean>> => {
-    const allAvailabilities = await getInstructorAvailabilities(instructorId);
-
-    // Créer une map date -> hasAvailability
-    const availabilityMap = new Map<string, boolean>();
-
-    // Générer les 7 jours de la semaine
-    const startDate = new Date(weekStartDate);
-    for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        const dateString = currentDate.toISOString().split("T")[0];
-
-        // Vérifier si au moins une dispo existe pour cette date
-        const hasAvailability = allAvailabilities.some(
-            (a) => a.date === dateString && a.status === "AVAILABLE"
-        );
-        availabilityMap.set(dateString, hasAvailability);
+    availabilityId: number,
+    data: {
+        startTime: string;
+        endTime: string;
     }
-
-    return availabilityMap;
+): Promise<AvailabilityResponse> => {
+    const response = await apiClient.put<AvailabilityResponse>(
+        `/instructors/${instructorId}/availabilities/${availabilityId}`,
+        data
+    );
+    return response.data;
 };
+
+/**
+ * Supprime une disponibilité
+ * DELETE /instructors/{id}/availabilities/{availabilityId}
+ */
+export const deleteAvailability = async (
+    instructorId: number,
+    availabilityId: number
+): Promise<void> => {
+    await apiClient.delete(
+        `/instructors/${instructorId}/availabilities/${availabilityId}`
+    );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

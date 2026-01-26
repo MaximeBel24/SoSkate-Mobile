@@ -116,3 +116,16 @@ export const canCancelBooking = (booking: BookingResponse): boolean => {
         (booking.status === "PENDING" || booking.status === "CONFIRMED")
     );
 };
+
+/**
+ * Récupère les bookings d'un instructeur
+ * GET /instructors/{id}/bookings
+ */
+export const getInstructorBookings = async (
+    instructorId: number
+): Promise<any[]> => {
+    const response = await apiClient.get<any[]>(
+        `/instructors/${instructorId}/bookings`
+    );
+    return response.data;
+};

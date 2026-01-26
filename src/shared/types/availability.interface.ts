@@ -18,6 +18,7 @@ export interface AvailabilityResponse {
     date: string; // "2026-01-20"
     startTime: string; // "15:00:00"
     endTime: string; // "19:00:00"
+    available: boolean;
     status: AvailabilityStatus;
     createdAt: string;
 }
