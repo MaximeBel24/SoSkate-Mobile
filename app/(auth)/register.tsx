@@ -1,7 +1,7 @@
-import AuthFooterLink from "@/src/features/auth/ui/AuthFooterLink";
-import AuthFormCard from "@/src/features/auth/ui/AuthFormCard";
-import AuthLayout from "@/src/features/auth/ui/AuthLayout";
-import PasswordRequirements from "@/src/features/auth/ui/PasswordRequirements";
+import AuthFooterLink from "@/src/features/auth/components/AuthFooterLink";
+import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
+import AuthLayout from "@/src/features/auth/components/AuthLayout";
+import PasswordRequirements from "@/src/features/auth/components/PasswordRequirements";
 import { registerCustomer } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
 import { CustomerRegisterRequest } from "@/src/shared/types/auth.interface";

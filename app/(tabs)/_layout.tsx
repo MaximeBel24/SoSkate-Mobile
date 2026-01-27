@@ -1,4 +1,4 @@
-import CustomTabs from "@/src/features/navigation/ui/CustomTabs";
+import CustomTabs from "@/src/features/navigation/components/CustomTabs";
 import { NavigationProvider } from "@/src/shared/contexts/NavigationContext";
 import { Tabs } from "expo-router";
 

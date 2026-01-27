@@ -19,7 +19,7 @@ import Header from "@/src/shared/ui/typography/Header";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, Href } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
@@ -174,6 +174,7 @@ const Profile = () => {
         />
       ),
       bgColor: "#6366f1",
+      routeName: "/(modals)/instructor/courses",
       roles: ["INSTRUCTOR"],
     },
     {
@@ -281,7 +282,7 @@ const Profile = () => {
     }
 
     if (option.routeName) {
-      router.push(option.routeName);
+      router.push(option.routeName as Href);
     } else {
       Alert.alert(
         "Bientôt disponible",

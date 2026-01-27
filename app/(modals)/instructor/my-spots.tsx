@@ -24,8 +24,8 @@ import Typo from "@/src/shared/ui/typography/Typo";
 
 // Hooks
 import { useInstructorSpots } from "@/src/features/instructor-spots/hooks/useInstructorSpots";
-import InstructorSpotCard from "@/src/features/instructor-spots/ui/InstructorSpotCard";
-import AddSpotModal from "@/src/features/instructor-spots/ui/AddSpotModal";
+import InstructorSpotCard from "@/src/features/instructor-spots/components/InstructorSpotCard";
+import AddSpotModal from "@/src/features/instructor-spots/components/AddSpotModal";
 
 export default function MySpotsScreen() {
     const { colors, isDark } = useTheme();

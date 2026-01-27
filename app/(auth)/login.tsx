@@ -3,10 +3,10 @@
 // ============================================
 // Écran de connexion unifié Customer/Instructor
 
-import AuthFooterLink from "@/src/features/auth/ui/AuthFooterLink";
-import AuthFormCard from "@/src/features/auth/ui/AuthFormCard";
-import AuthLayout from "@/src/features/auth/ui/AuthLayout";
-import SocialAuthButtons from "@/src/features/auth/ui/SocialAuthButtons";
+import AuthFooterLink from "@/src/features/auth/components/AuthFooterLink";
+import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
+import AuthLayout from "@/src/features/auth/components/AuthLayout";
+import SocialAuthButtons from "@/src/features/auth/components/SocialAuthButtons";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
