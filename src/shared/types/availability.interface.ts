@@ -24,17 +24,6 @@ export interface AvailabilityResponse {
 }
 
 /**
- * Créneau calculé à partir d'une disponibilité
- * (généré côté client selon la durée choisie)
- */
-export interface TimeSlot {
-    id: string; // Unique ID pour React key
-    startTime: string; // "14:00"
-    endTime: string; // "16:00"
-    availabilityId: number; // Référence à la dispo source
-}
-
-/**
  * Disponibilités groupées par date
  */
 export interface AvailabilityByDate {
