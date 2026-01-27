@@ -3,7 +3,7 @@
 // ============================================
 // Types internes pour le flow de réservation
 
-import { TimeSlot } from "@/src/shared/types/availability.interface";
+import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 
 /**
  * Étapes du flow de réservation

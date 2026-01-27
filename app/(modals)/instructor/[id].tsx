@@ -61,7 +61,7 @@ const InstructorDetailsModal = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getInstructorById(id!);
+      const data = await getInstructorById(Number(id));
       setInstructor(data);
     } catch (err: any) {
       console.error("Error loading instructor:", err);

@@ -19,7 +19,8 @@ type InstructorCardProps = {
   instructor: InstructorResponse;
   isSelected?: boolean;
   onSelect?: (instructor: InstructorResponse) => void;
-  onViewDetails?: (instructorId: string) => void;
+  onViewDetails?: (instructorId: number) => void;
+  isCurrentUser?: boolean;
 };
 
 const InstructorCard = ({

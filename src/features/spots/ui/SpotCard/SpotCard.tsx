@@ -11,6 +11,7 @@ import {
     getInstructorSpots,
     addSpotToInstructor,
     removeSpotFromInstructor,
+    getInstructorsBySpot,
 } from "@/src/shared/services/instructorSpotsService";
 import { useTheme } from "@/src/shared/theme";
 import { InstructorResponse } from "@/src/shared/types/instructor.interface";
@@ -43,7 +44,6 @@ import Animated, {
     useSharedValue,
     withSpring,
 } from "react-native-reanimated";
-import { getInstructorsBySpot } from "@/src/shared/services/instructorSpotService";
 
 // ============================================
 // 🛹 SOSKATE - SPOT CARD (REFACTORED)
@@ -84,7 +84,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
     const [loadingInstructors, setLoadingInstructors] = useState(false);
     const [instructorsLoaded, setInstructorsLoaded] = useState(false);
     const [selectedInstructorId, setSelectedInstructorId] = useState<
-        string | null
+        number | null
     >(null);
     const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
         null
@@ -351,7 +351,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
         }
     };
 
-    const handleViewInstructorDetails = (instructorId: string) => {
+    const handleViewInstructorDetails = (instructorId: number) => {
         router.push(`/(modals)/instructor/${instructorId}`);
     };
 

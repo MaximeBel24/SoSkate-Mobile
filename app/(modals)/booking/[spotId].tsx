@@ -38,7 +38,7 @@ import { useAvailability } from "@/src/features/booking/hooks/useAvailability";
 import { BookingParams, formatDuration } from "@/src/features/booking/types/booking.types";
 import { createBooking } from "@/src/shared/services/bookingService";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
-import {TimeSlot} from "@/src/shared/types/availability.interface";
+import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 
 export default function BookingScreen() {
     const { colors } = useTheme();
@@ -172,13 +172,8 @@ export default function BookingScreen() {
     };
 
     const handleSlotSelect = (slot: TimeSlot) => {
-        // Adapter le slot au format attendu par le flow
-        selectSlot({
-            id: slot.id,
-            startTime: slot.startTime,
-            endTime: slot.endTime,
-            availabilityId: 0, // Non utilisé avec le nouveau système
-        });
+        // Passer directement le slot au flow
+        selectSlot(slot);
     };
 
     const handleSubmit = async () => {

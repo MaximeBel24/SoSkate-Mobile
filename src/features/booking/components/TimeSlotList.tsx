@@ -15,7 +15,7 @@ import * as Icons from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { TimeSlot } from "@/src/shared/types/availability.interface";
+import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 
 interface TimeSlotListProps {
     slots: TimeSlot[];

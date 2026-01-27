@@ -7,9 +7,9 @@
 import { useState, useEffect, useCallback } from "react";
 
 import { DURATION_OPTIONS } from "../types/booking.types";
-import {AvailabilityResponse, TimeSlot} from "@/src/shared/types/availability.interface";
-import {getInstructorAvailabilities} from "@/src/shared/services/availabilityService";
-import {getAvailableSlots} from "@/src/shared/services/availableSlotsService";
+import { AvailabilityResponse } from "@/src/shared/types/availability.interface";
+import { getInstructorAvailabilities } from "@/src/shared/services/availabilityService";
+import { getAvailableSlots, TimeSlot } from "@/src/shared/services/availableSlotsService";
 
 interface UseAvailabilityParams {
     instructorId: number;

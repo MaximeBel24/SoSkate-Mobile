@@ -50,7 +50,7 @@ const ServiceList = ({
           <ServiceCard
             key={service.id}
             service={service}
-            onPress={onServicePress}
+            onSelect={() => onServicePress(Number(service.id))}
           />
         ))}
 

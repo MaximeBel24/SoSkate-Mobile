@@ -4,7 +4,7 @@
 // Gère l'état complet du flow de réservation
 
 import { useReducer, useCallback } from "react";
-import { TimeSlot } from "@/src/shared/types/availability.interface";
+import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 import {
     BookingFlowState,
     BookingFlowAction,

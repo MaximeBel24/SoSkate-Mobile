@@ -7,6 +7,7 @@ import {
   TextStyle,
   TouchableOpacityProps,
   ViewStyle,
+  StyleProp,
 } from "react-native";
 
 export interface UserProps {
@@ -66,7 +67,7 @@ export type ResponseProps = {
 };
 
 export interface ButtonProps extends TouchableOpacityProps {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   loading?: boolean;
   children: React.ReactNode;

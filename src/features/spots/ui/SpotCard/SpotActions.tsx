@@ -14,6 +14,7 @@ type SpotActionsProps = {
   address?: string;
   onViewCourses: () => void;
   hasServices: boolean;
+  hideBookingButton?: boolean;
 };
 
 const SpotActions = ({

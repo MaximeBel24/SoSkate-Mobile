@@ -1,6 +1,6 @@
 import { useTheme } from "@/src/shared/theme";
 import { verticalScale } from "@/src/shared/utils/styling";
-import { Text, TextProps, TextStyle } from "react-native";
+import { Text, TextProps, TextStyle, Pressable } from "react-native";
 
 export type TypoProps = {
   size?: number;
@@ -10,6 +10,7 @@ export type TypoProps = {
   style?: TextStyle;
   textProps?: TextProps;
   numberOfLines?: number;
+  onPress?: () => void;
 };
 
 const Typo = ({
@@ -20,6 +21,7 @@ const Typo = ({
                 style,
                 textProps = {},
                 numberOfLines,
+                onPress,
               }: TypoProps) => {
   const { colors } = useTheme();
 
@@ -29,7 +31,7 @@ const Typo = ({
     fontWeight,
   };
 
-  return (
+  const textElement = (
       <Text
           style={[textStyle, style]}
           numberOfLines={numberOfLines}
@@ -38,6 +40,16 @@ const Typo = ({
         {children}
       </Text>
   );
+
+  if (onPress) {
+    return (
+        <Pressable onPress={onPress} hitSlop={8}>
+          {textElement}
+        </Pressable>
+    );
+  }
+
+  return textElement;
 };
 
 export default Typo;
