@@ -6,7 +6,7 @@
 // ============================================
 // ENUMS
 // ============================================
-export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+export type BookingStatus = 'OPEN' | 'FULL' | 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
 export type ParticipantStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'REFUNDED';
 export type InvitedBy = 'SELF' | 'INSTRUCTOR' | 'OTHER';
 export type InstructorStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';

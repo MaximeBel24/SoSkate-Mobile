@@ -16,6 +16,14 @@ type StatusConfig = {
 };
 
 const STATUS_CONFIG: Record<BookingStatus, StatusConfig> = {
+    OPEN: {
+        label: 'Ouvert',
+        variant: 'success'
+    },
+    FULL: {
+        label: 'Plein',
+        variant: "warning"
+    },
     CONFIRMED: {
         label: "Confirmé",
         variant: "success",
@@ -32,6 +40,10 @@ const STATUS_CONFIG: Record<BookingStatus, StatusConfig> = {
         label: "Annulé",
         variant: "danger",
     },
+    NO_SHOW: {
+        label: "Pas venu",
+        variant: "neutral"
+    }
 };
 
 // ============================================
