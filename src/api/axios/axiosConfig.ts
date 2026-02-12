@@ -3,6 +3,8 @@ import { getToken, removeToken } from "@/src/shared/storage/tokenStorage";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+let logoutCallback: (() => void) | null = null;
+
 // Création de l'instance Axios
 const apiClient = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -30,6 +32,10 @@ apiClient.interceptors.request.use(
   },
 );
 
+export const setLogoutCallback = (callback: () => void) => {
+  logoutCallback = callback;
+}
+
 // Intercepteur de réponse - Gestion des erreurs
 apiClient.interceptors.response.use(
   (response) => {
@@ -45,6 +51,9 @@ apiClient.interceptors.response.use(
           // Token expiré ou invalide
           await removeToken();
           await AsyncStorage.removeItem("userData");
+          if (logoutCallback) {
+            logoutCallback();
+          }
           // Vous pouvez naviguer vers l'écran de connexion ici
           console.log("Session expirée, redirection vers login");
           break;

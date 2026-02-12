@@ -19,6 +19,7 @@ import {
   UnifiedLoginResponse,
 } from "../../features/auth/types/auth.types";
 import {removeToken} from "@/src/shared/storage/tokenStorage";
+import {setLogoutCallback} from "@/src/api/axios/axiosConfig";
 
 // ============================================
 // STORAGE KEYS
@@ -68,6 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // === Load stored data on mount ===
   useEffect(() => {
     loadStoredAuth();
+  }, []);
+
+  useEffect(() => {
+    setLogoutCallback(() => setUser(null));
   }, []);
 
   /**
