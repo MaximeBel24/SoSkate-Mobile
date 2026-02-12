@@ -14,6 +14,7 @@ import {
 } from "@/src/features/instructor-spots/types/instructor-spots.types";
 import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import {handleApiError} from "@/src/api/axios/handleApiError";
+import {ApiError} from "@/src/api/axios/apiError";
 
 // ============================================
 // INSTRUCTOR → SPOTS

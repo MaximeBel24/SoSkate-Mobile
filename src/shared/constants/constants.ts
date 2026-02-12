@@ -1,7 +1,7 @@
 // Configuration API
 export const API_CONFIG = {
-  BASE_URL: "http://192.168.1.27:8080/api",
-  TIMEOUT: 10000,
+  BASE_URL: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/api',
+  TIMEOUT: Number(process.env.EXPO_PUBLIC_API_TIMEOUT ?? 10000),
 };
 
 // Endpoints
