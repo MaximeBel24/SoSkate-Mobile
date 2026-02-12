@@ -56,7 +56,8 @@
           "photosPermission": "SoSkate a besoin d'accéder à vos photos pour définir votre photo de profil.",
           "cameraPermission": "SoSkate a besoin d'accéder à votre caméra pour prendre une photo de profil."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

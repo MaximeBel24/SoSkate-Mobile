@@ -18,6 +18,7 @@ import {
   StoredUser,
   UnifiedLoginResponse,
 } from "../../features/auth/types/auth.types";
+import {removeToken} from "@/src/shared/storage/tokenStorage";
 
 // ============================================
 // STORAGE KEYS
@@ -152,7 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
 
       // Supprimer aussi le token JWT si présent (pour le futur)
-      await AsyncStorage.removeItem("authToken");
+      await removeToken();
 
       setUser(null);
 
@@ -171,8 +172,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.USER_DATA,
         STORAGE_KEYS.HAS_LOGGED_BEFORE,
-        "authToken",
       ]);
+      await removeToken();
       setUser(null);
       setHasLoggedBefore(false);
     } catch (error) {

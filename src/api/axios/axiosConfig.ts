@@ -1,6 +1,7 @@
 import { API_CONFIG } from "@/src/shared/constants/constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getToken, removeToken } from "@/src/shared/storage/tokenStorage";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Création de l'instance Axios
 const apiClient = axios.create({
@@ -15,7 +16,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem("authToken");
+      const token = await getToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -42,7 +43,7 @@ apiClient.interceptors.response.use(
       switch (status) {
         case 401:
           // Token expiré ou invalide
-          await AsyncStorage.removeItem("authToken");
+          await removeToken();
           await AsyncStorage.removeItem("userData");
           // Vous pouvez naviguer vers l'écran de connexion ici
           console.log("Session expirée, redirection vers login");

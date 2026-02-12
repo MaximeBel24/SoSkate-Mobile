@@ -13,6 +13,7 @@ import {
 } from "@/src/features/auth/types/auth.types";
 import { AxiosError } from "axios";
 import { handleApiError } from "@/src/api/axios/handleApiError";
+import {saveToken} from "@/src/shared/storage/tokenStorage";
 
 /**
  * Connexion unifiée pour Customer et Instructor
@@ -26,10 +27,14 @@ export const login = async (
 ): Promise<UnifiedLoginResponse> => {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.UNIFIED_LOGIN}`;
-    const { data } = await apiClient.post<UnifiedLoginResponse>(
+    const { data, headers } = await apiClient.post<UnifiedLoginResponse>(
       endpoint,
       payload,
     );
+    if (headers['authorization']) {
+      const token = headers["authorization"].replace("Bearer ", "");
+      await saveToken(token);
+    }
     return data;
   } catch (err) {
     return handleApiError(err, "Erreur lors de la connexion");
