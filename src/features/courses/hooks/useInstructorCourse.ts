@@ -7,8 +7,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import {
-    instructorCoursesService,
-    CourseFilter,
+    CourseFilter, getCourses, getInstructorStats,
 } from "@/src/shared/services/instructorCoursesService";
 import {
     CourseListItem,
@@ -77,7 +76,7 @@ export const useInstructorCourses = (): UseInstructorCoursesReturn => {
             }));
 
             try {
-                const data = await instructorCoursesService.getCourses(
+                const data = await getCourses(
                     instructorId,
                     filter
                 );
@@ -113,7 +112,7 @@ export const useInstructorCourses = (): UseInstructorCoursesReturn => {
         setIsLoadingStats(true);
 
         try {
-            const data = await instructorCoursesService.getInstructorStats(
+            const data = await getInstructorStats(
                 instructorId
             );
             setStats(data);

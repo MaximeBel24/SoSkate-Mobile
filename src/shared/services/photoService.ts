@@ -8,6 +8,7 @@ import apiClient from "@/src/api/axios/axiosConfig";
 import { API_CONFIG, ENDPOINTS } from "@/src/shared/constants/constants";
 import { PhotoResponse } from "@/src/shared/types/photo.interface";
 import { AxiosError } from "axios";
+import { handleApiError } from "@/src/api/axios/handleApiError";
 
 // ============================================
 // TYPES
@@ -43,33 +44,24 @@ export interface AvatarResponse {
 /**
  * Upload un avatar pour un Customer ou Instructor
  */
-export async function uploadAvatar(
+export const uploadAvatar = async (
   params: UploadAvatarParams,
-): Promise<AvatarResponse> {
+): Promise<AvatarResponse> => {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}`;
 
-    // Créer le FormData
     const formData = new FormData();
 
-    // Ajouter le fichier
     formData.append("file", {
       uri: params.file.uri,
       type: params.file.type,
       name: params.file.name,
     } as any);
 
-    // Ajouter les métadonnées
     formData.append("entityType", params.entityType);
     formData.append("entityId", params.entityId.toString());
     formData.append("photoType", "AVATAR");
     formData.append("uploadedBy", params.uploadedBy.toString());
-
-    console.log("📤 Uploading avatar:", {
-      entityType: params.entityType,
-      entityId: params.entityId,
-      fileName: params.file.name,
-    });
 
     const { data } = await apiClient.post<AvatarResponse>(endpoint, formData, {
       headers: {
@@ -77,135 +69,72 @@ export async function uploadAvatar(
       },
     });
 
-    console.log("✅ Avatar uploaded successfully:", data.url);
-
     return data;
   } catch (err) {
-    const error = err as AxiosError<any>;
-    const status = error.response?.status;
-    const backend = error.response?.data;
-
-    const backendMessage =
-      (backend && (backend.message || backend.error || backend.title)) ??
-      error.message;
-
-    console.error("❌ Error uploading avatar:", {
-      status,
-      backendMessage,
-    });
-
-    throw new ApiError(
-      backendMessage || "Erreur lors de l'upload de la photo",
-      status,
-    );
+    return handleApiError(err, "Erreur lors de l'upload de la photo");
   }
-}
+};
 
 /**
  * Récupère l'avatar d'un Customer
+ * Retourne null si aucun avatar (404)
  */
-export async function getCustomerAvatar(
+export const getCustomerAvatar = async (
   customerId: number,
-): Promise<AvatarResponse | null> {
+): Promise<AvatarResponse | null> => {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/customers/${customerId}/avatar`;
-
-    console.log("🔍 Fetching customer avatar:", customerId);
-
     const { data } = await apiClient.get<AvatarResponse>(endpoint);
-
-    console.log("✅ Customer avatar found:", data.url);
-
     return data;
   } catch (err) {
-    const error = err as AxiosError<any>;
+    const error = err as AxiosError;
 
     // 404 = pas d'avatar, c'est normal
     if (error.response?.status === 404) {
-      console.log("ℹ️ No avatar found for customer:", customerId);
       return null;
     }
 
-    const status = error.response?.status;
-    const backend = error.response?.data;
-
-    const backendMessage =
-      (backend && (backend.message || backend.error || backend.title)) ??
-      error.message;
-
-    console.error("❌ Error fetching customer avatar:", {
-      status,
-      backendMessage,
-    });
-
-    throw new ApiError(
-      backendMessage || "Erreur lors de la récupération de l'avatar",
-      status,
-    );
+    return handleApiError(err, "Erreur lors de la récupération de l'avatar");
   }
-}
+};
 
 /**
  * Récupère l'avatar d'un Instructor
+ * Retourne null si aucun avatar (404)
  */
-export async function getInstructorAvatar(
+export const getInstructorAvatar = async (
   instructorId: number,
-): Promise<AvatarResponse | null> {
+): Promise<AvatarResponse | null> => {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/instructors/${instructorId}/avatar`;
-
-    console.log("🔍 Fetching instructor avatar:", instructorId);
-
     const { data } = await apiClient.get<AvatarResponse>(endpoint);
-
-    console.log("✅ Instructor avatar found:", data.url);
-
     return data;
   } catch (err) {
-    const error = err as AxiosError<any>;
+    const error = err as AxiosError;
 
     // 404 = pas d'avatar, c'est normal
     if (error.response?.status === 404) {
-      console.log("ℹ️ No avatar found for instructor:", instructorId);
       return null;
     }
 
-    const status = error.response?.status;
-    const backend = error.response?.data;
-
-    const backendMessage =
-      (backend && (backend.message || backend.error || backend.title)) ??
-      error.message;
-
-    console.error("❌ Error fetching instructor avatar:", {
-      status,
-      backendMessage,
-    });
-
-    throw new ApiError(
-      backendMessage || "Erreur lors de la récupération de l'avatar",
-      status,
-    );
+    return handleApiError(err, "Erreur lors de la récupération de l'avatar");
   }
-}
+};
 
 // ============================================
 // SPOT PHOTOS METHODS
 // ============================================
 
 /**
- * Get photos for a specific spot.
- * Uses the dedicated endpoint: GET /api/photos/spots/{spotId}
+ * Récupère les photos d'un spot
+ * GET /api/photos/spots/{spotId}
  */
-export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
+export const getSpotPhotos = async (
+  spotId: number,
+): Promise<PhotoResponse[]> => {
   try {
     const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/spots/${spotId}`;
-
-    console.log("🔍 Fetching photos for spot:", spotId);
-
     const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
-
-    console.log("✅ Photos received:", data.length, "photos");
 
     if (!Array.isArray(data)) {
       throw new ApiError("Format de réponse invalide", 500);
@@ -213,51 +142,17 @@ export async function getSpotPhotos(spotId: number): Promise<PhotoResponse[]> {
 
     return data;
   } catch (err) {
-    const error = err as AxiosError<any>;
-
-    const status = error.response?.status;
-    const backend = error.response?.data;
-
-    const backendMessage =
-      (backend && (backend.message || backend.error || backend.title)) ??
-      error.message;
-
-    const details = backend?.errors ?? backend;
-
-    console.error("❌ Error fetching photos:", {
-      status,
-      backendMessage,
-      details,
-    });
-
-    throw new ApiError(
-      backendMessage || "Erreur lors de la récupération des photos",
-      status,
-      details,
-    );
+    return handleApiError(err, "Erreur lors de la récupération des photos");
   }
-}
+};
 
 /**
- * Get photos for a specific instructor.
- * TODO: Implement when instructor photo endpoint is available.
+ * Récupère les photos d'un instructeur
+ * TODO: Implémenter quand l'endpoint backend sera disponible
  */
-export async function getInstructorPhotos(
+export const getInstructorPhotos = async (
   instructorId: number,
-): Promise<PhotoResponse[]> {
+): Promise<PhotoResponse[]> => {
   // TODO: Attendre l'implémentation backend
-  console.warn("getInstructorPhotos not yet implemented");
   return [];
-}
-
-/**
- * Get photos for a specific event.
- * TODO: Implement when event photo endpoint is available.
- */
-export async function getEventPhotos(
-  eventId: number,
-): Promise<PhotoResponse[]> {
-  // TODO: Attendre l'implémentation backend
-  console.warn("getEventPhotos not yet implemented");
-  return [];
-}
+};

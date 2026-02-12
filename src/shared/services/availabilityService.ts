@@ -6,6 +6,7 @@
 
 import {AvailabilityResponse} from "@/src/shared/types/availability.interface";
 import apiClient from "@/src/api/axios/axiosConfig";
+import {handleApiError} from "@/src/api/axios/handleApiError";
 
 /**
  * Récupère toutes les disponibilités d'un instructeur
@@ -13,10 +14,14 @@ import apiClient from "@/src/api/axios/axiosConfig";
 export const getInstructorAvailabilities = async (
     instructorId: number
 ): Promise<AvailabilityResponse[]> => {
-    const response = await apiClient.get<AvailabilityResponse[]>(
-        `/instructors/${instructorId}/availabilities`
-    );
-    return response.data;
+    try {
+        const response = await apiClient.get<AvailabilityResponse[]>(
+            `/instructors/${instructorId}/availabilities`
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des disponibilités");
+    }
 };
 
 /**
@@ -28,13 +33,17 @@ export const getAvailabilitiesWithFilters = async (
     from: string,
     to: string
 ): Promise<AvailabilityResponse[]> => {
-    const response = await apiClient.get<AvailabilityResponse[]>(
-        `/instructors/${instructorId}/planning-slots`,
-        {
-            params: { from, to },
-        }
-    );
-    return response.data;
+    try {
+        const response = await apiClient.get<AvailabilityResponse[]>(
+            `/instructors/${instructorId}/available`,
+            {
+                params: { from, to },
+            }
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des disponibilités avec filtre");
+    }
 };
 
 /**
@@ -49,11 +58,15 @@ export const createAvailability = async (
         endTime: string;
     }
 ): Promise<AvailabilityResponse> => {
-    const response = await apiClient.post<AvailabilityResponse>(
-        `/instructors/${instructorId}/availabilities`,
-        data
-    );
-    return response.data;
+    try {
+        const response = await apiClient.post<AvailabilityResponse>(
+            `/instructors/${instructorId}/availabilities`,
+            data
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la création de la disponibilité");
+    }
 };
 
 /**
@@ -68,11 +81,15 @@ export const updateAvailability = async (
         endTime: string;
     }
 ): Promise<AvailabilityResponse> => {
-    const response = await apiClient.put<AvailabilityResponse>(
-        `/instructors/${instructorId}/availabilities/${availabilityId}`,
-        data
-    );
-    return response.data;
+    try {
+        const response = await apiClient.put<AvailabilityResponse>(
+            `/instructors/${instructorId}/availabilities/${availabilityId}`,
+            data
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la modification de la disponibilité");
+    }
 };
 
 /**
@@ -83,30 +100,11 @@ export const deleteAvailability = async (
     instructorId: number,
     availabilityId: number
 ): Promise<void> => {
-    await apiClient.delete(
-        `/instructors/${instructorId}/availabilities/${availabilityId}`
-    );
+    try {
+        await apiClient.delete(
+            `/instructors/${instructorId}/availabilities/${availabilityId}`
+        );
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la suppression de la disponibilité");
+    }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

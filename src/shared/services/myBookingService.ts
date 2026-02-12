@@ -9,6 +9,7 @@ import {
     CancelParticipationRequest,
 } from "@/src/features/my-bookings/types/my-bookings.types";
 import apiClient from "@/src/api/axios/axiosConfig";
+import {handleApiError} from "@/src/api/axios/handleApiError";
 
 /**
  * Récupère toutes les réservations d'un customer
@@ -16,10 +17,14 @@ import apiClient from "@/src/api/axios/axiosConfig";
 export const getMyBookings = async (
     customerId: number
 ): Promise<MyBookingResponse[]> => {
-    const response = await apiClient.get<MyBookingResponse[]>(
-        `/customers/${customerId}/my-bookings`
-    );
-    return response.data;
+    try {
+        const response = await apiClient.get<MyBookingResponse[]>(
+            `/customers/${customerId}/my-bookings`
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des réservations");
+    }
 };
 
 /**
@@ -30,11 +35,15 @@ export const cancelParticipation = async (
     participationId: number,
     reason?: string
 ): Promise<void> => {
-    const request: CancelParticipationRequest = reason ? { reason } : {};
-    await apiClient.post(
-        `/customers/${customerId}/participations/${participationId}/cancel`,
-        request
-    );
+    try {
+        const request: CancelParticipationRequest = reason ? { reason } : {};
+        await apiClient.post(
+            `/customers/${customerId}/participations/${participationId}/cancel`,
+            request
+        );
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de l'annulation de la participation");
+    }
 };
 
 /**
@@ -45,10 +54,14 @@ export const updateBookingNotes = async (
     participationId: number,
     notes: string
 ): Promise<MyBookingResponse> => {
-    const request: UpdateNotesRequest = { notes };
-    const response = await apiClient.patch<MyBookingResponse>(
-        `/customers/${customerId}/participations/${participationId}/notes`,
-        request
-    );
-    return response.data;
+    try {
+        const request: UpdateNotesRequest = { notes };
+        const response = await apiClient.patch<MyBookingResponse>(
+            `/customers/${customerId}/participations/${participationId}/notes`,
+            request
+        );
+        return response.data;
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la modification des notes");
+    }
 };

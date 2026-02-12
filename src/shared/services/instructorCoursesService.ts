@@ -8,6 +8,7 @@ import {
     CourseStatsResponse,
 } from "@/src/features/courses/types/course.types";
 import apiClient from "@/src/api/axios/axiosConfig";
+import {handleApiError} from "@/src/api/axios/handleApiError";
 
 // ============================================
 // TYPES
@@ -17,55 +18,70 @@ export type CourseFilter = "upcoming" | "passed";
 // ============================================
 // SERVICE
 // ============================================
-export const instructorCoursesService = {
-    /**
-     * Récupère les cours d'un instructeur avec filtre
-     * GET /instructors/{id}/bookings?filter=upcoming|passed
-     */
-    getCourses: async (
-        instructorId: number,
-        filter: CourseFilter
-    ): Promise<CourseListItem[]> => {
+/**
+ * Récupère les cours d'un instructeur avec filtre
+ * GET /instructors/{id}/bookings?filter=upcoming|passed
+ */
+export const getCourses = async (
+    instructorId: number,
+    filter: CourseFilter
+): Promise<CourseListItem[]> => {
+    try {
         const response = await apiClient.get<CourseListItem[]>(
             `/instructors/${instructorId}/bookings`,
             { params: { filter } }
         );
         return response.data;
-    },
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des cours");
+    }
+}
 
-    /**
-     * Récupère le détail complet d'une réservation
-     * GET /bookings/{id}
-     */
-    getCourseDetail: async (bookingId: number): Promise<CourseDetail> => {
+/**
+ * Récupère le détail complet d'une réservation
+ * GET /bookings/{id}
+ */
+export const getCourseDetail = async (
+    bookingId: number
+): Promise<CourseDetail> => {
+    try {
         const response = await apiClient.get<CourseDetail>(
             `/bookings/${bookingId}`
         );
         return response.data;
-    },
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des détails de la réservation");
+    }
+}
 
-    /**
-     * Récupère les statistiques de l'instructeur
-     * GET /instructors/{id}/stats
-     */
-    getInstructorStats: async (
-        instructorId: number
-    ): Promise<CourseStatsResponse> => {
+/**
+ * Récupère les statistiques de l'instructeur
+ * GET /instructors/{id}/stats
+ */
+export const getInstructorStats = async (
+    instructorId: number
+): Promise<CourseStatsResponse> => {
+    try {
         const response = await apiClient.get<CourseStatsResponse>(
             `/instructors/${instructorId}/stats`
         );
         return response.data;
-    },
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de la récupération des statistiques");
+    }
+}
 
-    /**
-     * Annule une réservation (possible jusqu'à 24h avant)
-     * DELETE /bookings/{id}
-     */
-    cancelCourse: async (bookingId: number, reason?: string): Promise<void> => {
-        await apiClient.delete(`/bookings/${bookingId}`, {
-            data: { reason },
-        });
-    },
-};
-
-export default instructorCoursesService;
+/**
+ * Annule une réservation (possible jusqu'à 24h avant)
+ * DELETE /bookings/{id}
+ */
+export const cancelCourse = async (
+    instructorId: number,
+    bookingId: number
+): Promise<void> => {
+    try {
+        await apiClient.post(`/instructors/${instructorId}/bookings/${bookingId}/cancel`);
+    } catch (err) {
+        return handleApiError(err, "Erreur lors de l'annulation de la réservation");
+    }
+}
