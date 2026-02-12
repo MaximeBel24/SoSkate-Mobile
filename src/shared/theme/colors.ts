@@ -333,7 +333,7 @@ export const lightColors: SemanticColors = {
 // ============================================
 export const getThemeColors = (
   mode: ThemeMode,
-  systemColorScheme: ColorSchemeName
+  systemColorScheme: ColorSchemeName,
 ): SemanticColors => {
   if (mode === "auto") {
     return systemColorScheme === "dark" ? darkColors : lightColors;

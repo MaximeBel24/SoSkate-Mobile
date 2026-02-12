@@ -8,22 +8,22 @@
  * GET /instructors/{id}/spots
  */
 export interface InstructorSpotResponse {
-    id: number;
-    instructorId: number;
-    spot: SpotSummary;
-    createdAt: string;
+  id: number;
+  instructorId: number;
+  spot: SpotSummary;
+  createdAt: string;
 }
 
 /**
  * Résumé d'un spot (dans la réponse InstructorSpot)
  */
 export interface SpotSummary {
-    id: number;
-    name: string;
-    address: string;
-    city: string;
-    latitude: number;
-    longitude: number;
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  latitude: number;
+  longitude: number;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface SpotSummary {
  * POST /instructors/{id}/spots
  */
 export interface AddSpotRequest {
-    spotId: number;
+  spotId: number;
 }
 
 /**
@@ -39,11 +39,11 @@ export interface AddSpotRequest {
  * Réutilise le type SpotResponse existant
  */
 export interface SpotForSelection {
-    id: number;
-    name: string;
-    address: string;
-    city: string;
-    latitude: number;
-    longitude: number;
-    isAssociated: boolean; // true si l'instructeur est déjà associé
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+  isAssociated: boolean; // true si l'instructeur est déjà associé
 }

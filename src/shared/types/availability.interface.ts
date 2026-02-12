@@ -13,28 +13,28 @@ export type AvailabilityStatus = "AVAILABLE" | "BOOKED" | "CANCELLED";
  * GET /instructors/{id}/availabilities
  */
 export interface AvailabilityResponse {
-    id: number;
-    instructorId: number;
-    date: string; // "2026-01-20"
-    startTime: string; // "15:00:00"
-    endTime: string; // "19:00:00"
-    available: boolean;
-    status: AvailabilityStatus;
-    createdAt: string;
+  id: number;
+  instructorId: number;
+  date: string; // "2026-01-20"
+  startTime: string; // "15:00:00"
+  endTime: string; // "19:00:00"
+  available: boolean;
+  status: AvailabilityStatus;
+  createdAt: string;
 }
 
 /**
  * Disponibilités groupées par date
  */
 export interface AvailabilityByDate {
-    [date: string]: AvailabilityResponse[];
+  [date: string]: AvailabilityResponse[];
 }
 
 /**
  * Paramètres pour récupérer les disponibilités
  */
 export interface GetAvailabilityParams {
-    instructorId: number;
-    startDate?: string;
-    endDate?: string;
+  instructorId: number;
+  startDate?: string;
+  endDate?: string;
 }

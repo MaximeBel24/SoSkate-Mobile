@@ -4,28 +4,28 @@
 // Appels API pour les réservations
 
 import {
-    BookingResponse,
-    CreateBookingRequest,
+  BookingResponse,
+  CreateBookingRequest,
 } from "@/src/shared/types/booking.interface";
 import apiClient from "@/src/api/axios/axiosConfig";
-import {handleApiError} from "@/src/api/axios/handleApiError";
+import { handleApiError } from "@/src/api/axios/handleApiError";
 
 /**
  * Crée une nouvelle réservation
  */
 export const createBooking = async (
-    customerId: number,
-    bookingData: CreateBookingRequest
+  customerId: number,
+  bookingData: CreateBookingRequest,
 ): Promise<BookingResponse> => {
-    try {
-        const response = await apiClient.post<BookingResponse>(
-            `/customers/${customerId}/bookings`,
-            bookingData
-        );
-        return response.data;
-    } catch (err) {
-        return handleApiError(err, "Erreur lors de la création de la réservation");
-    }
+  try {
+    const response = await apiClient.post<BookingResponse>(
+      `/customers/${customerId}/bookings`,
+      bookingData,
+    );
+    return response.data;
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la création de la réservation");
+  }
 };
 
 /**
@@ -33,14 +33,17 @@ export const createBooking = async (
  * GET /instructors/{id}/bookings
  */
 export const getInstructorBookings = async (
-    instructorId: number
+  instructorId: number,
 ): Promise<any[]> => {
-    try {
-        const response = await apiClient.get<any[]>(
-            `/instructors/${instructorId}/bookings`
-        );
-        return response.data;
-    } catch (err) {
-        return handleApiError(err, "Erreur lors de la récupération des réservations");
-    }
+  try {
+    const response = await apiClient.get<any[]>(
+      `/instructors/${instructorId}/bookings`,
+    );
+    return response.data;
+  } catch (err) {
+    return handleApiError(
+      err,
+      "Erreur lors de la récupération des réservations",
+    );
+  }
 };

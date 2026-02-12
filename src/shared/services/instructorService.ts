@@ -11,6 +11,9 @@ export const getInstructorById = async (
     const { data } = await apiClient.get<InstructorResponse>(endpoint);
     return data;
   } catch (err) {
-    return handleApiError(err, "Erreur lors de la récupération de l'instructeur");
+    return handleApiError(
+      err,
+      "Erreur lors de la récupération de l'instructeur",
+    );
   }
 };

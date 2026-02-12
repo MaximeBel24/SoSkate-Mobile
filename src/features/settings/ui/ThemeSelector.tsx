@@ -45,13 +45,13 @@ const ThemeOptionCard: React.FC<ThemeOptionCardProps> = ({
     const backgroundColor = interpolateColor(
       selected.value,
       [0, 1],
-      [colors.background.surface, colors.accent.primary + "20"]
+      [colors.background.surface, colors.accent.primary + "20"],
     );
 
     const borderColor = interpolateColor(
       selected.value,
       [0, 1],
-      [colors.border.default, colors.accent.primary]
+      [colors.border.default, colors.accent.primary],
     );
 
     return {

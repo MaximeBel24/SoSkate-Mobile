@@ -17,8 +17,8 @@ const InfoBox = ({ message, variant = "info" }: InfoBoxProps) => {
     variant === "warning"
       ? colors.semantic.warning
       : variant === "success"
-      ? colors.semantic.success
-      : colors.accent.primary;
+        ? colors.semantic.success
+        : colors.accent.primary;
 
   return (
     <View

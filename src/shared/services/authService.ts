@@ -13,7 +13,7 @@ import {
 } from "@/src/features/auth/types/auth.types";
 import { AxiosError } from "axios";
 import { handleApiError } from "@/src/api/axios/handleApiError";
-import {saveToken} from "@/src/shared/storage/tokenStorage";
+import { saveToken } from "@/src/shared/storage/tokenStorage";
 
 /**
  * Connexion unifiée pour Customer et Instructor
@@ -31,7 +31,7 @@ export const login = async (
       endpoint,
       payload,
     );
-    if (headers['authorization']) {
+    if (headers["authorization"]) {
       const token = headers["authorization"].replace("Bearer ", "");
       await saveToken(token);
     }

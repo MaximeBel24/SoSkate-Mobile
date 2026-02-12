@@ -1,15 +1,15 @@
-import * as SecureStore from "expo-secure-store"
+import * as SecureStore from "expo-secure-store";
 
-const TOKEN_KEY = "authToken"
+const TOKEN_KEY = "authToken";
 
-export const getToken = async() => {
-    return await SecureStore.getItemAsync(TOKEN_KEY);
-}
+export const getToken = async () => {
+  return await SecureStore.getItemAsync(TOKEN_KEY);
+};
 
 export const saveToken = async (token: string) => {
-    await SecureStore.setItemAsync(TOKEN_KEY, token);
-}
+  await SecureStore.setItemAsync(TOKEN_KEY, token);
+};
 
 export const removeToken = async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
-}
+  await SecureStore.deleteItemAsync(TOKEN_KEY);
+};

@@ -20,8 +20,8 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
             : options.title !== undefined
-            ? options.title
-            : route.name;
+              ? options.title
+              : route.name;
 
         const onPress = () => {
           const event = navigation.emit({

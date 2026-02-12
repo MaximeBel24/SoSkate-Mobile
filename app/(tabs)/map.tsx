@@ -67,7 +67,7 @@ const MapScreen = () => {
           latitudeDelta: 0.02,
           longitudeDelta: 0.02,
         },
-        500
+        500,
       );
     }
   };
@@ -84,7 +84,7 @@ const MapScreen = () => {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         },
-        800
+        800,
       );
     }
   };

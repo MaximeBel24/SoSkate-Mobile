@@ -89,7 +89,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   // Theme state
   const [themeMode, setThemeModeState] = useState<ThemeMode>(
-    initialTheme ?? "dark"
+    initialTheme ?? "dark",
   );
   const [isThemeLoaded, setIsThemeLoaded] = useState(false);
 
@@ -130,12 +130,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // ============================================
   const colors = useMemo(
     () => getThemeColors(themeMode, systemColorScheme),
-    [themeMode, systemColorScheme]
+    [themeMode, systemColorScheme],
   );
 
   const mapStyle = useMemo(
     () => (isDark ? darkMapStyle : lightMapStyle),
-    [isDark]
+    [isDark],
   );
 
   // ============================================
@@ -200,7 +200,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       setThemeMode,
       toggleTheme,
       isThemeLoaded,
-    ]
+    ],
   );
 
   return (

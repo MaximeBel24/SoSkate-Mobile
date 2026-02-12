@@ -1,6 +1,6 @@
 // Configuration API
 export const API_CONFIG = {
-  BASE_URL: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/api',
+  BASE_URL: process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080/api",
   TIMEOUT: Number(process.env.EXPO_PUBLIC_API_TIMEOUT ?? 10000),
 };
 
@@ -33,4 +33,3 @@ export const MAP_CONFIG = {
   },
   MARKER_SIZE: 40,
 };
-

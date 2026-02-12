@@ -18,8 +18,8 @@ import {
   StoredUser,
   UnifiedLoginResponse,
 } from "../../features/auth/types/auth.types";
-import {removeToken} from "@/src/shared/storage/tokenStorage";
-import {setLogoutCallback} from "@/src/api/axios/axiosConfig";
+import { removeToken } from "@/src/shared/storage/tokenStorage";
+import { setLogoutCallback } from "@/src/api/axios/axiosConfig";
 
 // ============================================
 // STORAGE KEYS

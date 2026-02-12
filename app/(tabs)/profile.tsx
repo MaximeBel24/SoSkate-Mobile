@@ -128,7 +128,11 @@ const Profile = () => {
       id: "my-favorites",
       title: "Mes favoris",
       icon: (
-        <Icons.HeartIcon size={24} color={colors.constant.white} weight="duotone" />
+        <Icons.HeartIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       bgColor: "#ec4899",
       roles: ["CUSTOMER"],
@@ -139,25 +143,25 @@ const Profile = () => {
       id: "my-schedule",
       title: "Mon planning",
       icon: (
-          <Icons.CalendarDotsIcon
-              size={24}
-              color={colors.constant.white}
-              weight="duotone"
-          />
+        <Icons.CalendarDotsIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       bgColor: "#8b5cf6",
-      routeName: "/(modals)/instructor/planning",  // ← AJOUTER
+      routeName: "/(modals)/instructor/planning", // ← AJOUTER
       roles: ["INSTRUCTOR"],
     },
     {
       id: "my-spots",
       title: "Mes spots d'enseignement",
       icon: (
-          <Icons.MapPinIcon
-              size={24}
-              color={colors.constant.white}
-              weight="duotone"
-          />
+        <Icons.MapPinIcon
+          size={24}
+          color={colors.constant.white}
+          weight="duotone"
+        />
       ),
       bgColor: "#10b981", // Vert
       routeName: "/(modals)/instructor/my-spots",

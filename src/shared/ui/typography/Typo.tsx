@@ -14,15 +14,15 @@ export type TypoProps = {
 };
 
 const Typo = ({
-                size = 16,
-                color,
-                fontWeight = "400",
-                children,
-                style,
-                textProps = {},
-                numberOfLines,
-                onPress,
-              }: TypoProps) => {
+  size = 16,
+  color,
+  fontWeight = "400",
+  children,
+  style,
+  textProps = {},
+  numberOfLines,
+  onPress,
+}: TypoProps) => {
   const { colors } = useTheme();
 
   const textStyle: TextStyle = {
@@ -32,20 +32,20 @@ const Typo = ({
   };
 
   const textElement = (
-      <Text
-          style={[textStyle, style]}
-          numberOfLines={numberOfLines}
-          {...textProps}
-      >
-        {children}
-      </Text>
+    <Text
+      style={[textStyle, style]}
+      numberOfLines={numberOfLines}
+      {...textProps}
+    >
+      {children}
+    </Text>
   );
 
   if (onPress) {
     return (
-        <Pressable onPress={onPress} hitSlop={8}>
-          {textElement}
-        </Pressable>
+      <Pressable onPress={onPress} hitSlop={8}>
+        {textElement}
+      </Pressable>
     );
   }
 

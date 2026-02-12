@@ -5,7 +5,6 @@ import { StyleSheet, View } from "react-native";
 import Typo from "@/src/shared/ui/typography/Typo";
 
 const spots = () => {
-
   return (
     <ScreenWrapper>
       <View style={styles.container}>

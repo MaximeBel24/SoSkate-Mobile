@@ -26,6 +26,9 @@ export const getActiveSpots = async (): Promise<SpotResponse[]> => {
     }
     return data;
   } catch (err) {
-    return handleApiError(err, "Erreur lors de la récupération des spots actifs");
+    return handleApiError(
+      err,
+      "Erreur lors de la récupération des spots actifs",
+    );
   }
 };

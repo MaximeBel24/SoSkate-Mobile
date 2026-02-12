@@ -62,7 +62,7 @@ const Register = () => {
     if (!isPasswordValid) {
       Alert.alert(
         "Inscription",
-        "Le mot de passe ne respecte pas tous les critères de sécurité"
+        "Le mot de passe ne respecte pas tous les critères de sécurité",
       );
       return;
     }
@@ -83,7 +83,7 @@ const Register = () => {
     } catch (error: any) {
       Alert.alert(
         "Erreur d'inscription",
-        error?.message || "Une erreur est survenue."
+        error?.message || "Une erreur est survenue.",
       );
     } finally {
       setIsLoading(false);

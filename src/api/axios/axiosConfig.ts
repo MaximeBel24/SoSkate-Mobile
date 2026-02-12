@@ -34,7 +34,7 @@ apiClient.interceptors.request.use(
 
 export const setLogoutCallback = (callback: () => void) => {
   logoutCallback = callback;
-}
+};
 
 // Intercepteur de réponse - Gestion des erreurs
 apiClient.interceptors.response.use(

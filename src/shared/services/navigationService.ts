@@ -29,7 +29,7 @@ const isAppInstalled = async (url: string): Promise<boolean> => {
  */
 const getGoogleMapsUrl = (
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): string => {
   const { latitude, longitude } = coords;
   const destination =
@@ -37,7 +37,7 @@ const getGoogleMapsUrl = (
 
   if (Platform.OS === "ios") {
     return `comgooglemaps://?daddr=${encodeURIComponent(
-      destination
+      destination,
     )}&directionsmode=driving`;
   }
 
@@ -49,13 +49,13 @@ const getGoogleMapsUrl = (
  */
 const getAppleMapsUrl = (
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): string => {
   const { latitude, longitude } = coords;
   const label = options?.destinationName || "Destination";
 
   return `maps://app?daddr=${latitude},${longitude}&q=${encodeURIComponent(
-    label
+    label,
   )}`;
 };
 
@@ -64,7 +64,7 @@ const getAppleMapsUrl = (
  */
 const getWazeUrl = (
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): string => {
   const { latitude, longitude } = coords;
 
@@ -77,7 +77,7 @@ const getWazeUrl = (
 const openNavigationApp = async (
   app: NavigationApp,
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): Promise<boolean> => {
   let url: string;
   let fallbackUrl: string | null = null;
@@ -130,7 +130,7 @@ const openNavigationApp = async (
  */
 export const openNavigationMenu = async (
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): Promise<void> => {
   // Vérifier les apps disponibles
   const availableApps: { name: string; app: NavigationApp; url: string }[] = [];
@@ -192,7 +192,7 @@ export const openNavigationMenu = async (
         text: "Annuler",
         style: "cancel",
       },
-    ]
+    ],
   );
 };
 
@@ -202,7 +202,7 @@ export const openNavigationMenu = async (
  */
 export const openDefaultNavigation = async (
   coords: Coordinates,
-  options?: NavigationOptions
+  options?: NavigationOptions,
 ): Promise<void> => {
   const defaultApp: NavigationApp =
     Platform.OS === "ios" ? "apple-maps" : "google-maps";

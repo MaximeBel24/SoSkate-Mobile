@@ -13,7 +13,6 @@ import {
 } from "@/src/shared/types/profile.interface";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
-
 /**
  * Met à jour le profil d'un customer
  */

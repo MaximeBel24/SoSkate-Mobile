@@ -55,14 +55,14 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim().length > 0) {
         const filtered = spots.filter((spot) =>
-          spot.name.toLowerCase().includes(searchQuery.toLowerCase())
+          spot.name.toLowerCase().includes(searchQuery.toLowerCase()),
         );
         setFilteredSpots(filtered);
         setShowResults(true);
 
         resultsHeight.value = withTiming(
           filtered.length > 0 ? Math.min(filtered.length * 70, 300) : 80,
-          { duration: 200 }
+          { duration: 200 },
         );
       } else {
         setFilteredSpots([]);
@@ -82,7 +82,7 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
       onSpotSelect(spot);
       onClose();
     },
-    [onSpotSelect, onClose]
+    [onSpotSelect, onClose],
   );
 
   const handleClear = useCallback(() => {
