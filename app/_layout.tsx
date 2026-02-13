@@ -6,34 +6,38 @@
 import { AuthProvider } from "@/src/shared/contexts/AuthContext";
 import { ThemeProvider } from "@/src/shared/theme";
 import { Stack } from "expo-router";
-import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ErrorFallback from "@/src/shared/ui/feedback/ErrorFallback";
+import ErrorBoundary from "@/src/shared/ui/feedback/ErrorBoundary";
+import { StyleSheet } from "react-native";
 
 const RootLayout = () => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider>
-        <AuthProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="(modals)/profileModal"
-              options={{
-                presentation: "modal",
-                animation: "slide_from_bottom",
-              }}
-            />
-            <Stack.Screen
-              name="(modals)/settingsModal"
-              options={{
-                presentation: "modal",
-                animation: "slide_from_bottom",
-              }}
-            />
-          </Stack>
-        </AuthProvider>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <AuthProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="(modals)/profileModal"
+                options={{
+                  presentation: "modal",
+                  animation: "slide_from_bottom",
+                }}
+              />
+              <Stack.Screen
+                name="(modals)/settingsModal"
+                options={{
+                  presentation: "modal",
+                  animation: "slide_from_bottom",
+                }}
+              />
+            </Stack>
+          </AuthProvider>
+        </ErrorBoundary>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
