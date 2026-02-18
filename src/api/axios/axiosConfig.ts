@@ -5,6 +5,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 let logoutCallback: (() => void) | null = null;
 
+const inFlightRequests = new Map<string, Promise<any>>();
+
+const buildRequestKey = (url: string, params?: any): string => {
+  const serializedParams = params ? JSON.stringify(params) : "";
+  return `get:${url}:${serializedParams}`;
+};
+
 // Création de l'instance Axios
 const apiClient = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -91,5 +98,21 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// Déduplication des requêtes GET en vol
+const originalGet = apiClient.get.bind(apiClient);
+apiClient.get = ((url: string, config?: any) => {
+  const key = buildRequestKey(url, config?.params);
+
+  const existing = inFlightRequests.get(key);
+  if (existing) return existing;
+
+  const request = originalGet(url, config).finally(() => {
+    inFlightRequests.delete(key);
+  });
+
+  inFlightRequests.set(key, request);
+  return request;
+}) as typeof apiClient.get;
 
 export default apiClient;
