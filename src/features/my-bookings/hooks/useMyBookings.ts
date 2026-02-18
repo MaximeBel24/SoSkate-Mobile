@@ -78,47 +78,45 @@ export const useMyBookings = (): UseMyBookingsReturn => {
     [user?.id],
   );
 
-  /**
-   * Rafraîchir (pull to refresh)
-   */
-  const refresh = useCallback(async () => {
-    await fetchBookings(true);
-  }, [fetchBookings]);
+      /**
+       * Rafraîchir (pull to refresh)
+       */
+      const refresh = useCallback(async () => {
+        await fetchBookings(true);
+      }, [fetchBookings]);
 
-  /**
-   * Annuler une participation
-   */
-  const cancel = useCallback(
-    async (participationId: number, reason?: string): Promise<boolean> => {
-      if (!user?.id) return false;
+    const cancel = useCallback(
+        async (participationId: number, reason?: string): Promise<boolean> => {
+            if (!user?.id) return false;
 
-      setIsCancelling(true);
+            // 1. SNAPSHOT — on sauvegarde l'état actuel
+            const previousBookings = bookings;
 
-      try {
-        await cancelParticipation(user.id, participationId, reason);
+            // 2. OPTIMISTIC UPDATE — on met à jour l'UI immédiatement
+            setBookings((prev) =>
+                prev.map((booking) =>
+                    booking.participationId === participationId
+                        ? { ...booking, participantStatus: "CANCELLED" as const }
+                        : booking,
+                ),
+            );
 
-        // Mettre à jour localement (optimistic update)
-        setBookings((prev) =>
-          prev.map((booking) =>
-            booking.participationId === participationId
-              ? { ...booking, participantStatus: "CANCELLED" as const }
-              : booking,
-          ),
-        );
-
-        return true;
-      } catch (err: any) {
-        console.error("Erreur annulation:", err);
-        setError(
-          err.response?.data?.message || "Impossible d'annuler la réservation",
-        );
-        return false;
-      } finally {
-        setIsCancelling(false);
-      }
-    },
-    [user?.id],
-  );
+            try {
+                // 3. APPEL API — on envoie la requête au serveur
+                await cancelParticipation(user.id, participationId, reason);
+                return true;
+            } catch (err: any) {
+                // 4. ROLLBACK — l'API a échoué, on restaure l'état précédent
+                setBookings(previousBookings);
+                console.error("Erreur annulation:", err);
+                setError(
+                    err.response?.data?.message || "Impossible d'annuler la réservation",
+                );
+                return false;
+            }
+        },
+        [user?.id, bookings],
+    );
 
   /**
    * Modifier les notes
@@ -129,27 +127,25 @@ export const useMyBookings = (): UseMyBookingsReturn => {
 
       setIsUpdatingNotes(true);
 
-      try {
-        const updatedBooking = await updateBookingNotes(
-          user.id,
-          participationId,
-          notes,
-        );
+      const saveBookings = bookings;
 
         // Mettre à jour localement
         setBookings((prev) =>
-          prev.map((booking) =>
-            booking.participationId === participationId
-              ? {
-                  ...booking,
-                  participantsNotes: updatedBooking.participantsNotes,
-                }
-              : booking,
-          ),
+            prev.map((booking) =>
+                booking.participationId === participationId
+                    ? {
+                        ...booking,
+                        participantsNotes: notes,
+                    }
+                    : booking,
+            ),
         );
 
+      try {
+        await updateBookingNotes(user.id, participationId, notes);
         return true;
       } catch (err: any) {
+          setBookings(saveBookings)
         console.error("Erreur modification notes:", err);
         setError(
           err.response?.data?.message || "Impossible de modifier les notes",
@@ -159,7 +155,7 @@ export const useMyBookings = (): UseMyBookingsReturn => {
         setIsUpdatingNotes(false);
       }
     },
-    [user?.id],
+    [user?.id, bookings],
   );
 
   // Charger au montage

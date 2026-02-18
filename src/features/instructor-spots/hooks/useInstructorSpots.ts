@@ -11,6 +11,7 @@ import {
   removeSpotFromInstructor,
 } from "@/src/shared/services/instructorSpotsService";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
+import {SpotResponse} from "@/src/shared/types/spot.interface";
 
 interface UseInstructorSpotsReturn {
   // Data
@@ -27,7 +28,7 @@ interface UseInstructorSpotsReturn {
 
   // Actions
   refresh: () => Promise<void>;
-  addSpot: (spotId: number) => Promise<boolean>;
+  addSpot: (spotId: number, spotData: SpotResponse) => Promise<boolean>;
   removeSpot: (spotId: number) => Promise<boolean>;
   isSpotAssociated: (spotId: number) => boolean;
 }
@@ -82,28 +83,53 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
    * Ajouter un spot
    */
   const addSpot = useCallback(
-    async (spotId: number): Promise<boolean> => {
-      if (!user?.instructorId) return false;
+      async (spotId: number, spotData: SpotResponse): Promise<boolean> => {
+        if (!user?.instructorId) return false;
 
-      setIsAdding(true);
-      setError(null);
+        setIsAdding(true);
+        setError(null);
 
-      try {
-        const newSpot = await addSpotToInstructor(user.instructorId, spotId);
+        // 1. SNAPSHOT
+        const previousSpots = spots;
 
-        // Ajouter localement (optimistic update)
-        setSpots((prev) => [...prev, newSpot]);
+        // 2. OPTIMISTIC UPDATE — objet temporaire
+        const optimisticSpot: InstructorSpotResponse = {
+          id: -1,
+          instructorId: user.instructorId,
+          spot: {
+            id: spotData.id,
+            name: spotData.name,
+            address: spotData.address,
+            city: spotData.city,
+            latitude: spotData.latitude,
+            longitude: spotData.longitude,
+          },
+          createdAt: new Date().toISOString(),
+        };
 
-        return true;
-      } catch (err: any) {
-        console.error("Erreur ajout spot:", err);
-        setError(err.response?.data?.message || "Impossible d'ajouter ce spot");
-        return false;
-      } finally {
-        setIsAdding(false);
-      }
-    },
-    [user?.instructorId],
+        setSpots((prev) => [...prev, optimisticSpot]);
+
+        try {
+          // 3. APPEL API
+          const realSpot = await addSpotToInstructor(user.instructorId, spotId);
+
+          // Remplacer le placeholder par la vraie réponse
+          setSpots((prev) =>
+              prev.map((s) => (s.id === -1 ? realSpot : s)),
+          );
+
+          return true;
+        } catch (err: any) {
+          // 4. ROLLBACK
+          setSpots(previousSpots);
+          console.error("Erreur ajout spot:", err);
+          setError(err.response?.data?.message || "Impossible d'ajouter ce spot");
+          return false;
+        } finally {
+          setIsAdding(false);
+        }
+      },
+      [user?.instructorId, spots],
   );
 
   /**
@@ -116,14 +142,18 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
       setIsRemoving(true);
       setError(null);
 
+      // 1. SNAPSHOT — on sauvegarde l'état actuel
+      const saveSpots = spots;
+
+      setSpots((prev) =>
+          prev.filter((s) =>
+              s.spot.id !== spotId));
+
       try {
         await removeSpotFromInstructor(user.instructorId, spotId);
-
-        // Retirer localement (optimistic update)
-        setSpots((prev) => prev.filter((s) => s.spot.id !== spotId));
-
         return true;
       } catch (err: any) {
+        setSpots(saveSpots);
         console.error("Erreur retrait spot:", err);
         setError(
           err.response?.data?.message ||
@@ -134,7 +164,7 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
         setIsRemoving(false);
       }
     },
-    [user?.instructorId],
+    [user?.instructorId, spots  ],
   );
 
   /**

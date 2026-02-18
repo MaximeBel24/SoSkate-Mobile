@@ -25,7 +25,7 @@ import { getAllSpots } from "@/src/shared/services/spotService";
 interface AddSpotModalProps {
   visible: boolean;
   onClose: () => void;
-  onAddSpot: (spotId: number) => Promise<boolean>;
+  onAddSpot: (spotId: number, spot: SpotResponse) => Promise<boolean>;
   associatedSpotIds: number[];
   isAdding: boolean;
 }
@@ -89,8 +89,11 @@ const AddSpotModal: React.FC<AddSpotModalProps> = ({
   const handleConfirm = async () => {
     if (!selectedSpotId) return;
 
+    const selectedSpot = spots.find((s) => s.id === selectedSpotId);
+    if (!selectedSpot) return;
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const success = await onAddSpot(selectedSpotId);
+    const success = await onAddSpot(selectedSpotId, selectedSpot);
 
     if (success) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

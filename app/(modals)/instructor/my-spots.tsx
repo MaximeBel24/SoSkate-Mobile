@@ -24,6 +24,7 @@ import Typo from "@/src/shared/ui/typography/Typo";
 import { useInstructorSpots } from "@/src/features/instructor-spots/hooks/useInstructorSpots";
 import InstructorSpotCard from "@/src/features/instructor-spots/components/InstructorSpotCard";
 import AddSpotModal from "@/src/features/instructor-spots/components/AddSpotModal";
+import {SpotResponse} from "@/src/shared/types/spot.interface";
 
 export default function MySpotsScreen() {
   const { colors, isDark } = useTheme();
@@ -55,8 +56,8 @@ export default function MySpotsScreen() {
     setIsRefreshing(false);
   };
 
-  const handleAddSpot = async (spotId: number): Promise<boolean> => {
-    return await addSpot(spotId);
+  const handleAddSpot = async (spotId: number, spot: SpotResponse): Promise<boolean> => {
+    return await addSpot(spotId, spot);
   };
 
   const handleRemoveSpot = async (spotId: number): Promise<boolean> => {
