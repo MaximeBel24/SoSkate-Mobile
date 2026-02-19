@@ -18,6 +18,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Icons from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
 import { getAllSpots } from "@/src/shared/services/spotService";
@@ -60,7 +61,7 @@ const AddSpotModal: React.FC<AddSpotModalProps> = ({
       const data = await getAllSpots();
       setSpots(data);
     } catch (error) {
-      console.error("Erreur chargement spots:", error);
+      logger.error("Erreur chargement spots:", error);
     } finally {
       setIsLoading(false);
     }

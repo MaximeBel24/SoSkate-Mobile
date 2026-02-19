@@ -4,6 +4,7 @@
 // Hook pour gérer les spots d'enseignement d'un instructeur
 
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
+import { logger } from "@/src/shared/utils/logger";
 import { useState, useEffect, useCallback } from "react";
 import { InstructorSpotResponse } from "../types/instructor-spots.types";
 import {
@@ -63,7 +64,7 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
       const data = await getInstructorSpots(user.instructorId);
       setSpots(data);
     } catch (err) {
-      console.error("Erreur chargement spots instructeur:", err);
+      logger.error("Erreur chargement spots instructeur:", err);
       setError(
         getErrorMessage(err, "Impossible de charger vos spots d'enseignement"),
       );
@@ -122,7 +123,7 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
         } catch (err) {
           // 4. ROLLBACK
           setSpots(previousSpots);
-          console.error("Erreur ajout spot:", err);
+          logger.error("Erreur ajout spot:", err);
           setError(getErrorMessage(err, "Impossible d'ajouter ce spot"));
           return false;
         } finally {
@@ -154,7 +155,7 @@ export const useInstructorSpots = (): UseInstructorSpotsReturn => {
         return true;
       } catch (err) {
         setSpots(saveSpots);
-        console.error("Erreur retrait spot:", err);
+        logger.error("Erreur retrait spot:", err);
         setError(
           getErrorMessage(err, "Impossible de vous retirer de ce spot"),
         );

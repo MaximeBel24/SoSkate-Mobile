@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
+import { logger } from "@/src/shared/utils/logger";
 import {
   CourseFilter,
   getCourses,
@@ -96,7 +97,7 @@ export const useInstructorCourses = (): UseInstructorCoursesReturn => {
           isLoading: false,
           isRefreshing: false,
         }));
-        console.error(`[useInstructorCourses] fetch ${filter} error:`, err);
+        logger.error(`[useInstructorCourses] fetch ${filter} error:`, err);
       }
     },
     [instructorId],
@@ -114,7 +115,7 @@ export const useInstructorCourses = (): UseInstructorCoursesReturn => {
       const data = await getInstructorStats(instructorId);
       setStats(data);
     } catch (err: unknown) {
-      console.error("[useInstructorCourses] fetchStats error:", err);
+      logger.error("[useInstructorCourses] fetchStats error:", err);
       setStats(INITIAL_STATS);
     } finally {
       setIsLoadingStats(false);

@@ -4,6 +4,7 @@
 // Hook pour gérer les données du planning (disponibilités + bookings)
 
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
+import { logger } from "@/src/shared/utils/logger";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import {
@@ -100,7 +101,7 @@ export const usePlanningData = ({
 
       setBookings(filteredBookings);
     } catch (err) {
-      console.error("Erreur chargement planning:", err);
+      logger.error("Erreur chargement planning:", err);
       setError(
         getErrorMessage(err, "Impossible de charger votre planning"),
       );
@@ -141,7 +142,7 @@ export const usePlanningData = ({
 
         return true;
       } catch (err) {
-        console.error("Erreur création disponibilité:", err);
+        logger.error("Erreur création disponibilité:", err);
         setError(
           getErrorMessage(err, "Impossible de créer la disponibilité"),
         );
@@ -180,7 +181,7 @@ export const usePlanningData = ({
 
         return true;
       } catch (err) {
-        console.error("Erreur modification disponibilité:", err);
+        logger.error("Erreur modification disponibilité:", err);
         setError(
           getErrorMessage(err, "Impossible de modifier la disponibilité"),
         );
@@ -212,7 +213,7 @@ export const usePlanningData = ({
 
         return true;
       } catch (err) {
-        console.error("Erreur suppression disponibilité:", err);
+        logger.error("Erreur suppression disponibilité:", err);
         setError(
           getErrorMessage(err, "Impossible de supprimer la disponibilité"),
         );

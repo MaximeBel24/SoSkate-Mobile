@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Icons from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import Typo from "@/src/shared/ui/typography/Typo";
 import Card from "@/src/shared/ui/card/Card";
 import Badge from "@/src/shared/ui/badge/Badge";
@@ -89,7 +90,7 @@ export default function CourseDetailScreen() {
       const data = await instructorCoursesService.getCourseDetail(Number(id));
       setCourse(data);
     } catch (err: unknown) {
-      console.error("[CourseDetail] fetch error:", err);
+      logger.error("[CourseDetail] fetch error:", err);
       setError("Impossible de charger les détails du cours");
     } finally {
       setIsLoading(false);
@@ -155,7 +156,7 @@ export default function CourseDetailScreen() {
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch (err) {
-      console.error("[CourseDetail] cancel error:", err);
+      logger.error("[CourseDetail] cancel error:", err);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
         "Erreur",

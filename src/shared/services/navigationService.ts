@@ -1,5 +1,6 @@
 // services/navigationService.ts
 import { Alert, Linking, Platform } from "react-native";
+import { logger } from "@/src/shared/utils/logger";
 
 export type NavigationApp = "google-maps" | "apple-maps" | "waze";
 
@@ -120,7 +121,7 @@ const openNavigationApp = async (
       return false;
     }
   } catch (error) {
-    console.error(`Erreur lors de l'ouverture de ${app}:`, error);
+    logger.error(`Erreur lors de l'ouverture de ${app}:`, error);
     return false;
   }
 };

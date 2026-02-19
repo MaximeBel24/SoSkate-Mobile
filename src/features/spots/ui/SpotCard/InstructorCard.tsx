@@ -1,6 +1,7 @@
 import { spacingX } from "@/src/shared/constants/theme";
 import { getInstructorAvatar } from "@/src/shared/services/photoService";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import Avatar from "@/src/shared/ui/media/Avatar";
 import Typo from "@/src/shared/ui/typography/Typo";
@@ -45,7 +46,7 @@ const InstructorCard = ({
           setAvatarUri(avatar.url);
         }
       } catch (error) {
-        console.error("Error loading instructor avatar:", error);
+        logger.error("Error loading instructor avatar:", error);
       } finally {
         setIsLoadingAvatar(false);
       }

@@ -5,6 +5,7 @@
 
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { logger } from "@/src/shared/utils/logger";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import {
   SelectedImage,
@@ -121,7 +122,7 @@ const ProfileModal = () => {
           setAvatarUri(avatar.url);
         }
       } catch (error) {
-        console.error("Error loading avatar:", error);
+        logger.error("Error loading avatar:", error);
       } finally {
         setIsLoadingAvatar(false);
       }
@@ -158,7 +159,7 @@ const ProfileModal = () => {
         setInstagramHandle(instructorData.instagramHandle || "");
         setYoutubeChannel(instructorData.youtubeChannel || "");
       } catch (error) {
-        console.error("Error loading instructor profile:", error);
+        logger.error("Error loading instructor profile:", error);
       }
     };
 
@@ -176,11 +177,7 @@ const ProfileModal = () => {
         const entityType = isCustomer ? "CUSTOMER" : "INSTRUCTOR";
         const entityId = isCustomer ? user.customerId! : user.instructorId!;
 
-        console.log("📤 Uploading avatar...", {
-          entityType,
-          entityId,
-          fileName: image.name,
-        });
+        logger.dev("Uploading avatar...", { entityType, entityId, fileName: image.name });
 
         const result = await uploadAvatar({
           file: {
@@ -198,7 +195,7 @@ const ProfileModal = () => {
 
         Alert.alert("Succès", "Votre photo de profil a été mise à jour !");
       } catch (error) {
-        console.error("❌ Error uploading avatar:", error);
+        logger.error("Error uploading avatar:", error);
         Alert.alert(
           "Erreur",
           getErrorMessage(error, "Impossible de mettre à jour la photo"),
@@ -275,7 +272,7 @@ const ProfileModal = () => {
           birthDate: birthDate.toISOString().split("T")[0],
         };
 
-        console.log("📤 Customer payload:", payload);
+        logger.dev("Customer payload:", payload);
 
         const updatedCustomer = await updateCustomerProfile(
           user.customerId,
@@ -304,7 +301,7 @@ const ProfileModal = () => {
           youtubeChannel: youtubeChannel.trim() || null,
         };
 
-        console.log("📤 Instructor payload:", payload);
+        logger.dev("Instructor payload:", payload);
 
         await updateInstructorProfile(user.instructorId, payload);
       }
@@ -316,7 +313,7 @@ const ProfileModal = () => {
         },
       ]);
     } catch (error) {
-      console.error("❌ Erreur mise à jour profil:", error);
+      logger.error("Erreur mise à jour profil:", error);
       Alert.alert(
         "Erreur",
         getErrorMessage(error, "Une erreur est survenue lors de la mise à jour"),

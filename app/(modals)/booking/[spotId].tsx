@@ -43,6 +43,7 @@ import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { createBooking } from "@/src/shared/services/bookingService";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { TimeSlot } from "@/src/shared/services/availableSlotsService";
+import { logger } from "@/src/shared/utils/logger";
 
 export default function BookingScreen() {
   const { colors } = useTheme();
@@ -132,7 +133,7 @@ export default function BookingScreen() {
       );
       setAvailableSlots(slots);
     } catch (error) {
-      console.error("Erreur chargement créneaux:", error);
+      logger.error("Erreur chargement créneaux:", error);
       setAvailableSlots([]);
     } finally {
       setIsLoadingSlotsLocal(false);
@@ -227,7 +228,7 @@ export default function BookingScreen() {
         ],
       );
     } catch (error) {
-      console.error("Erreur création réservation:", error);
+      logger.error("Erreur création réservation:", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
       Alert.alert(

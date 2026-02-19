@@ -6,6 +6,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useState } from "react";
 import { Alert, Linking } from "react-native";
+import { logger } from "@/src/shared/utils/logger";
 
 // ============================================
 // TYPES
@@ -200,7 +201,7 @@ export function useImagePicker(
 
         return processResult(result);
       } catch (error) {
-        console.error("❌ Error picking image from gallery:", error);
+        logger.error("Error picking image from gallery:", error);
         Alert.alert("Erreur", "Impossible d'accéder à la galerie");
         return null;
       } finally {
@@ -228,7 +229,7 @@ export function useImagePicker(
 
       return processResult(result);
     } catch (error) {
-      console.error("❌ Error taking photo:", error);
+      logger.error("Error taking photo:", error);
       Alert.alert("Erreur", "Impossible d'accéder à la caméra");
       return null;
     } finally {

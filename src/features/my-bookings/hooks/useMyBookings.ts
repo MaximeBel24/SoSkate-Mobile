@@ -4,6 +4,7 @@
 // Hook pour gérer les réservations de l'utilisateur
 
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
+import { logger } from "@/src/shared/utils/logger";
 import { useState, useEffect, useCallback } from "react";
 import {
   MyBookingResponse,
@@ -66,7 +67,7 @@ export const useMyBookings = (): UseMyBookingsReturn => {
         const data = await getMyBookings(user.id);
         setBookings(data);
       } catch (err) {
-        console.error("Erreur chargement réservations:", err);
+        logger.error("Erreur chargement réservations:", err);
         setError(
           getErrorMessage(err, "Impossible de charger vos réservations"),
         );
@@ -108,7 +109,7 @@ export const useMyBookings = (): UseMyBookingsReturn => {
             } catch (err) {
                 // 4. ROLLBACK — l'API a échoué, on restaure l'état précédent
                 setBookings(previousBookings);
-                console.error("Erreur annulation:", err);
+                logger.error("Erreur annulation:", err);
                 setError(
                     getErrorMessage(err, "Impossible d'annuler la réservation"),
                 );
@@ -146,7 +147,7 @@ export const useMyBookings = (): UseMyBookingsReturn => {
         return true;
       } catch (err) {
           setBookings(saveBookings)
-        console.error("Erreur modification notes:", err);
+        logger.error("Erreur modification notes:", err);
         setError(
           getErrorMessage(err, "Impossible de modifier les notes"),
         );

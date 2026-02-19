@@ -3,6 +3,7 @@ import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { getInstructorById } from "@/src/shared/services/instructorService";
 import { getInstructorAvatar } from "@/src/shared/services/photoService";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import Avatar from "@/src/shared/ui/media/Avatar";
@@ -65,7 +66,7 @@ const InstructorDetailsModal = () => {
       const data = await getInstructorById(Number(id));
       setInstructor(data);
     } catch (err) {
-      console.error("Error loading instructor:", err);
+      logger.error("Error loading instructor:", err);
       setError(getErrorMessage(err, "Impossible de charger le profil"));
     } finally {
       setLoading(false);
@@ -82,7 +83,7 @@ const InstructorDetailsModal = () => {
         setAvatarUri(avatar.url);
       }
     } catch (err) {
-      console.error("Error loading avatar:", err);
+      logger.error("Error loading avatar:", err);
     } finally {
       setIsLoadingAvatar(false);
     }
@@ -110,7 +111,7 @@ const InstructorDetailsModal = () => {
 
   const handleBookLesson = () => {
     // TODO: Navigation vers la réservation
-    console.log("Book lesson with instructor:", instructor?.id);
+    logger.dev("Book lesson with instructor:", instructor?.id);
   };
 
   // === Nom complet ===

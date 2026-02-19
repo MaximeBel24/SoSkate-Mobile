@@ -20,6 +20,7 @@ import {
 } from "../../features/auth/types/auth.types";
 import { removeToken } from "@/src/shared/storage/tokenStorage";
 import { setLogoutCallback } from "@/src/api/axios/axiosConfig";
+import { logger } from "@/src/shared/utils/logger";
 
 // ============================================
 // STORAGE KEYS
@@ -91,12 +92,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedUser) {
         const parsedUser: StoredUser = JSON.parse(storedUser);
         setUser(parsedUser);
-        console.log("✅ Session restaurée pour:", parsedUser.email);
+        logger.dev("Session restaurée pour:", parsedUser.email);
       }
 
       setHasLoggedBefore(hasLogged === "true");
     } catch (error) {
-      console.error("❌ Erreur lors du chargement de la session:", error);
+      logger.error("Erreur lors du chargement de la session:", error);
       // En cas d'erreur, on reset tout
       await clearStorage();
     } finally {
@@ -135,14 +136,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(userData);
         setHasLoggedBefore(true);
 
-        console.log(
-          "✅ Connexion réussie:",
-          userData.email,
-          "| Rôle:",
-          userData.role,
-        );
+        logger.dev("Connexion réussie:", userData.email, "| Rôle:", userData.role);
       } catch (error) {
-        console.error("❌ Erreur lors de la sauvegarde de la session:", error);
+        logger.error("Erreur lors de la sauvegarde de la session:", error);
         throw error;
       }
     },
@@ -162,9 +158,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(null);
 
-      console.log("✅ Déconnexion réussie");
+      logger.dev("Déconnexion réussie");
     } catch (error) {
-      console.error("❌ Erreur lors de la déconnexion:", error);
+      logger.error("Erreur lors de la déconnexion:", error);
       throw error;
     }
   }, []);
@@ -182,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       setHasLoggedBefore(false);
     } catch (error) {
-      console.error("❌ Erreur lors du nettoyage du storage:", error);
+      logger.error("Erreur lors du nettoyage du storage:", error);
     }
   };
 

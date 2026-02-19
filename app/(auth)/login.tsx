@@ -8,6 +8,7 @@ import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
 import AuthLayout from "@/src/features/auth/components/AuthLayout";
 import SocialAuthButtons from "@/src/features/auth/components/SocialAuthButtons";
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
+import { logger } from "@/src/shared/utils/logger";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
@@ -56,13 +57,13 @@ const Login = () => {
       await authLogin(response);
 
       // 3. Log du rôle pour debug
-      console.log(`✅ Connexion réussie - Rôle: ${response.role}`);
+      logger.dev("Connexion réussie - Rôle:", response.role);
 
       // 4. Navigation vers l'écran principal
       // Le router remplace la stack pour éviter le retour arrière
       router.replace("/(tabs)");
     } catch (error) {
-      console.error("❌ Erreur de connexion:", error);
+      logger.error("Erreur de connexion:", error);
 
       Alert.alert(
         "Erreur de connexion",

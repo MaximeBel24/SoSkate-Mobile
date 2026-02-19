@@ -5,6 +5,7 @@
 
 import React from "react";
 import Badge from "@/src/shared/ui/badge/Badge";
+import { logger } from "@/src/shared/utils/logger";
 import { BookingStatus, CourseStatusBadgeProps } from "../types/course.types";
 
 // ============================================
@@ -65,7 +66,7 @@ const CourseStatusBadge: React.FC<CourseStatusBadgeProps> = ({
 
   // Debug: log unknown status in development
   if (__DEV__ && !STATUS_CONFIG[status]) {
-    console.warn(`[CourseStatusBadge] Unknown status: "${status}"`);
+    logger.warn(`[CourseStatusBadge] Unknown status: "${status}"`);
   }
 
   return (

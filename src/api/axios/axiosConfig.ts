@@ -1,5 +1,6 @@
 import { API_CONFIG } from "@/src/shared/constants/constants";
 import { getToken, removeToken } from "@/src/shared/storage/tokenStorage";
+import { logger } from "@/src/shared/utils/logger";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -30,7 +31,7 @@ apiClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération du token:", error);
+      logger.error("Erreur lors de la récupération du token:", error);
     }
     return config;
   },
@@ -62,11 +63,11 @@ apiClient.interceptors.response.use(
             logoutCallback();
           }
           // Vous pouvez naviguer vers l'écran de connexion ici
-          console.log("Session expirée, redirection vers login");
+          logger.dev("Session expirée, redirection vers login");
           break;
 
         case 403:
-          console.error("Accès refusé");
+          logger.error("Accès refusé");
           break;
 
         case 404:
@@ -76,23 +77,23 @@ apiClient.interceptors.response.use(
             error.config?.url?.includes(ep),
           );
           if (!isSilent) {
-            console.warn("Ressource non trouvée:", error.config?.url);
+            logger.warn("Ressource non trouvée:", error.config?.url);
           }
           break;
 
         case 500:
-          console.error("Erreur serveur");
+          logger.error("Erreur serveur");
           break;
 
         default:
-          console.error(`Erreur ${status}:`, data);
+          logger.error(`Erreur ${status}:`, data);
       }
     } else if (error.request) {
       // La requête a été faite mais pas de réponse
-      console.error("Pas de réponse du serveur:", error.message);
+      logger.error("Pas de réponse du serveur:", error.message);
     } else {
       // Erreur lors de la configuration de la requête
-      console.error("Erreur de configuration:", error.message);
+      logger.error("Erreur de configuration:", error.message);
     }
 
     return Promise.reject(error);

@@ -3,6 +3,7 @@
 // ============================================
 // Theme provider with auto mode, persistence, and smooth transitions
 
+import { logger } from "@/src/shared/utils/logger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
@@ -104,7 +105,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
           setThemeModeState(savedTheme as ThemeMode);
         }
       } catch (error) {
-        console.warn("Failed to load theme preference:", error);
+        logger.warn("Failed to load theme preference:", error);
       } finally {
         setIsThemeLoaded(true);
       }
@@ -159,7 +160,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
       setThemeModeState(mode);
     } catch (error) {
-      console.warn("Failed to save theme preference:", error);
+      logger.warn("Failed to save theme preference:", error);
       // Still update state even if persistence fails
       setThemeModeState(mode);
     }

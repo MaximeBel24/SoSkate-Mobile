@@ -26,10 +26,6 @@ interface UseWeekNavigationReturn {
 }
 
 export const useWeekNavigation = (): UseWeekNavigationReturn => {
-  // Dans useWeekNavigation.ts, au début du hook
-  console.log("Today:", new Date());
-  console.log("Monday:", getMonday(new Date()));
-
   // Initialiser au lundi de la semaine actuelle
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() =>
     getMonday(new Date()),

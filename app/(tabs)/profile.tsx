@@ -13,6 +13,7 @@ import {
   getInstructorAvatar,
 } from "@/src/shared/services/photoService";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import { SectionHeader } from "@/src/shared/ui/layout/SectionHeader";
 import Header from "@/src/shared/ui/typography/Header";
@@ -78,7 +79,7 @@ const Profile = () => {
         setAvatarUri(null);
       }
     } catch (error) {
-      console.error("Error loading avatar:", error);
+      logger.error("Error loading avatar:", error);
       setAvatarUri(null);
     } finally {
       setIsLoadingAvatar(false);
@@ -264,7 +265,7 @@ const Profile = () => {
       await logout();
       router.replace("/(auth)/welcome");
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
+      logger.error("Erreur lors de la déconnexion:", error);
       Alert.alert(
         "Erreur",
         "Impossible de se déconnecter. Veuillez réessayer.",

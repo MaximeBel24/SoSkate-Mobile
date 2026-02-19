@@ -7,6 +7,7 @@ import MapSearchBar from "@/src/features/map/ui/MapView/MapSearchBar";
 import SpotCard from "@/src/features/spots/ui/SpotCard/SpotCard";
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { getActiveSpots } from "@/src/shared/services/spotService";
+import { logger } from "@/src/shared/utils/logger";
 import { useTheme } from "@/src/shared/theme";
 import { getMapStyle } from "@/src/shared/theme/mapStyles";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
@@ -50,7 +51,7 @@ const MapScreen = () => {
       const data = await getActiveSpots();
       setSpots(data);
     } catch (err) {
-      console.error("Erreur lors du chargement des spots:", err);
+      logger.error("Erreur lors du chargement des spots:", err);
       setError(getErrorMessage(err, "Impossible de charger les spots"));
     } finally {
       setLoading(false);

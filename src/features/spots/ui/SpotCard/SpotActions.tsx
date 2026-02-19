@@ -1,6 +1,7 @@
 import { spacingY } from "@/src/shared/constants/theme";
 import { openNavigationMenu } from "@/src/shared/services/navigationService";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
@@ -46,7 +47,7 @@ const SpotActions = ({
         },
       );
     } catch (error) {
-      console.error("Erreur lors de l'ouverture de l'itinéraire:", error);
+      logger.error("Erreur lors de l'ouverture de l'itinéraire:", error);
       Alert.alert("Erreur", "Impossible d'ouvrir l'application de navigation.");
     }
   };

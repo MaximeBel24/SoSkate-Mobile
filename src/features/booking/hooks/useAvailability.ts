@@ -5,6 +5,7 @@
 // Utilise maintenant l'endpoint /available-slots du backend
 
 import { useState, useEffect, useCallback } from "react";
+import { logger } from "@/src/shared/utils/logger";
 
 import { DURATION_OPTIONS } from "../types/booking.types";
 import { AvailabilityResponse } from "@/src/shared/types/availability.interface";
@@ -87,7 +88,7 @@ export const useAvailability = ({
       });
       setAvailabilitiesByDate(byDate);
     } catch (err) {
-      console.error("Erreur chargement disponibilités:", err);
+      logger.error("Erreur chargement disponibilités:", err);
       setError("Impossible de charger les disponibilités");
     } finally {
       setIsLoading(false);
@@ -133,7 +134,7 @@ export const useAvailability = ({
         );
         return slots;
       } catch (err) {
-        console.error("Erreur chargement créneaux:", err);
+        logger.error("Erreur chargement créneaux:", err);
         setError("Impossible de charger les créneaux");
         return [];
       } finally {

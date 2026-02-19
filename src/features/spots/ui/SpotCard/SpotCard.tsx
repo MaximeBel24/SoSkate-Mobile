@@ -15,6 +15,7 @@ import {
   getInstructorsBySpot,
 } from "@/src/shared/services/instructorSpotsService";
 import { useTheme } from "@/src/shared/theme";
+import { logger } from "@/src/shared/utils/logger";
 import { InstructorResponse } from "@/src/shared/types/instructor.interface";
 import { Photo } from "@/src/shared/types/photo.interface";
 import { ServiceResponse } from "@/src/shared/types/service.interface";
@@ -116,7 +117,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       const isAssociated = instructorSpots.some((s) => s.spot.id === spot.id);
       setIsAssociatedToSpot(isAssociated);
     } catch (error) {
-      console.error("Erreur vérification association:", error);
+      logger.error("Erreur vérification association:", error);
       setIsAssociatedToSpot(false);
     } finally {
       setCheckingAssociation(false);
@@ -145,7 +146,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       setServices(data);
       setServicesLoaded(true);
     } catch (error) {
-      console.error("Erreur lors du chargement des services:", error);
+      logger.error("Erreur lors du chargement des services:", error);
       setServices([]);
     } finally {
       setLoadingServices(false);
@@ -163,7 +164,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       }));
       setPhotos(transformedPhotos);
     } catch (error) {
-      console.error("Error loading spot photos:", error);
+      logger.error("Error loading spot photos:", error);
       setPhotos([]);
     } finally {
       setLoadingPhotos(false);
@@ -177,7 +178,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       setInstructors(data);
       setInstructorsLoaded(true);
     } catch (err) {
-      console.error("Erreur chargement instructeurs:", err);
+      logger.error("Erreur chargement instructeurs:", err);
       setInstructors([]);
     } finally {
       setLoadingInstructors(false);
@@ -214,7 +215,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                 loadInstructors();
               }
             } catch (error) {
-              console.error("Erreur association:", error);
+              logger.error("Erreur association:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
                 "Erreur",
@@ -255,7 +256,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
                 loadInstructors();
               }
             } catch (error) {
-              console.error("Erreur retrait:", error);
+              logger.error("Erreur retrait:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
                 "Erreur",
@@ -308,7 +309,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
     const selectedService = services.find((s) => Number(s.id) === serviceId);
 
     if (!selectedInstructor || !selectedService) {
-      console.error("Instructeur ou service non trouvé", {
+      logger.error("Instructeur ou service non trouvé", {
         selectedInstructorId,
         serviceId,
         instructorFound: !!selectedInstructor,
