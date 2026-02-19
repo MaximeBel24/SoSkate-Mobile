@@ -93,12 +93,10 @@ export const usePlanningData = ({
       setAvailabilities(availabilitiesData);
 
       // Filtrer les bookings pour la période affichée
-      const filteredBookings = bookingsData.filter(
-        (booking: InstructorBookingResponse) => {
-          const bookingDate = booking.startTime.split("T")[0];
-          return bookingDate >= fromDate && bookingDate <= toDate;
-        },
-      );
+      const filteredBookings = bookingsData.filter((booking) => {
+        const bookingDate = booking.startTime.split("T")[0];
+        return bookingDate >= fromDate && bookingDate <= toDate;
+      });
 
       setBookings(filteredBookings);
     } catch (err) {

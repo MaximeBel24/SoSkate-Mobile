@@ -7,6 +7,7 @@ import {
   BookingResponse,
   CreateBookingRequest,
 } from "@/src/shared/types/booking.interface";
+import { InstructorBookingResponse } from "@/src/features/planning/types/planning.types";
 import apiClient from "@/src/api/axios/axiosConfig";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
@@ -34,9 +35,9 @@ export const createBooking = async (
  */
 export const getInstructorBookings = async (
   instructorId: number,
-): Promise<any[]> => {
+): Promise<InstructorBookingResponse[]> => {
   try {
-    const response = await apiClient.get<any[]>(
+    const response = await apiClient.get<InstructorBookingResponse[]>(
       `/instructors/${instructorId}/bookings`,
     );
     return response.data;
