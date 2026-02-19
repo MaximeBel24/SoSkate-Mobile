@@ -11,7 +11,6 @@ import {
   LoginRequest,
   UnifiedLoginResponse,
 } from "@/src/features/auth/types/auth.types";
-import { AxiosError } from "axios";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 import { saveToken } from "@/src/shared/storage/tokenStorage";
 
@@ -68,6 +67,7 @@ export const registerCustomer = async (
  *
  * @param email - Email à vérifier
  * @returns true si l'email existe déjà
+ * @throws ApiError si l'API est injoignable ou retourne une erreur
  */
 export const checkEmailExists = async (email: string): Promise<boolean> => {
   try {
@@ -77,9 +77,6 @@ export const checkEmailExists = async (email: string): Promise<boolean> => {
     });
     return data;
   } catch (err) {
-    // En cas d'erreur réseau, on considère que l'email n'existe pas
-    // pour ne pas bloquer l'utilisateur
-    console.error("Erreur vérification email:", (err as AxiosError).message);
-    return false;
+    return handleApiError(err, "Impossible de vérifier la disponibilité de l'email");
   }
 };
