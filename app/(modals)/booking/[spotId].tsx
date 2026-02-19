@@ -39,6 +39,7 @@ import {
   BookingParams,
   formatDuration,
 } from "@/src/features/booking/types/booking.types";
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { createBooking } from "@/src/shared/services/bookingService";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { TimeSlot } from "@/src/shared/services/availableSlotsService";
@@ -225,14 +226,14 @@ export default function BookingScreen() {
           },
         ],
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erreur création réservation:", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-      const message =
-        error.response?.data?.message ||
-        "Une erreur est survenue lors de la réservation";
-      Alert.alert("Erreur", message);
+      Alert.alert(
+        "Erreur",
+        getErrorMessage(error, "Une erreur est survenue lors de la réservation"),
+      );
     } finally {
       setIsSubmitting(false);
     }

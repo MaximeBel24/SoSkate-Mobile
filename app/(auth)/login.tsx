@@ -7,6 +7,7 @@ import AuthFooterLink from "@/src/features/auth/components/AuthFooterLink";
 import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
 import AuthLayout from "@/src/features/auth/components/AuthLayout";
 import SocialAuthButtons from "@/src/features/auth/components/SocialAuthButtons";
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
@@ -60,12 +61,12 @@ const Login = () => {
       // 4. Navigation vers l'écran principal
       // Le router remplace la stack pour éviter le retour arrière
       router.replace("/(tabs)");
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ Erreur de connexion:", error);
 
       Alert.alert(
         "Erreur de connexion",
-        error?.message || "Une erreur est survenue. Veuillez réessayer.",
+        getErrorMessage(error, "Une erreur est survenue. Veuillez réessayer."),
       );
     } finally {
       setIsLoading(false);

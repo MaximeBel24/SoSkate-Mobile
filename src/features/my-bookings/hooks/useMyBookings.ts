@@ -3,6 +3,7 @@
 // ============================================
 // Hook pour gérer les réservations de l'utilisateur
 
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { useState, useEffect, useCallback } from "react";
 import {
   MyBookingResponse,
@@ -64,11 +65,10 @@ export const useMyBookings = (): UseMyBookingsReturn => {
       try {
         const data = await getMyBookings(user.id);
         setBookings(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Erreur chargement réservations:", err);
         setError(
-          err.response?.data?.message ||
-            "Impossible de charger vos réservations",
+          getErrorMessage(err, "Impossible de charger vos réservations"),
         );
       } finally {
         setIsLoading(false);
@@ -105,12 +105,12 @@ export const useMyBookings = (): UseMyBookingsReturn => {
                 // 3. APPEL API — on envoie la requête au serveur
                 await cancelParticipation(user.id, participationId, reason);
                 return true;
-            } catch (err: any) {
+            } catch (err) {
                 // 4. ROLLBACK — l'API a échoué, on restaure l'état précédent
                 setBookings(previousBookings);
                 console.error("Erreur annulation:", err);
                 setError(
-                    err.response?.data?.message || "Impossible d'annuler la réservation",
+                    getErrorMessage(err, "Impossible d'annuler la réservation"),
                 );
                 return false;
             }
@@ -144,11 +144,11 @@ export const useMyBookings = (): UseMyBookingsReturn => {
       try {
         await updateBookingNotes(user.id, participationId, notes);
         return true;
-      } catch (err: any) {
+      } catch (err) {
           setBookings(saveBookings)
         console.error("Erreur modification notes:", err);
         setError(
-          err.response?.data?.message || "Impossible de modifier les notes",
+          getErrorMessage(err, "Impossible de modifier les notes"),
         );
         return false;
       } finally {

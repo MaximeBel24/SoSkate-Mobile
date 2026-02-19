@@ -3,6 +3,7 @@ import InstructorCard from "@/src/features/spots/ui/SpotCard/InstructorCard";
 import ServiceCard from "@/src/features/spots/ui/SpotCard/ServiceCard";
 import SpotActions from "@/src/features/spots/ui/SpotCard/SpotActions";
 import SpotInfo from "@/src/features/spots/ui/SpotCard/SpotInfo";
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { getSpotPhotos } from "@/src/shared/services/photoService";
@@ -212,13 +213,12 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
               if (isExpanded) {
                 loadInstructors();
               }
-            } catch (error: any) {
+            } catch (error) {
               console.error("Erreur association:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
                 "Erreur",
-                error.response?.data?.message ||
-                  "Impossible de vous associer à ce spot",
+                getErrorMessage(error, "Impossible de vous associer à ce spot"),
               );
             } finally {
               setLoadingAssociation(false);
@@ -254,13 +254,12 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
               if (isExpanded) {
                 loadInstructors();
               }
-            } catch (error: any) {
+            } catch (error) {
               console.error("Erreur retrait:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(
                 "Erreur",
-                error.response?.data?.message ||
-                  "Impossible de vous retirer de ce spot",
+                getErrorMessage(error, "Impossible de vous retirer de ce spot"),
               );
             } finally {
               setLoadingAssociation(false);

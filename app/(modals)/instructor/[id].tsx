@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { getInstructorById } from "@/src/shared/services/instructorService";
 import { getInstructorAvatar } from "@/src/shared/services/photoService";
@@ -63,9 +64,9 @@ const InstructorDetailsModal = () => {
       setError(null);
       const data = await getInstructorById(Number(id));
       setInstructor(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error loading instructor:", err);
-      setError(err?.message || "Impossible de charger le profil");
+      setError(getErrorMessage(err, "Impossible de charger le profil"));
     } finally {
       setLoading(false);
     }

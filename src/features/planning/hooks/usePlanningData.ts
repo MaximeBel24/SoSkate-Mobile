@@ -3,6 +3,7 @@
 // ============================================
 // Hook pour gérer les données du planning (disponibilités + bookings)
 
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import {
@@ -100,10 +101,10 @@ export const usePlanningData = ({
       );
 
       setBookings(filteredBookings);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Erreur chargement planning:", err);
       setError(
-        err.response?.data?.message || "Impossible de charger votre planning",
+        getErrorMessage(err, "Impossible de charger votre planning"),
       );
     } finally {
       setIsLoading(false);
@@ -141,10 +142,10 @@ export const usePlanningData = ({
         setAvailabilities((prev) => [...prev, newAvailability]);
 
         return true;
-      } catch (err: any) {
+      } catch (err) {
         console.error("Erreur création disponibilité:", err);
         setError(
-          err.response?.data?.message || "Impossible de créer la disponibilité",
+          getErrorMessage(err, "Impossible de créer la disponibilité"),
         );
         return false;
       } finally {
@@ -180,11 +181,10 @@ export const usePlanningData = ({
         );
 
         return true;
-      } catch (err: any) {
+      } catch (err) {
         console.error("Erreur modification disponibilité:", err);
         setError(
-          err.response?.data?.message ||
-            "Impossible de modifier la disponibilité",
+          getErrorMessage(err, "Impossible de modifier la disponibilité"),
         );
         return false;
       } finally {
@@ -213,11 +213,10 @@ export const usePlanningData = ({
         );
 
         return true;
-      } catch (err: any) {
+      } catch (err) {
         console.error("Erreur suppression disponibilité:", err);
         setError(
-          err.response?.data?.message ||
-            "Impossible de supprimer la disponibilité",
+          getErrorMessage(err, "Impossible de supprimer la disponibilité"),
         );
         return false;
       } finally {

@@ -3,6 +3,7 @@
 // ============================================
 // Modal d'édition du profil avec upload photo
 
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import {
@@ -196,11 +197,11 @@ const ProfileModal = () => {
         setAvatarUri(result.url);
 
         Alert.alert("Succès", "Votre photo de profil a été mise à jour !");
-      } catch (error: any) {
+      } catch (error) {
         console.error("❌ Error uploading avatar:", error);
         Alert.alert(
           "Erreur",
-          error?.message || "Impossible de mettre à jour la photo",
+          getErrorMessage(error, "Impossible de mettre à jour la photo"),
         );
       } finally {
         setIsUploadingPhoto(false);
@@ -314,11 +315,11 @@ const ProfileModal = () => {
           onPress: () => router.back(),
         },
       ]);
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ Erreur mise à jour profil:", error);
       Alert.alert(
         "Erreur",
-        error?.message || "Une erreur est survenue lors de la mise à jour",
+        getErrorMessage(error, "Une erreur est survenue lors de la mise à jour"),
       );
     } finally {
       setIsLoading(false);

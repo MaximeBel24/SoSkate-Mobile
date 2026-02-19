@@ -2,6 +2,7 @@ import AuthFooterLink from "@/src/features/auth/components/AuthFooterLink";
 import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
 import AuthLayout from "@/src/features/auth/components/AuthLayout";
 import PasswordRequirements from "@/src/features/auth/components/PasswordRequirements";
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { login, registerCustomer } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
@@ -91,10 +92,10 @@ const Register = () => {
       });
       await authLogin(response);
       router.replace("/(tabs)");
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert(
         "Erreur d'inscription",
-        error?.message || "Une erreur est survenue.",
+        getErrorMessage(error, "Une erreur est survenue."),
       );
     } finally {
       setIsLoading(false);
