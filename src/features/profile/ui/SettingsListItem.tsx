@@ -27,9 +27,7 @@ const SettingsListItem = ({
 }: SettingsListItemProps) => {
   const { colors, isDark } = useTheme();
 
-  const borderColor = isDark
-    ? "rgba(255, 255, 255, 0.08)"
-    : "rgba(0, 0, 0, 0.06)";
+  const borderColor = colors.background.elevated;
 
   const dangerBgColor = isDark
     ? "rgba(239, 68, 68, 0.05)"

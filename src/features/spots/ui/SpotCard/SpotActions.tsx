@@ -27,7 +27,7 @@ const SpotActions = ({
   onViewCourses,
   hasServices,
 }: SpotActionsProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const handleItinerary = async () => {
     if (!latitude || !longitude) {
@@ -102,9 +102,7 @@ const SpotActions = ({
         style={[
           styles.secondaryButton,
           {
-            backgroundColor: isDark
-              ? "rgba(255, 255, 255, 0.08)"
-              : "rgba(0, 0, 0, 0.05)",
+            backgroundColor: colors.background.elevated,
             borderColor: colors.border.default,
           },
         ]}

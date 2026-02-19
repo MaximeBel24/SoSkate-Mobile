@@ -44,7 +44,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
   value,
   highlight = false,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -52,9 +52,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
         styles.row,
         {
           backgroundColor: highlight
-            ? isDark
-              ? "rgba(255, 107, 53, 0.1)"
-              : "rgba(234, 88, 12, 0.08)"
+            ? colors.accent.tint
             : "transparent",
           borderRadius: highlight ? 12 : 0,
           paddingHorizontal: highlight ? 12 : 0,
@@ -87,7 +85,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
   notes,
   onNotesChange,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Formatage de la date
   const formatSelectedDate = (dateString: string): string => {
@@ -143,9 +141,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
         style={[
           styles.card,
           {
-            backgroundColor: isDark
-              ? "rgba(255,255,255,0.03)"
-              : "rgba(0,0,0,0.02)",
+            backgroundColor: colors.background.subtle,
             borderColor: colors.border.subtle,
           },
         ]}
@@ -289,9 +285,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
           style={[
             styles.notesInput,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.03)",
+              backgroundColor: colors.background.subtle,
               borderColor: colors.border.default,
               color: colors.text.primary,
             },

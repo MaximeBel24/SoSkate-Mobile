@@ -91,7 +91,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
       <Animated.View
         style={[
           styles.spotCard,
-          { backgroundColor: isDark ? "#161412" : "#ffffff" },
+          { backgroundColor: colors.background.primary },
           animatedCardStyle,
         ]}
       >

@@ -39,7 +39,7 @@ const SlotItem: React.FC<SlotItemProps> = ({
   onPress,
   index,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -69,9 +69,7 @@ const SlotItem: React.FC<SlotItemProps> = ({
         {
           backgroundColor: isSelected
             ? colors.accent.primary
-            : isDark
-              ? "rgba(255,255,255,0.05)"
-              : "rgba(0,0,0,0.03)",
+            : colors.background.subtle,
           borderColor: isSelected
             ? colors.accent.primary
             : colors.border.default,
@@ -125,7 +123,7 @@ const TimeSlotList: React.FC<TimeSlotListProps> = ({
   onSelectSlot,
   isLoading = false,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Skeleton loading
   if (isLoading) {
@@ -164,9 +162,7 @@ const TimeSlotList: React.FC<TimeSlotListProps> = ({
           style={[
             styles.emptyContainer,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.03)"
-                : "rgba(0,0,0,0.02)",
+              backgroundColor: colors.background.subtle,
               borderColor: colors.border.subtle,
             },
           ]}

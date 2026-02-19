@@ -27,7 +27,7 @@ const SpotDetailsHeader = ({
     <View
       style={[
         styles.container,
-        { backgroundColor: isDark ? "#161412" : "#ffffff" },
+        { backgroundColor: colors.background.primary },
       ]}
     >
       {/* Image avec gradient overlay */}
@@ -39,9 +39,7 @@ const SpotDetailsHeader = ({
             style={[
               styles.placeholderImage,
               {
-                backgroundColor: isDark
-                  ? "rgba(255, 255, 255, 0.05)"
-                  : "rgba(0, 0, 0, 0.03)",
+                backgroundColor: colors.background.subtle,
               },
             ]}
           >
@@ -71,12 +69,8 @@ const SpotDetailsHeader = ({
             style={[
               styles.badge,
               {
-                backgroundColor: isDark
-                  ? "rgba(255, 107, 53, 0.15)"
-                  : "rgba(234, 88, 12, 0.1)",
-                borderColor: isDark
-                  ? "rgba(255, 107, 53, 0.3)"
-                  : "rgba(234, 88, 12, 0.2)",
+                backgroundColor: colors.accent.tint,
+                borderColor: colors.accent.tintBorder,
               },
             ]}
           >

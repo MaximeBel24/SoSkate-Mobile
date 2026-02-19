@@ -14,7 +14,7 @@ const SocialAuthButtons = ({
   onGooglePress,
   onApplePress,
 }: SocialAuthButtonsProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
@@ -23,9 +23,7 @@ const SocialAuthButtons = ({
           style={[
             styles.socialButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
+              backgroundColor: colors.background.elevated,
               borderColor: colors.border.default,
             },
           ]}
@@ -47,9 +45,7 @@ const SocialAuthButtons = ({
           style={[
             styles.socialButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
+              backgroundColor: colors.background.elevated,
               borderColor: colors.border.default,
             },
           ]}

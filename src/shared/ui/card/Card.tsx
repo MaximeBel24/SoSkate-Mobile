@@ -96,9 +96,7 @@ const Card: React.FC<CardProps> = ({
     switch (variant) {
       case "elevated":
         return {
-          backgroundColor: isDark
-            ? "rgba(255,255,255,0.03)"
-            : colors.constant.white,
+          backgroundColor: colors.background.subtle,
           borderWidth: 1,
           borderColor: colors.border.subtle,
           shadowColor: colors.constant.black,

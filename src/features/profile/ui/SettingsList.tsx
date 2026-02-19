@@ -9,13 +9,11 @@ interface SettingsListProps {
 }
 
 const SettingsList = ({ children, animationDelay = 0 }: SettingsListProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const dynamicStyles = {
-    backgroundColor: isDark
-      ? "rgba(255, 255, 255, 0.05)"
-      : "rgba(0, 0, 0, 0.03)",
-    borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)",
+    backgroundColor: colors.background.subtle,
+    borderColor: colors.background.elevated,
   };
 
   const content = (

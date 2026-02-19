@@ -326,9 +326,7 @@ export default function PlanningScreen() {
           style={[
             styles.infoBar,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.03)"
-                : "rgba(0,0,0,0.02)",
+              backgroundColor: colors.background.subtle,
               paddingBottom: insets.bottom + 12,
               borderTopColor: colors.border.subtle,
             },

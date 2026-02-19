@@ -20,7 +20,7 @@ const SpotInfo = ({
   isIndoor,
   description,
 }: SpotInfoProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <>
@@ -56,9 +56,7 @@ const SpotInfo = ({
           style={[
             styles.tag,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.05)"
-                : "rgba(0, 0, 0, 0.03)",
+              backgroundColor: colors.background.subtle,
               borderColor: colors.border.default,
             },
           ]}

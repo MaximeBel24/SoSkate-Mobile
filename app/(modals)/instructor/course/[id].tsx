@@ -66,7 +66,7 @@ const canCancel = (startTime: string): boolean => {
 // COMPONENT
 // ============================================
 export default function CourseDetailScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -445,9 +445,7 @@ export default function CourseDetailScreen() {
           style={[
             styles.priceSection,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.03)"
-                : colors.background.surface,
+              backgroundColor: colors.background.subtle,
               borderColor: colors.border.subtle,
             },
           ]}

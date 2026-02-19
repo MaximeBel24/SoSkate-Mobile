@@ -681,7 +681,7 @@ const ProfileModal = () => {
         <LinearGradient
           colors={[
             "transparent",
-            isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.6)",
+            colors.background.scrim,
           ]}
           style={[styles.bottomGradient, { height: insets.bottom + 50 }]}
           pointerEvents="none"

@@ -29,7 +29,7 @@ import BookingDetailModal from "@/src/features/my-bookings/components/BookingDet
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 
 export default function MyBookingsScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -206,9 +206,7 @@ export default function MyBookingsScreen() {
               style={[
                 styles.emptyIconContainer,
                 {
-                  backgroundColor: isDark
-                    ? "rgba(255,255,255,0.05)"
-                    : "rgba(0,0,0,0.03)",
+                  backgroundColor: colors.background.subtle,
                   borderColor: colors.border.default,
                 },
               ]}

@@ -32,7 +32,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // ============================================
 const InstructorDetailsModal = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -338,9 +338,7 @@ const InstructorDetailsModal = () => {
                     style={[
                       styles.socialButton,
                       {
-                        backgroundColor: isDark
-                          ? "rgba(255, 255, 255, 0.05)"
-                          : "rgba(0, 0, 0, 0.03)",
+                        backgroundColor: colors.background.subtle,
                         borderColor: colors.border.default,
                       },
                     ]}
@@ -366,9 +364,7 @@ const InstructorDetailsModal = () => {
                     style={[
                       styles.socialButton,
                       {
-                        backgroundColor: isDark
-                          ? "rgba(255, 255, 255, 0.05)"
-                          : "rgba(0, 0, 0, 0.03)",
+                        backgroundColor: colors.background.subtle,
                         borderColor: colors.border.default,
                       },
                     ]}

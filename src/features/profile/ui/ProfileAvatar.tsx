@@ -22,7 +22,7 @@ const ProfileAvatar = ({
   helpText = "Appuyez pour changer votre photo",
   animationDelay = 200,
 }: ProfileAvatarProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <Animated.View
@@ -34,12 +34,8 @@ const ProfileAvatar = ({
           style={[
             styles.avatarBorder,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.1)"
-                : "rgba(0, 0, 0, 0.05)",
-              borderColor: isDark
-                ? "rgba(255, 255, 255, 0.2)"
-                : "rgba(0, 0, 0, 0.1)",
+              backgroundColor: colors.background.elevated,
+              borderColor: colors.border.default,
             },
           ]}
         >

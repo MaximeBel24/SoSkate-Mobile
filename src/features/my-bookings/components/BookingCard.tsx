@@ -32,7 +32,7 @@ interface BookingCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const BookingCard: React.FC<BookingCardProps> = ({ booking, onPress }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const isPast = isBookingPast(booking);
   const isCancelled = booking.participantStatus === "CANCELLED";
@@ -72,9 +72,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, onPress }) => {
       style={[
         styles.card,
         {
-          backgroundColor: isDark
-            ? "rgba(255,255,255,0.03)"
-            : colors.constant.white,
+          backgroundColor: colors.background.subtle,
           borderColor: colors.border.subtle,
           opacity: isPast || isCancelled ? 0.6 : 1,
         },

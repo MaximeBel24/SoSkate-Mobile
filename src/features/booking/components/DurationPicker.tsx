@@ -42,7 +42,7 @@ const DurationChip: React.FC<DurationChipProps> = ({
   onPress,
   pricePreview,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -69,12 +69,8 @@ const DurationChip: React.FC<DurationChipProps> = ({
   const backgroundColor = isSelected
     ? colors.accent.primary
     : isDisabled
-      ? isDark
-        ? "rgba(255,255,255,0.03)"
-        : "rgba(0,0,0,0.02)"
-      : isDark
-        ? "rgba(255,255,255,0.08)"
-        : "rgba(0,0,0,0.04)";
+      ? colors.background.subtle
+      : colors.background.elevated;
 
   const borderColor = isSelected
     ? colors.accent.primary

@@ -5,7 +5,7 @@ import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 const LoadingState = () => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View style={styles.centerContent}>
@@ -13,9 +13,7 @@ const LoadingState = () => {
         style={[
           styles.loadingContainer,
           {
-            backgroundColor: isDark
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.03)",
+            backgroundColor: colors.background.subtle,
             borderColor: colors.border.default,
           },
         ]}

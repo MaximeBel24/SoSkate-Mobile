@@ -27,7 +27,7 @@ import AddSpotModal from "@/src/features/instructor-spots/components/AddSpotModa
 import {SpotResponse} from "@/src/shared/types/spot.interface";
 
 export default function MySpotsScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -149,9 +149,7 @@ export default function MySpotsScreen() {
             style={[
               styles.emptyIconContainer,
               {
-                backgroundColor: isDark
-                  ? "rgba(255,255,255,0.05)"
-                  : "rgba(0,0,0,0.03)",
+                backgroundColor: colors.background.subtle,
                 borderColor: colors.border.default,
               },
             ]}

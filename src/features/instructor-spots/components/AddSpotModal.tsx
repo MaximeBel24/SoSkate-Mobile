@@ -124,12 +124,8 @@ const AddSpotModal: React.FC<AddSpotModalProps> = ({
             styles.spotItem,
             {
               backgroundColor: isSelected
-                ? isDark
-                  ? "rgba(255, 107, 53, 0.15)"
-                  : "rgba(234, 88, 12, 0.1)"
-                : isDark
-                  ? "rgba(255,255,255,0.03)"
-                  : "rgba(0,0,0,0.02)",
+                ? colors.accent.tint
+                : colors.background.subtle,
               borderColor: isSelected
                 ? colors.accent.primary
                 : colors.border.subtle,
@@ -142,9 +138,7 @@ const AddSpotModal: React.FC<AddSpotModalProps> = ({
               {
                 backgroundColor: isSelected
                   ? colors.accent.primary
-                  : isDark
-                    ? "rgba(255,255,255,0.1)"
-                    : "rgba(0,0,0,0.05)",
+                  : colors.background.elevated,
               },
             ]}
           >

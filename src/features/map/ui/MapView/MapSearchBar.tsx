@@ -122,9 +122,7 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
         style={[
           styles.resultIconContainer,
           {
-            backgroundColor: isDark
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.03)",
+            backgroundColor: colors.background.subtle,
             borderColor: colors.border.default,
           },
         ]}
@@ -227,9 +225,7 @@ const MapSearchBar = ({ spots, onSpotSelect, onClose }: MapSearchBarProps) => {
             style={[
               styles.closeButton,
               {
-                backgroundColor: isDark
-                  ? "rgba(255, 255, 255, 0.1)"
-                  : "rgba(0, 0, 0, 0.05)",
+                backgroundColor: colors.background.elevated,
               },
             ]}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

@@ -11,7 +11,7 @@ interface InfoBoxProps {
 }
 
 const InfoBox = ({ message, variant = "info" }: InfoBoxProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const iconColor =
     variant === "warning"
@@ -25,9 +25,7 @@ const InfoBox = ({ message, variant = "info" }: InfoBoxProps) => {
       style={[
         styles.container,
         {
-          backgroundColor: isDark
-            ? "rgba(255, 255, 255, 0.03)"
-            : "rgba(0, 0, 0, 0.02)",
+          backgroundColor: colors.background.subtle,
           borderColor: colors.border.subtle,
         },
       ]}

@@ -32,7 +32,7 @@ const DayColumn: React.FC<DayColumnProps> = ({
   onAvailabilityPress,
   onEmptySlotPress,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Calculer la hauteur totale
   const totalHours = PLANNING_END_HOUR - PLANNING_START_HOUR;
@@ -79,9 +79,7 @@ const DayColumn: React.FC<DayColumnProps> = ({
           {
             backgroundColor: day.isToday
               ? colors.accent.primary
-              : isDark
-                ? "rgba(255,255,255,0.03)"
-                : "rgba(0,0,0,0.02)",
+              : colors.background.subtle,
             borderBottomColor: colors.border.subtle,
           },
         ]}

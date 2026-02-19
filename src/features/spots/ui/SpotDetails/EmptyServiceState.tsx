@@ -10,7 +10,7 @@ type EmptyServiceStateProps = {
 };
 
 const EmptyServiceState = ({ onBackToMap }: EmptyServiceStateProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
@@ -19,9 +19,7 @@ const EmptyServiceState = ({ onBackToMap }: EmptyServiceStateProps) => {
         style={[
           styles.iconContainer,
           {
-            backgroundColor: isDark
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.03)",
+            backgroundColor: colors.background.subtle,
             borderColor: colors.border.default,
           },
         ]}
@@ -50,12 +48,8 @@ const EmptyServiceState = ({ onBackToMap }: EmptyServiceStateProps) => {
         style={[
           styles.button,
           {
-            backgroundColor: isDark
-              ? "rgba(255, 107, 53, 0.15)"
-              : "rgba(234, 88, 12, 0.1)",
-            borderColor: isDark
-              ? "rgba(255, 107, 53, 0.3)"
-              : "rgba(234, 88, 12, 0.2)",
+            backgroundColor: colors.accent.tint,
+            borderColor: colors.accent.tintBorder,
           },
         ]}
         onPress={onBackToMap}

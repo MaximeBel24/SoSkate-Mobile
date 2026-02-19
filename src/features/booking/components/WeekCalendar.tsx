@@ -140,7 +140,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
   hasAvailability = () => true,
   minDate,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Date d'aujourd'hui (locale)
   const today = useMemo(() => getTodayLocal(), []);
@@ -220,9 +220,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
           style={[
             styles.navButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.03)",
+              backgroundColor: colors.background.subtle,
               opacity: canGoPrevious ? 1 : 0.3,
             },
           ]}
@@ -243,9 +241,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
           style={[
             styles.navButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.05)"
-                : "rgba(0,0,0,0.03)",
+              backgroundColor: colors.background.subtle,
             },
           ]}
         >
@@ -279,9 +275,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
                 },
                 !isSelected &&
                   !isDisabled && {
-                    backgroundColor: isDark
-                      ? "rgba(255,255,255,0.05)"
-                      : "rgba(0,0,0,0.03)",
+                    backgroundColor: colors.background.subtle,
                   },
                 isDisabled && {
                   opacity: 0.4,

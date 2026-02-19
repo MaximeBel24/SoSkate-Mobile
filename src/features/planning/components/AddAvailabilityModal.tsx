@@ -90,7 +90,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
   existingAvailability,
   isLoading,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const [date, setDate] = useState<string>("");
@@ -313,9 +313,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
                 style={[
                   styles.dateDisplay,
                   {
-                    backgroundColor: isDark
-                      ? "rgba(255,255,255,0.05)"
-                      : "rgba(0,0,0,0.03)",
+                    backgroundColor: colors.background.subtle,
                     borderColor: colors.border.default,
                   },
                 ]}
@@ -345,9 +343,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
                         backgroundColor:
                           date === option.date
                             ? colors.accent.primary
-                            : isDark
-                              ? "rgba(255,255,255,0.05)"
-                              : "rgba(0,0,0,0.03)",
+                            : colors.background.subtle,
                         borderColor:
                           date === option.date
                             ? colors.accent.primary
@@ -410,9 +406,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
                       backgroundColor:
                         startTime === time
                           ? colors.accent.primary
-                          : isDark
-                            ? "rgba(255,255,255,0.05)"
-                            : "rgba(0,0,0,0.03)",
+                          : colors.background.subtle,
                       borderColor:
                         startTime === time
                           ? colors.accent.primary
@@ -466,9 +460,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
                       backgroundColor:
                         endTime === time
                           ? colors.accent.primary
-                          : isDark
-                            ? "rgba(255,255,255,0.05)"
-                            : "rgba(0,0,0,0.03)",
+                          : colors.background.subtle,
                       borderColor:
                         endTime === time
                           ? colors.accent.primary

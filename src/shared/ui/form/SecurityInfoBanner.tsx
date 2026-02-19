@@ -12,16 +12,14 @@ interface SecurityInfoBannerProps {
 export const SecurityInfoBanner = ({
   message = "Vos données sont sécurisées et cryptées",
 }: SecurityInfoBannerProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: isDark
-            ? "rgba(255, 255, 255, 0.05)"
-            : "rgba(0, 0, 0, 0.03)",
+          backgroundColor: colors.background.subtle,
           borderColor: colors.border.subtle,
         },
       ]}

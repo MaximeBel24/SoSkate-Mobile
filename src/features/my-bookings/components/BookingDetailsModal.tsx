@@ -54,16 +54,14 @@ const DetailRow: React.FC<DetailRowProps> = ({
   value,
   highlight = false,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
       style={[
         styles.detailRow,
         highlight && {
-          backgroundColor: isDark
-            ? "rgba(255, 107, 53, 0.1)"
-            : "rgba(234, 88, 12, 0.08)",
+          backgroundColor: colors.accent.tint,
           borderRadius: 12,
           padding: 12,
           marginHorizontal: -12,
@@ -97,7 +95,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   isCancelling,
   isUpdatingNotes,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [showEditNotes, setShowEditNotes] = useState(false);
 
@@ -218,9 +216,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
               style={[
                 styles.detailsCard,
                 {
-                  backgroundColor: isDark
-                    ? "rgba(255,255,255,0.03)"
-                    : "rgba(0,0,0,0.02)",
+                  backgroundColor: colors.background.subtle,
                   borderColor: colors.border.subtle,
                 },
               ]}
@@ -387,9 +383,7 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
                 style={[
                   styles.notesContent,
                   {
-                    backgroundColor: isDark
-                      ? "rgba(255,255,255,0.03)"
-                      : "rgba(0,0,0,0.02)",
+                    backgroundColor: colors.background.subtle,
                     borderColor: colors.border.subtle,
                   },
                 ]}

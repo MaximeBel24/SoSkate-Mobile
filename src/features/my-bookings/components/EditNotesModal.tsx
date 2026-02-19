@@ -37,7 +37,7 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
   onSave,
   isLoading,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [notes, setNotes] = useState(currentNotes || "");
 
@@ -132,9 +132,7 @@ const EditNotesModal: React.FC<EditNotesModalProps> = ({
               style={[
                 styles.textInput,
                 {
-                  backgroundColor: isDark
-                    ? "rgba(255,255,255,0.05)"
-                    : "rgba(0,0,0,0.03)",
+                  backgroundColor: colors.background.subtle,
                   borderColor: colors.border.default,
                   color: colors.text.primary,
                 },

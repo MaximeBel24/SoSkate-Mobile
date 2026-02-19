@@ -18,11 +18,14 @@ export type SemanticColors = {
     secondary: string;
     surface: string;
     surfaceHover: string;
+    subtle: string;
+    elevated: string;
     row: string;
     rowAlt: string;
     input: string;
     inputFocus: string;
     overlay: string;
+    scrim: string;
   };
 
   // Text
@@ -46,6 +49,8 @@ export type SemanticColors = {
     primaryLight: string;
     primaryDark: string;
     secondary: string;
+    tint: string;
+    tintBorder: string;
   };
 
   // Semantic - States
@@ -131,11 +136,14 @@ export const darkColors: SemanticColors = {
     secondary: "rgba(44, 58, 71, 0.9)",
     surface: "rgba(28, 25, 23, 0.95)",
     surfaceHover: "rgba(44, 58, 71, 0.8)",
+    subtle: "rgba(255, 255, 255, 0.05)",
+    elevated: "rgba(255, 255, 255, 0.08)",
     row: "rgba(28, 25, 23, 0.6)",
     rowAlt: "transparent",
     input: "rgba(28, 25, 23, 0.9)",
     inputFocus: "rgba(28, 25, 23, 1)",
     overlay: "rgba(0, 0, 0, 0.5)",
+    scrim: "rgba(0, 0, 0, 0.3)",
   },
 
   text: {
@@ -156,6 +164,8 @@ export const darkColors: SemanticColors = {
     primaryLight: "#FF8C42",
     primaryDark: "#D44A1C",
     secondary: "#FFD24C",
+    tint: "rgba(255, 107, 53, 0.15)",
+    tintBorder: "rgba(255, 107, 53, 0.3)",
   },
 
   semantic: {
@@ -234,11 +244,14 @@ export const lightColors: SemanticColors = {
     secondary: "#f8fafc",
     surface: "#ffffff",
     surfaceHover: "#f1f5f9",
+    subtle: "rgba(0, 0, 0, 0.03)",
+    elevated: "rgba(0, 0, 0, 0.05)",
     row: "#f8fafc",
     rowAlt: "#ffffff",
     input: "#ffffff",
     inputFocus: "#ffffff",
     overlay: "rgba(0, 0, 0, 0.3)",
+    scrim: "rgba(255, 255, 255, 0.6)",
   },
 
   text: {
@@ -259,6 +272,8 @@ export const lightColors: SemanticColors = {
     primaryLight: "#f97316",
     primaryDark: "#c2410c",
     secondary: "#eab308",
+    tint: "rgba(234, 88, 12, 0.1)",
+    tintBorder: "rgba(234, 88, 12, 0.2)",
   },
 
   semantic: {

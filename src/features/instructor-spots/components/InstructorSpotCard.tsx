@@ -32,7 +32,7 @@ const InstructorSpotCard: React.FC<InstructorSpotCardProps> = ({
   isRemoving,
   animationDelay = 0,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -92,9 +92,7 @@ const InstructorSpotCard: React.FC<InstructorSpotCardProps> = ({
         style={[
           styles.card,
           {
-            backgroundColor: isDark
-              ? "rgba(255,255,255,0.03)"
-              : colors.constant.white,
+            backgroundColor: colors.background.subtle,
             borderColor: colors.border.subtle,
           },
           animatedStyle,

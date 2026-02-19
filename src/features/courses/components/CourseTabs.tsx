@@ -32,7 +32,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
   onTabChange,
   upcomingCount,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const handleTabPress = (tab: CourseTab) => {
     if (tab !== activeTab) {
@@ -46,9 +46,7 @@ const CourseTabs: React.FC<CourseTabsProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: isDark
-            ? "rgba(255,255,255,0.05)"
-            : colors.background.surface,
+          backgroundColor: colors.background.subtle,
           borderColor: colors.border.subtle,
         },
       ]}

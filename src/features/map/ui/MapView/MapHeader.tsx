@@ -34,9 +34,7 @@ const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
             style={[
               styles.statsCard,
               {
-                backgroundColor: isDark
-                  ? "rgba(255, 255, 255, 0.1)"
-                  : "rgba(0, 0, 0, 0.05)",
+                backgroundColor: colors.background.elevated,
                 borderColor: colors.border.default,
               },
             ]}
@@ -58,9 +56,7 @@ const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
             style={[
               styles.searchButton,
               {
-                backgroundColor: isDark
-                  ? "rgba(255, 255, 255, 0.1)"
-                  : "rgba(0, 0, 0, 0.05)",
+                backgroundColor: colors.background.elevated,
                 borderColor: colors.border.default,
               },
             ]}
