@@ -2,10 +2,12 @@ import AuthFooterLink from "@/src/features/auth/components/AuthFooterLink";
 import AuthFormCard from "@/src/features/auth/components/AuthFormCard";
 import AuthLayout from "@/src/features/auth/components/AuthLayout";
 import PasswordRequirements from "@/src/features/auth/components/PasswordRequirements";
-import { registerCustomer } from "@/src/shared/services/authService";
+import { useAuth } from "@/src/shared/contexts/AuthContext";
+import { login, registerCustomer } from "@/src/shared/services/authService";
 import { useTheme } from "@/src/shared/theme";
 import { CustomerRegisterRequest } from "@/src/shared/types/auth.interface";
 import Button from "@/src/shared/ui/button/Button";
+import DatePickerInput from "@/src/shared/ui/form/DatePickerInput";
 import FormInputGroup from "@/src/shared/ui/form/FormInputGroup";
 import { SecurityInfoBanner } from "@/src/shared/ui/form/SecurityInfoBanner";
 import Input from "@/src/shared/ui/typography/Input";
@@ -18,12 +20,14 @@ import { Alert } from "react-native";
 
 const Register = () => {
   const { colors } = useTheme();
+  const { login: authLogin } = useAuth();
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const passwordConfirmRef = useRef("");
   const firstnameRef = useRef("");
   const lastnameRef = useRef("");
 
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -39,6 +43,7 @@ const Register = () => {
     emailRef.current &&
     firstnameRef.current &&
     lastnameRef.current &&
+    birthDate !== null &&
     isPasswordValid &&
     password === passwordConfirm &&
     password.length > 0;
@@ -48,7 +53,8 @@ const Register = () => {
       !emailRef.current ||
       !passwordRef.current ||
       !firstnameRef.current ||
-      !lastnameRef.current
+      !lastnameRef.current ||
+      !birthDate
     ) {
       Alert.alert("Inscription", "Veuillez remplir tous les champs");
       return;
@@ -68,18 +74,23 @@ const Register = () => {
     }
 
     const payload: CustomerRegisterRequest = {
-      firstname: firstnameRef.current,
-      lastname: lastnameRef.current,
+      firstName: firstnameRef.current,
+      lastName: lastnameRef.current,
       email: emailRef.current,
       password: passwordRef.current,
-      birthDate: "1986-02-01",
-      phone: "+33678534661",
+      birthDate: birthDate.toISOString().split("T")[0],
     };
 
     try {
       setIsLoading(true);
       await registerCustomer(payload);
-      router.push("/(auth)/login");
+
+      const response = await login({
+        email: payload.email,
+        password: payload.password,
+      });
+      await authLogin(response);
+      router.replace("/(tabs)");
     } catch (error: any) {
       Alert.alert(
         "Erreur d'inscription",
@@ -131,11 +142,19 @@ const Register = () => {
               />
             }
           />
+          <DatePickerInput
+            value={birthDate}
+            onChange={setBirthDate}
+            placeholder="Date de naissance"
+            maximumDate={new Date()}
+            minimumDate={new Date(1940, 0, 1)}
+          />
         </FormInputGroup>
 
         <FormInputGroup label="IDENTIFIANTS DE CONNEXION">
           <Input
             placeholder="Email"
+            autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
             onChangeText={(value) => (emailRef.current = value)}
@@ -149,6 +168,7 @@ const Register = () => {
           />
           <Input
             placeholder="Mot de passe"
+            autoCapitalize="none"
             secureTextEntry
             onChangeText={(value) => {
               passwordRef.current = value;
@@ -170,6 +190,7 @@ const Register = () => {
 
           <Input
             placeholder="Confirmer le mot de passe"
+            autoCapitalize="none"
             secureTextEntry
             onChangeText={(value) => {
               passwordConfirmRef.current = value;

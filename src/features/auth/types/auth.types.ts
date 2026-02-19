@@ -22,8 +22,8 @@ export interface LoginRequest {
 export interface CustomerRegisterRequest {
   email: string;
   password: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
   birthDate?: string;
 }

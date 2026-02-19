@@ -1,4 +1,4 @@
-import { spacingX, spacingY } from "@/src/shared/constants/theme";
+import { radius, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -7,10 +7,11 @@ import React, { useState } from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface DatePickerInputProps {
-  value: Date;
+  value: Date | null;
   onChange: (date: Date) => void;
   minimumDate?: Date;
   maximumDate?: Date;
+  placeholder?: string;
   formatDate?: (date: Date) => string;
 }
 
@@ -19,6 +20,7 @@ const DatePickerInput = ({
   onChange,
   minimumDate = new Date(1940, 0, 1),
   maximumDate = new Date(),
+  placeholder,
   formatDate = (date) =>
     date.toLocaleDateString("fr-FR", {
       day: "2-digit",
@@ -57,8 +59,12 @@ const DatePickerInput = ({
           color={colors.text.muted}
           weight="duotone"
         />
-        <Typo size={16} color={colors.text.primary} style={{ flex: 1 }}>
-          {formatDate(value)}
+        <Typo
+          size={16}
+          color={value ? colors.text.primary : colors.text.muted}
+          style={{ flex: 1 }}
+        >
+          {value ? formatDate(value) : placeholder}
         </Typo>
         <Icons.CaretDownIcon
           size={20}
@@ -69,7 +75,7 @@ const DatePickerInput = ({
 
       {showPicker && (
         <DateTimePicker
-          value={value}
+          value={value ?? new Date()}
           mode="date"
           display={Platform.OS === "ios" ? "spinner" : "default"}
           onChange={handleChange}
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     gap: spacingX._12,
     paddingHorizontal: spacingX._16,
     paddingVertical: spacingY._14,
-    borderRadius: 12,
+    borderRadius: radius.full,
     borderWidth: 1,
   },
 });
