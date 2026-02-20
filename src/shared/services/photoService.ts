@@ -5,7 +5,7 @@
 
 import { ApiError } from "@/src/api/axios/apiError";
 import apiClient from "@/src/api/axios/axiosConfig";
-import { API_CONFIG, ENDPOINTS } from "@/src/shared/constants/constants";
+import { ENDPOINTS } from "@/src/shared/constants/constants";
 import { PhotoResponse } from "@/src/shared/types/photo.interface";
 import { AxiosError } from "axios";
 import { handleApiError } from "@/src/api/axios/handleApiError";
@@ -48,7 +48,7 @@ export const uploadAvatar = async (
   params: UploadAvatarParams,
 ): Promise<AvatarResponse> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}`;
+    const endpoint = ENDPOINTS.PHOTOS;
 
     const formData = new FormData();
 
@@ -83,7 +83,7 @@ export const getCustomerAvatar = async (
   customerId: number,
 ): Promise<AvatarResponse | null> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/customers/${customerId}/avatar`;
+    const endpoint = `${ENDPOINTS.PHOTOS}/customers/${customerId}/avatar`;
     const { data } = await apiClient.get<AvatarResponse>(endpoint);
     return data;
   } catch (err) {
@@ -106,7 +106,7 @@ export const getInstructorAvatar = async (
   instructorId: number,
 ): Promise<AvatarResponse | null> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/instructors/${instructorId}/avatar`;
+    const endpoint = `${ENDPOINTS.PHOTOS}/instructors/${instructorId}/avatar`;
     const { data } = await apiClient.get<AvatarResponse>(endpoint);
     return data;
   } catch (err) {
@@ -133,7 +133,7 @@ export const getSpotPhotos = async (
   spotId: number,
 ): Promise<PhotoResponse[]> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.PHOTOS}/spots/${spotId}`;
+    const endpoint = `${ENDPOINTS.PHOTOS}/spots/${spotId}`;
     const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
 
     if (!Array.isArray(data)) {

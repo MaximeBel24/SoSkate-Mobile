@@ -8,6 +8,7 @@ import {
   CreateBookingRequest,
 } from "@/src/shared/types/booking.interface";
 import { InstructorBookingResponse } from "@/src/features/planning/types/planning.types";
+import { ApiError } from "@/src/api/axios/apiError";
 import apiClient from "@/src/api/axios/axiosConfig";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
@@ -40,6 +41,9 @@ export const getInstructorBookings = async (
     const response = await apiClient.get<InstructorBookingResponse[]>(
       `/instructors/${instructorId}/bookings`,
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(

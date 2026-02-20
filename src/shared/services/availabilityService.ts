@@ -4,6 +4,7 @@
 // Appels API pour les disponibilités des instructeurs
 
 import { AvailabilityResponse } from "@/src/shared/types/availability.interface";
+import { ApiError } from "@/src/api/axios/apiError";
 import apiClient from "@/src/api/axios/axiosConfig";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
@@ -17,6 +18,9 @@ export const getInstructorAvailabilities = async (
     const response = await apiClient.get<AvailabilityResponse[]>(
       `/instructors/${instructorId}/availabilities`,
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(
@@ -42,6 +46,9 @@ export const getAvailabilitiesWithFilters = async (
         params: { from, to },
       },
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(

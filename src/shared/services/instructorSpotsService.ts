@@ -30,6 +30,9 @@ export const getInstructorSpots = async (
     const response = await apiClient.get<InstructorSpotResponse[]>(
       `/instructors/${instructorId}/spots`,
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(err, "Erreur lors de la récupération des spots");

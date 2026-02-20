@@ -4,7 +4,7 @@
 // Service d'authentification avec endpoint unifié
 
 import apiClient from "@/src/api/axios/axiosConfig";
-import { API_CONFIG, ENDPOINTS } from "@/src/shared/constants/constants";
+import { ENDPOINTS } from "@/src/shared/constants/constants";
 import {
   CustomerRegisterRequest,
   CustomerResponse,
@@ -25,9 +25,8 @@ export const login = async (
   payload: LoginRequest,
 ): Promise<UnifiedLoginResponse> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.UNIFIED_LOGIN}`;
     const { data, headers } = await apiClient.post<UnifiedLoginResponse>(
-      endpoint,
+      ENDPOINTS.AUTH.UNIFIED_LOGIN,
       payload,
     );
     if (headers["authorization"]) {
@@ -50,8 +49,10 @@ export const registerCustomer = async (
   payload: CustomerRegisterRequest,
 ): Promise<CustomerResponse> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.CUSTOMER_REGISTER}`;
-    const { data } = await apiClient.post<CustomerResponse>(endpoint, payload);
+    const { data } = await apiClient.post<CustomerResponse>(
+      ENDPOINTS.AUTH.CUSTOMER_REGISTER,
+      payload,
+    );
     return data;
   } catch (err) {
     return handleApiError(err, "Erreur lors de l'inscription");
@@ -71,8 +72,7 @@ export const registerCustomer = async (
  */
 export const checkEmailExists = async (email: string): Promise<boolean> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.EMAIL_EXISTS}`;
-    const { data } = await apiClient.get<boolean>(endpoint, {
+    const { data } = await apiClient.get<boolean>(ENDPOINTS.AUTH.EMAIL_EXISTS, {
       params: { email },
     });
     return data;

@@ -7,6 +7,7 @@ import {
   CourseListItem,
   CourseStatsResponse,
 } from "@/src/features/courses/types/course.types";
+import { ApiError } from "@/src/api/axios/apiError";
 import apiClient from "@/src/api/axios/axiosConfig";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
@@ -31,6 +32,9 @@ export const getCourses = async (
       `/instructors/${instructorId}/bookings`,
       { params: { filter } },
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(err, "Erreur lors de la récupération des cours");

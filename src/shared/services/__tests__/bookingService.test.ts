@@ -78,6 +78,13 @@ describe("bookingService", () => {
       expect(mockGet).toHaveBeenCalledWith("/instructors/5/bookings");
     });
 
+    it("throws ApiError when response is not an array", async () => {
+      const { ApiError } = require("@/src/api/axios/apiError");
+      mockGet.mockResolvedValue({ data: { invalid: true } });
+
+      await expect(getInstructorBookings(5)).rejects.toThrow(ApiError);
+    });
+
     it("throws ApiError on failure", async () => {
       const { ApiError } = require("@/src/api/axios/apiError");
       mockGet.mockRejectedValue(new Error("Server error"));

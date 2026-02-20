@@ -4,7 +4,6 @@
 // Service pour la gestion des profils Customer et Instructor
 
 import apiClient from "@/src/api/axios/axiosConfig";
-import { API_CONFIG } from "@/src/shared/constants/constants";
 import {
   CustomerProfileResponse,
   CustomerProfileUpdateRequest,
@@ -21,9 +20,8 @@ export const updateCustomerProfile = async (
   payload: CustomerProfileUpdateRequest,
 ): Promise<CustomerProfileResponse> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}/customer/${customerId}`;
     const { data } = await apiClient.put<CustomerProfileResponse>(
-      endpoint,
+      `/customer/${customerId}`,
       payload,
     );
     return data;
@@ -40,9 +38,8 @@ export const updateInstructorProfile = async (
   payload: InstructorProfileUpdateRequest,
 ): Promise<InstructorProfileResponse> => {
   try {
-    const endpoint = `${API_CONFIG.BASE_URL}/instructors/${instructorId}`;
     const { data } = await apiClient.put<InstructorProfileResponse>(
-      endpoint,
+      `/instructors/${instructorId}`,
       payload,
     );
     return data;

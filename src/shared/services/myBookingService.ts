@@ -8,6 +8,7 @@ import {
   UpdateNotesRequest,
   CancelParticipationRequest,
 } from "@/src/features/my-bookings/types/my-bookings.types";
+import { ApiError } from "@/src/api/axios/apiError";
 import apiClient from "@/src/api/axios/axiosConfig";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 
@@ -21,6 +22,9 @@ export const getMyBookings = async (
     const response = await apiClient.get<MyBookingResponse[]>(
       `/customers/${customerId}/my-bookings`,
     );
+    if (!Array.isArray(response.data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
     return response.data;
   } catch (err) {
     return handleApiError(
