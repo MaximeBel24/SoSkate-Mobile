@@ -11,9 +11,12 @@ type MapHeaderProps = {
   spotsCount: number;
   topInset: number;
   onSearchPress: () => void;
+  onFilterPress: () => void;
+  isFilterActive: boolean;
 };
 
-const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
+
+const MapHeader = ({ spotsCount, topInset, onSearchPress, onFilterPress, isFilterActive }: MapHeaderProps) => {
   const { colors, isDark } = useTheme();
 
   return (
@@ -52,23 +55,44 @@ const MapHeader = ({ spotsCount, topInset, onSearchPress }: MapHeaderProps) => {
             </Typo>
           </View>
 
-          <TouchableOpacity
-            style={[
-              styles.searchButton,
-              {
-                backgroundColor: colors.background.elevated,
-                borderColor: colors.border.default,
-              },
-            ]}
-            onPress={onSearchPress}
-            activeOpacity={0.7}
-          >
-            <Icons.MagnifyingGlassIcon
-              size={20}
-              color={colors.text.primary}
-              weight="bold"
-            />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+                style={[
+                  styles.searchButton,
+                  {
+                    backgroundColor: colors.background.elevated,
+                    borderColor: isFilterActive ? "#ff6b35" : colors.border.default,
+                  },
+                ]}
+                onPress={onFilterPress}
+                activeOpacity={0.7}
+            >
+              <Icons.FunnelSimpleIcon
+                  size={20}
+                  color={isFilterActive ? "#ff6b35" : colors.text.primary}
+                  weight={isFilterActive ? "fill" : "bold"}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={[
+                  styles.searchButton,
+                  {
+                    backgroundColor: colors.background.elevated,
+                    borderColor: colors.border.default,
+                  },
+                ]}
+                onPress={onSearchPress}
+                activeOpacity={0.7}
+            >
+              <Icons.MagnifyingGlassIcon
+                  size={20}
+                  color={colors.text.primary}
+                  weight="bold"
+              />
+            </TouchableOpacity>
+          </View>
+
         </View>
       </LinearGradient>
     </Animated.View>
@@ -111,5 +135,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 12,
     borderWidth: 1,
+  },
+  headerRight: {
+    flexDirection: "row",
+    gap: 8,
   },
 });

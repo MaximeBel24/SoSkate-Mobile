@@ -16,6 +16,7 @@ import React from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLocationSettings } from "@/src/shared/contexts/LocationContext";
 
 // ============================================
 // SETTING ITEM COMPONENT
@@ -119,7 +120,7 @@ const SettingsScreen = () => {
 
   // Mock states for toggles
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [locationEnabled, setLocationEnabled] = React.useState(true);
+  const { isLocationEnabled: locationEnabled, setLocationEnabled } = useLocationSettings();
 
   return (
     <ScreenWrapper showPattern={true} bgOpacity={0.15}>

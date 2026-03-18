@@ -16,12 +16,11 @@ import { handleApiError } from "@/src/api/axios/handleApiError";
  * Crée une nouvelle réservation
  */
 export const createBooking = async (
-  customerId: number,
   bookingData: CreateBookingRequest,
 ): Promise<BookingResponse> => {
   try {
     const response = await apiClient.post<BookingResponse>(
-      `/customers/${customerId}/bookings`,
+      `/bookings`,
       bookingData,
     );
     return response.data;

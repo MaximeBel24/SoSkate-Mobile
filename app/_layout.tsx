@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ErrorFallback from "@/src/shared/ui/feedback/ErrorFallback";
 import ErrorBoundary from "@/src/shared/ui/feedback/ErrorBoundary";
 import { StyleSheet } from "react-native";
+import {LocationProvider} from "@/src/shared/contexts/LocationContext";
 
 const RootLayout = () => {
   return (
@@ -17,25 +18,27 @@ const RootLayout = () => {
       <ThemeProvider>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <AuthProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen
-                name="(modals)/profileModal"
-                options={{
-                  presentation: "modal",
-                  animation: "slide_from_bottom",
-                }}
-              />
-              <Stack.Screen
-                name="(modals)/settingsModal"
-                options={{
-                  presentation: "modal",
-                  animation: "slide_from_bottom",
-                }}
-              />
-            </Stack>
+              <LocationProvider>
+                  <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="index" />
+                      <Stack.Screen name="(auth)" />
+                      <Stack.Screen name="(tabs)" />
+                      <Stack.Screen
+                          name="(modals)/profileModal"
+                          options={{
+                              presentation: "modal",
+                              animation: "slide_from_bottom",
+                          }}
+                      />
+                      <Stack.Screen
+                          name="(modals)/settingsModal"
+                          options={{
+                              presentation: "modal",
+                              animation: "slide_from_bottom",
+                          }}
+                      />
+                  </Stack>
+              </LocationProvider>
           </AuthProvider>
         </ErrorBoundary>
       </ThemeProvider>

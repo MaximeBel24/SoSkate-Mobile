@@ -1,6 +1,7 @@
 import ErrorState from "@/src/features/map/ui/MapLoadingStates/ErrorState";
 import LoadingState from "@/src/features/map/ui/MapLoadingStates/LoadingState";
 import CustomMarker from "@/src/features/map/ui/MapView/CustomMarker";
+import UserMarker from "@/src/features/map/ui/MapView/UserMarker";
 import MapControls from "@/src/features/map/ui/MapView/MapControls";
 import MapHeader from "@/src/features/map/ui/MapView/MapHeader";
 import MapSearchBar from "@/src/features/map/ui/MapView/MapSearchBar";
@@ -12,17 +13,22 @@ import { useTheme } from "@/src/shared/theme";
 import { getMapStyle } from "@/src/shared/theme/mapStyles";
 import { SpotResponse } from "@/src/shared/types/spot.interface";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Keyboard, StyleSheet } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
+import { useUserLocation } from "@/src/features/map/hooks/useUserLocation";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Keyboard, StyleSheet, Text, View } from "react-native";
+import MapView, { Callout, Marker, Region } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RadiusFilter from "@/src/features/map/ui/MapView/RadiusFilter";
+import { getDistanceKm } from "@/src/shared/utils/geo";
+
 
 const MapScreen = () => {
-  const router = useRouter();
   const mapRef = useRef<MapView>(null);
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
+
+  // Géolocalisation : récupère la position de l'utilisateur au mount
+  const { userLocation, refresh: refreshLocation } = useUserLocation();
 
   const [spots, setSpots] = useState<SpotResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,12 +36,45 @@ const MapScreen = () => {
   const [selectedSpot, setSelectedSpot] = useState<SpotResponse | null>(null);
   const [mapType, setMapType] = useState<"standard" | "satellite">("standard");
   const [showSearch, setShowSearch] = useState(false);
-  const [region] = useState<Region>({
+  const [selectedRadius, setSelectedRadius] = useState<number | null>(null);
+  const [showRadiusFilter, setShowRadiusFilter] = useState(false);
+
+  // Fallback Paris si la géoloc n'est pas disponible (permission refusée, etc.)
+  const DEFAULT_REGION: Region = {
     latitude: 48.774159,
     longitude: 2.536275,
     latitudeDelta: 0.0522,
     longitudeDelta: 0.0221,
-  });
+  };
+
+  // Région initiale : position de l'utilisateur si disponible, sinon Paris
+  // useMemo évite de recréer l'objet à chaque render
+  const initialRegion = useMemo<Region>(() => {
+    if (userLocation) {
+      return {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.0522,
+        longitudeDelta: 0.0221,
+      };
+    }
+    return DEFAULT_REGION;
+  }, [userLocation]);
+
+  const filteredSpots = useMemo(() => {
+    if (!selectedRadius || !userLocation) return spots;
+
+    return spots.filter((spot) => {
+      if (!spot.latitude || !spot.longitude) return false;
+      const distance = getDistanceKm(
+          userLocation.latitude,
+          userLocation.longitude,
+          spot.latitude,
+          spot.longitude,
+      );
+      return distance <= selectedRadius;
+    });
+  }, [spots, selectedRadius, userLocation]);
 
   const NAVBAR_HEIGHT = 80;
   const SPOT_CARD_HEIGHT = 400;
@@ -91,10 +130,29 @@ const MapScreen = () => {
     }
   };
 
-  const handleRecenterMap = () => {
-    if (mapRef.current) {
-      mapRef.current.animateToRegion(region, 500);
+  // Recentrer sur l'utilisateur si sa position est connue, sinon fallback Paris
+  const handleRecenterMap = async () => {
+    if (!mapRef.current) return;
+
+    // Si on a déjà la position, on y va directement
+    if (userLocation) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: 0.0522,
+          longitudeDelta: 0.0221,
+        },
+        500,
+      );
+      return;
     }
+
+    // Sinon on retente la géoloc (peut-être que l'utilisateur a changé d'avis)
+    await refreshLocation();
+
+    // Fallback Paris si toujours pas de position
+    mapRef.current.animateToRegion(DEFAULT_REGION, 500);
   };
 
   const handleOpenSearch = () => {
@@ -125,10 +183,10 @@ const MapScreen = () => {
     <ScreenWrapper style={styles.container}>
       <MapView
         ref={mapRef}
-        initialRegion={region}
+        initialRegion={initialRegion}
         style={styles.map}
         mapType={mapType}
-        showsUserLocation={true}
+        showsUserLocation={false}
         showsMyLocationButton={false}
         showsCompass={false}
         toolbarEnabled={false}
@@ -156,7 +214,7 @@ const MapScreen = () => {
           left: 0,
         }}
       >
-        {spots
+        {filteredSpots
           .filter((spot) => spot.latitude && spot.longitude)
           .map((spot) => (
             <Marker
@@ -170,13 +228,34 @@ const MapScreen = () => {
               <CustomMarker isSelected={selectedSpot?.id === spot.id} />
             </Marker>
           ))}
+
+        {/* Marqueur utilisateur : affiché uniquement si la géoloc est disponible */}
+        {userLocation && (
+          <Marker
+            coordinate={{
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+            }}
+            tracksViewChanges={true}
+          >
+            <UserMarker />
+            <Callout tooltip>
+              <View style={styles.callout}>
+                <Text style={styles.calloutText}>Vous êtes ici</Text>
+              </View>
+            </Callout>
+          </Marker>
+        )}
       </MapView>
 
       <MapHeader
-        spotsCount={spots.length}
-        topInset={insets.top}
-        onSearchPress={handleOpenSearch}
+          spotsCount={filteredSpots.length}
+          topInset={insets.top}
+          onSearchPress={handleOpenSearch}
+          onFilterPress={() => setShowRadiusFilter(!showRadiusFilter)}
+          isFilterActive={selectedRadius !== null}
       />
+
 
       <MapControls
         topInset={insets.top}
@@ -190,6 +269,16 @@ const MapScreen = () => {
           bottomInset={insets.bottom}
           onClose={() => setSelectedSpot(null)}
         />
+      )}
+
+      {showRadiusFilter && !selectedSpot && (
+          <RadiusFilter
+              selectedRadius={selectedRadius}
+              onSelectRadius={setSelectedRadius}
+              userLocation={!!userLocation}
+              filteredCount={filteredSpots.length}
+              totalCount={spots.length}
+          />
       )}
 
       {showSearch && (
@@ -212,5 +301,18 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
+  },
+  callout: {
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    minWidth: 120,
+    alignItems: "center",
+  },
+  calloutText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "600",
   },
 });

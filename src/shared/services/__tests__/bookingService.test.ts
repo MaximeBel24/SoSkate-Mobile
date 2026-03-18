@@ -34,16 +34,16 @@ describe("bookingService", () => {
     it("returns booking response", async () => {
       mockPost.mockResolvedValue({ data: bookingResponse });
 
-      const result = await createBooking(42, bookingData as any);
+      const result = await createBooking(bookingData as any);
       expect(result).toEqual(bookingResponse);
     });
 
-    it("calls correct endpoint with customerId", async () => {
+    it("calls correct endpoint", async () => {
       mockPost.mockResolvedValue({ data: bookingResponse });
 
-      await createBooking(42, bookingData as any);
+      await createBooking(bookingData as any);
       expect(mockPost).toHaveBeenCalledWith(
-        "/customers/42/bookings",
+        "/bookings",
         bookingData,
       );
     });
@@ -52,7 +52,7 @@ describe("bookingService", () => {
       const { ApiError } = require("@/src/api/axios/apiError");
       mockPost.mockRejectedValue(new Error("Server error"));
 
-      await expect(createBooking(42, bookingData as any)).rejects.toThrow(
+      await expect(createBooking(bookingData as any)).rejects.toThrow(
         ApiError,
       );
     });

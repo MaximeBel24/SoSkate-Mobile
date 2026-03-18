@@ -8,7 +8,7 @@ export const getInstructorById = async (
 ): Promise<InstructorResponse> => {
   try {
     const { data } = await apiClient.get<InstructorResponse>(
-      `${ENDPOINTS.ADMIN.INSTRUCTOR}/${id}`,
+      `/instructors/${id}`,
     );
     return data;
   } catch (err) {

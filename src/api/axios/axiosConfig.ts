@@ -58,11 +58,10 @@ apiClient.interceptors.response.use(
         case 401:
           // Token expiré ou invalide
           await removeToken();
-          await AsyncStorage.removeItem("userData");
+          await AsyncStorage.removeItem("@soskate/user");
           if (logoutCallback) {
             logoutCallback();
           }
-          // Vous pouvez naviguer vers l'écran de connexion ici
           logger.dev("Session expirée, redirection vers login");
           break;
 

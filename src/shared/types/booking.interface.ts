@@ -22,11 +22,12 @@ export type BookingStatus =
  * POST /customers/{customerId}/bookings
  */
 export interface CreateBookingRequest {
+  customerId: number;
   instructorId: number;
   spotId: number;
   serviceId: number;
-  startTime: string; // ISO format: "2026-01-29T14:00:00"
-  durationMinutes: number; // 60, 90, 120, 150, 180, 240
+  startTime: string;
+  durationMinutes: number;
   numberOfParticipants: number;
   participantsNotes: string | null;
 }

@@ -203,6 +203,7 @@ export default function BookingScreen() {
       const startTimeISO = `${state.selectedDate}T${state.selectedSlot.startTime}:00`;
 
       const bookingData = {
+        customerId: user.id,
         instructorId: state.params.instructorId,
         spotId: state.params.spotId,
         serviceId: state.params.serviceId,
@@ -212,7 +213,7 @@ export default function BookingScreen() {
         participantsNotes: state.participantsNotes || null,
       };
 
-      await createBooking(user.id, bookingData);
+      await createBooking(bookingData);
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -223,7 +224,7 @@ export default function BookingScreen() {
         [
           {
             text: "Super !",
-            onPress: () => router.back(),
+            onPress: () => router.replace("/(modals)/my-bookings"),
           },
         ],
       );

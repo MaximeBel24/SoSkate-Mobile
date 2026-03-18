@@ -12,6 +12,7 @@ export interface CustomerRegisterRequest {
 export interface LoginRequest {
   email: string;
   password: string;
+  isAdmin: boolean;
 }
 
 export interface LoginResponse {

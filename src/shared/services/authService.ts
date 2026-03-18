@@ -13,6 +13,7 @@ import {
 } from "@/src/features/auth/types/auth.types";
 import { handleApiError } from "@/src/api/axios/handleApiError";
 import { saveToken } from "@/src/shared/storage/tokenStorage";
+import { logger } from "@/src/shared/utils/logger";
 
 /**
  * Connexion unifiée pour Customer et Instructor
@@ -29,10 +30,20 @@ export const login = async (
       ENDPOINTS.AUTH.UNIFIED_LOGIN,
       payload,
     );
-    if (headers["authorization"]) {
-      const token = headers["authorization"].replace("Bearer ", "");
+
+    // Extraction du token : header (principal) ou body (fallback)
+    const headerToken = headers["authorization"]?.replace(/^Bearer\s+/i, "");
+    const token = headerToken || data.token;
+
+    if (token) {
       await saveToken(token);
+      logger.dev("[Auth] Token JWT sauvegardé avec succès");
+    } else {
+      logger.warn(
+        "[Auth] Aucun token JWT trouvé dans la réponse de login (ni header, ni body)",
+      );
     }
+
     return data;
   } catch (err) {
     return handleApiError(err, "Erreur lors de la connexion");

@@ -49,6 +49,9 @@ export interface UnifiedLoginResponse {
 
   // Message
   message: string;
+
+  // Token JWT (optionnel - fallback si le header Authorization n'est pas accessible)
+  token?: string;
 }
 
 /**

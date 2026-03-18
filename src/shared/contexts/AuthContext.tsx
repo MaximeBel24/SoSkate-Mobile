@@ -18,7 +18,7 @@ import {
   StoredUser,
   UnifiedLoginResponse,
 } from "../../features/auth/types/auth.types";
-import { removeToken } from "@/src/shared/storage/tokenStorage";
+import { getToken, removeToken } from "@/src/shared/storage/tokenStorage";
 import { setLogoutCallback } from "@/src/api/axios/axiosConfig";
 import { logger } from "@/src/shared/utils/logger";
 
@@ -83,16 +83,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
 
-      // Charger les données en parallèle
-      const [storedUser, hasLogged] = await Promise.all([
+      // Charger les données en parallèle + vérifier le token
+      const [storedUser, hasLogged, token] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_DATA),
         AsyncStorage.getItem(STORAGE_KEYS.HAS_LOGGED_BEFORE),
+        getToken(),
       ]);
 
-      if (storedUser) {
+      if (storedUser && token) {
         const parsedUser: StoredUser = JSON.parse(storedUser);
         setUser(parsedUser);
         logger.dev("Session restaurée pour:", parsedUser.email);
+      } else if (storedUser && !token) {
+        // Données utilisateur sans token = session invalide
+        logger.warn("[Auth] Session orpheline détectée (données sans token) - nettoyage");
+        await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
       }
 
       setHasLoggedBefore(hasLogged === "true");
