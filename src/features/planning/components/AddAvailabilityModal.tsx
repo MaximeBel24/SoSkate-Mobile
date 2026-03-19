@@ -23,6 +23,7 @@ import {
   PLANNING_START_HOUR,
   PLANNING_END_HOUR,
 } from "../types/planning.types";
+import { useCustomAlert } from "@/src/shared/ui/CustomModal/AlertContext";
 
 interface AddAvailabilityModalProps {
   visible: boolean;
@@ -100,6 +101,8 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
   const isEditMode = !!existingAvailability;
   const dateOptions = useMemo(() => generateDateOptions(), []);
 
+  const { showAlert } = useCustomAlert();
+
   // Initialiser les valeurs
   useEffect(() => {
     if (visible) {
@@ -173,19 +176,14 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
 
   const handleSave = async () => {
     if (!isValidTimeRange()) {
-      Alert.alert(
-        "Durée invalide",
-        "La durée minimum d'une disponibilité est d'1 heure.",
-      );
-      return;
+      showAlert("Durée invalide", "La durée minimum d'une disponibilité est d'1 heure.");
     }
 
     if (!date) {
-      Alert.alert("Date manquante", "Veuillez sélectionner une date.");
-      return;
+      showAlert("Date manquante", "Veuillez sélectionner une date.");
     }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     let success = false;
 
@@ -200,7 +198,7 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
     }
 
     if (success) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       onClose();
     }
   };
@@ -208,26 +206,24 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
   const handleDelete = () => {
     if (!existingAvailability || !onDelete) return;
 
-    Alert.alert(
-      "Supprimer la disponibilité",
-      "Êtes-vous sûr de vouloir supprimer cette disponibilité ?",
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Supprimer",
-          style: "destructive",
-          onPress: async () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            const success = await onDelete(existingAvailability.id);
-            if (success) {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success,
-              );
-              onClose();
-            }
+    showAlert(
+        "Supprimer la disponibilité",
+        "Êtes-vous sûr de vouloir supprimer cette disponibilité ?",
+        [
+          { text: "Annuler", style: "cancel" },
+          {
+            text: "Supprimer",
+            style: "destructive",
+            onPress: async () => {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              const success = await onDelete(existingAvailability.id);
+              if (success) {
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                onClose();
+              }
+            },
           },
-        },
-      ],
+        ],
     );
   };
 

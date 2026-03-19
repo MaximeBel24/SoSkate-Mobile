@@ -44,12 +44,14 @@ import { createBooking } from "@/src/shared/services/bookingService";
 import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 import { logger } from "@/src/shared/utils/logger";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 export default function BookingScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { showAlert } = useCustomAlert();
 
   // Constante pour le délai minimum de réservation (en jours)
   const MIN_BOOKING_DAYS_AHEAD = 3;
@@ -192,8 +194,7 @@ export default function BookingScreen() {
     }
 
     if (!user?.id) {
-      Alert.alert("Erreur", "Vous devez être connecté pour réserver");
-      return;
+      showAlert("Erreur", "Vous devez être connecté pour réserver");
     }
 
     setIsSubmitting(true);
@@ -203,7 +204,7 @@ export default function BookingScreen() {
       const startTimeISO = `${state.selectedDate}T${state.selectedSlot.startTime}:00`;
 
       const bookingData = {
-        customerId: user.id,
+        customerId: user!.id,
         instructorId: state.params.instructorId,
         spotId: state.params.spotId,
         serviceId: state.params.serviceId,
@@ -218,23 +219,23 @@ export default function BookingScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       // Succès
-      Alert.alert(
-        "Réservation confirmée ! 🛹",
-        `Votre cours de ${formatDuration(state.selectedDuration)} avec ${state.params.instructorFirstName} est réservé pour le ${formatDate(state.selectedDate)} à ${state.selectedSlot.startTime}.`,
-        [
-          {
-            text: "Super !",
-            onPress: () => router.replace("/(modals)/my-bookings"),
-          },
-        ],
+      showAlert(
+          "Réservation confirmée !",
+          `Votre cours de ${formatDuration(state.selectedDuration)} avec ${state.params.instructorFirstName} est réservé pour le ${formatDate(state.selectedDate)} à ${state.selectedSlot.startTime}.`,
+          [
+            {
+              text: "Super !",
+              onPress: () => router.replace("/(modals)/my-bookings"),
+            },
+          ],
       );
     } catch (error) {
       logger.error("Erreur création réservation:", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-      Alert.alert(
-        "Erreur",
-        getErrorMessage(error, "Une erreur est survenue lors de la réservation"),
+      showAlert(
+          "Erreur",
+          getErrorMessage(error, "Une erreur est survenue lors de la réservation"),
       );
     } finally {
       setIsSubmitting(false);
