@@ -23,11 +23,13 @@ import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React, { useRef, useState } from "react";
 import { Alert } from "react-native";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 const Login = () => {
   const { colors } = useTheme();
   const { login: authLogin } = useAuth();
   const router = useRouter();
+  const { showAlert } = useCustomAlert();
 
   // === Form State ===
   const emailRef = useRef("");
@@ -38,7 +40,7 @@ const Login = () => {
   const handleSubmit = async () => {
     // Validation des champs
     if (!emailRef.current || !passwordRef.current) {
-      Alert.alert("Connexion", "Veuillez remplir tous les champs");
+      showAlert("Connexion", "Veuillez remplir tous les champs");
       return;
     }
 
@@ -65,7 +67,7 @@ const Login = () => {
     } catch (error) {
       logger.error("Erreur de connexion:", error);
 
-      Alert.alert(
+      showAlert(
         "Erreur de connexion",
         getErrorMessage(error, "Une erreur est survenue. Veuillez réessayer."),
       );
@@ -75,14 +77,14 @@ const Login = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    Alert.alert(
+    showAlert(
       `Connexion ${provider}`,
       "Cette fonctionnalité sera bientôt disponible !",
     );
   };
 
   const handleForgotPassword = () => {
-    Alert.alert(
+    showAlert(
       "Mot de passe oublié",
       "Cette fonctionnalité sera bientôt disponible !",
     );

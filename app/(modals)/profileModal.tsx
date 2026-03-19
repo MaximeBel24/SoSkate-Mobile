@@ -46,6 +46,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 // ============================================
 // TYPES
@@ -67,6 +68,8 @@ const ProfileModal = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
+  const { showAlert } = useCustomAlert()
+
   const { user, isCustomer, isInstructor, login } = useAuth();
   const { showImagePickerAlert, isLoading: isPickerLoading } = useImagePicker();
 
@@ -193,10 +196,10 @@ const ProfileModal = () => {
         // Mettre à jour l'avatar affiché
         setAvatarUri(result.url);
 
-        Alert.alert("Succès", "Votre photo de profil a été mise à jour !");
+        showAlert("Succès", "Votre photo de profil a été mise à jour !");
       } catch (error) {
         logger.error("Error uploading avatar:", error);
-        Alert.alert(
+        showAlert(
           "Erreur",
           getErrorMessage(error, "Impossible de mettre à jour la photo"),
         );
@@ -215,7 +218,7 @@ const ProfileModal = () => {
   // === Validation ===
   const validateForm = (): boolean => {
     if (!firstname.trim() || !lastname.trim() || !email.trim()) {
-      Alert.alert(
+      showAlert(
         "Champs manquants",
         "Veuillez remplir tous les champs obligatoires",
       );
@@ -224,7 +227,7 @@ const ProfileModal = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert("Email invalide", "Veuillez entrer un email valide");
+      showAlert("Email invalide", "Veuillez entrer un email valide");
       return false;
     }
 
@@ -232,7 +235,7 @@ const ProfileModal = () => {
       const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/;
       const cleanPhone = phone.replace(/\s/g, "");
       if (!phoneRegex.test(cleanPhone)) {
-        Alert.alert(
+        showAlert(
           "Téléphone invalide",
           "Format attendu : +33 6 12 34 56 78 ou 06 12 34 56 78",
         );
@@ -242,7 +245,7 @@ const ProfileModal = () => {
 
     if (isInstructor) {
       if (yearsOfExperience && isNaN(Number(yearsOfExperience))) {
-        Alert.alert(
+        showAlert(
           "Années d'expérience invalides",
           "Veuillez entrer un nombre valide",
         );
@@ -306,7 +309,7 @@ const ProfileModal = () => {
         await updateInstructorProfile(user.instructorId, payload);
       }
 
-      Alert.alert("Succès", "Votre profil a été mis à jour avec succès !", [
+      showAlert("Succès", "Votre profil a été mis à jour avec succès !", [
         {
           text: "OK",
           onPress: () => router.back(),
@@ -314,7 +317,7 @@ const ProfileModal = () => {
       ]);
     } catch (error) {
       logger.error("Erreur mise à jour profil:", error);
-      Alert.alert(
+      showAlert(
         "Erreur",
         getErrorMessage(error, "Une erreur est survenue lors de la mise à jour"),
       );

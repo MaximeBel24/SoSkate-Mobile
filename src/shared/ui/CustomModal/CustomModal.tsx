@@ -17,7 +17,9 @@ type CustomModalProps = {
     message?: string;
     buttons?: AlertButton[];
     onClose: () => void;
+    layout?: "horizontal" | "vertical";
 };
+
 
 const CustomModal: React.FC<CustomModalProps> = ({
      visible,
@@ -25,7 +27,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
      message,
      buttons = [{ text: "OK" }],
      onClose,
+     layout = "horizontal",
  }) => {
+
 
     const { colors } = useTheme();
 
@@ -86,6 +90,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                         style={[
                             styles.buttonsContainer,
                             { borderTopColor: colors.border.subtle },
+                            layout === "vertical" && styles.buttonsVertical,
                         ]}
                     >
                         {buttons.map((button, index) => (
@@ -94,17 +99,25 @@ const CustomModal: React.FC<CustomModalProps> = ({
                                 onPress={() => handlePress(button)}
                                 style={({ pressed }) => [
                                     styles.button,
-                                    index > 0 && {
+                                    layout === "horizontal" && { flex: 1 },
+                                    layout === "horizontal" && index > 0 && {
                                         borderLeftWidth: 1,
                                         borderLeftColor: colors.border.subtle,
                                     },
+                                    layout === "vertical" && index > 0 && {
+                                        borderTopWidth: 1,
+                                        borderTopColor: colors.border.subtle,
+                                    },
+                                    layout === "vertical" && { width: "100%" },
                                     pressed && { backgroundColor: colors.background.subtle },
                                 ]}
                             >
+
                                 <Typo
                                     size={15}
                                     fontWeight={button.style === "cancel" ? "500" : "700"}
                                     color={getButtonColor(button.style)}
+                                    style={{ textAlign: "center" }}
                                 >
                                     {button.text}
                                 </Typo>
@@ -152,10 +165,12 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
     },
     button: {
-        flex: 1,
         paddingVertical: verticalScale(14),
         alignItems: "center",
         justifyContent: "center",
+    },
+    buttonsVertical: {
+        flexDirection: "column",
     },
 });
 

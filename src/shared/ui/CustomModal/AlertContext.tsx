@@ -5,10 +5,11 @@ type AlertConfig = {
     title: string;
     message?: string;
     buttons?: AlertButton[];
+    layout?: "horizontal" | "vertical";
 };
 
 type AlertContextType = {
-    showAlert: (title: string, message?: string, buttons?: AlertButton[]) => void;
+    showAlert: (title: string, message?: string, buttons?: AlertButton[], layout?: "horizontal" | "vertical") => void;
 };
 
 const AlertContext = createContext<AlertContextType>({
@@ -22,8 +23,8 @@ type AlertProviderProps = {
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
     const [alertConfig, setAlertConfig] = useState<AlertConfig | null>(null);
 
-    const showAlert = useCallback((title: string, message?: string, buttons?: AlertButton[]) => {
-        setAlertConfig({ title, message, buttons });
+    const showAlert = useCallback((title: string, message?: string, buttons?: AlertButton[], layout?: "horizontal" | "vertical") => {
+        setAlertConfig({ title, message, buttons, layout });
     }, []);
 
     const hideAlert = useCallback(() => {
@@ -44,6 +45,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
                 message={alertConfig?.message}
                 buttons={alertConfig?.buttons}
                 onClose={hideAlert}
+                layout={alertConfig?.layout}
             />
         </AlertContext.Provider>
     );

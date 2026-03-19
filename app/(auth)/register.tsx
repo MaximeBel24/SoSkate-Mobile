@@ -18,6 +18,7 @@ import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
 import React, { useCallback, useRef, useState } from "react";
 import { Alert } from "react-native";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 const Register = () => {
   const { colors } = useTheme();
@@ -35,6 +36,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
+  const { showAlert } = useCustomAlert();
 
   const handlePasswordValidationChange = useCallback((isValid: boolean) => {
     setIsPasswordValid(isValid);
@@ -57,17 +59,17 @@ const Register = () => {
       !lastnameRef.current ||
       !birthDate
     ) {
-      Alert.alert("Inscription", "Veuillez remplir tous les champs");
+      showAlert("Inscription", "Veuillez remplir tous les champs");
       return;
     }
 
     if (passwordRef.current !== passwordConfirmRef.current) {
-      Alert.alert("Inscription", "Le mot de passe n'est pas identique");
+      showAlert("Inscription", "Le mot de passe n'est pas identique");
       return;
     }
 
     if (!isPasswordValid) {
-      Alert.alert(
+      showAlert(
         "Inscription",
         "Le mot de passe ne respecte pas tous les critères de sécurité",
       );
@@ -93,7 +95,7 @@ const Register = () => {
       await authLogin(response);
       router.replace("/(tabs)");
     } catch (error) {
-      Alert.alert(
+      showAlert(
         "Erreur d'inscription",
         getErrorMessage(error, "Une erreur est survenue."),
       );

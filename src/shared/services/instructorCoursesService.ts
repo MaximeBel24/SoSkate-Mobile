@@ -45,7 +45,7 @@ export const getCourses = async (
  * Récupère le détail complet d'une réservation
  * GET /bookings/{id}
  */
-export const getCourseDetail = async (
+export const getCourseDetails = async (
   bookingId: number,
 ): Promise<CourseDetail> => {
   try {
@@ -86,12 +86,11 @@ export const getInstructorStats = async (
  * DELETE /bookings/{id}
  */
 export const cancelCourse = async (
-  instructorId: number,
   bookingId: number,
 ): Promise<void> => {
   try {
     await apiClient.post(
-      `/instructors/${instructorId}/bookings/${bookingId}/cancel`,
+      `/bookings/${bookingId}/cancel`,
     );
   } catch (err) {
     return handleApiError(err, "Erreur lors de l'annulation de la réservation");

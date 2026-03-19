@@ -9,7 +9,6 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  Alert,
   Linking,
   ActivityIndicator,
 } from "react-native";
@@ -24,11 +23,12 @@ import Card from "@/src/shared/ui/card/Card";
 import Badge from "@/src/shared/ui/badge/Badge";
 import Button from "@/src/shared/ui/button/Button";
 import { ParticipantCard, CourseStatusBadge } from "@/src/features/courses";
-import { instructorCoursesService } from "@/src/shared/services/instructorCoursesService";
 import {
   CourseDetail,
   CourseHelpers,
 } from "@/src/features/courses/types/course.types";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
+import {cancelCourse, getCourseDetails} from "@/src/shared/services/instructorCoursesService";
 
 // ============================================
 // HELPERS
@@ -70,6 +70,7 @@ export default function CourseDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { showAlert } = useCustomAlert();
 
   // State
   const [course, setCourse] = useState<CourseDetail | null>(null);
@@ -87,7 +88,7 @@ export default function CourseDetailScreen() {
     setError(null);
 
     try {
-      const data = await instructorCoursesService.getCourseDetail(Number(id));
+      const data = await getCourseDetails(Number(id));
       setCourse(data);
     } catch (err: unknown) {
       logger.error("[CourseDetail] fetch error:", err);
@@ -122,7 +123,7 @@ export default function CourseDetailScreen() {
     if (!course) return;
 
     if (!canCancel(course.startTime)) {
-      Alert.alert(
+      showAlert(
         "Annulation impossible",
         "Vous ne pouvez annuler un cours que 24h avant son début.",
         [{ text: "Compris" }],
@@ -130,7 +131,7 @@ export default function CourseDetailScreen() {
       return;
     }
 
-    Alert.alert(
+    showAlert(
       "Annuler ce cours ?",
       "Cette action est irréversible. Le client sera notifié de l'annulation.",
       [
@@ -149,16 +150,16 @@ export default function CourseDetailScreen() {
 
     setIsCancelling(true);
     try {
-      await instructorCoursesService.cancelCourse(course.id);
+      await cancelCourse(course.id);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      Alert.alert("Cours annulé", "Le cours a été annulé avec succès.", [
+      showAlert("Cours annulé", "Le cours a été annulé avec succès.", [
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch (err) {
       logger.error("[CourseDetail] cancel error:", err);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert(
+      showAlert(
         "Erreur",
         "Impossible d'annuler le cours. Veuillez réessayer.",
       );

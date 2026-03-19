@@ -25,6 +25,7 @@ import * as Icons from "phosphor-react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 // ============================================
 // TYPES
@@ -47,6 +48,7 @@ const Profile = () => {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
   const { user, logout, isCustomer, isInstructor } = useAuth();
+  const { showAlert } = useCustomAlert();
 
   // === Avatar State ===
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -266,7 +268,7 @@ const Profile = () => {
       router.replace("/(auth)/welcome");
     } catch (error) {
       logger.error("Erreur lors de la déconnexion:", error);
-      Alert.alert(
+      showAlert(
         "Erreur",
         "Impossible de se déconnecter. Veuillez réessayer.",
       );
@@ -274,7 +276,7 @@ const Profile = () => {
   };
 
   const showLogoutAlert = () => {
-    Alert.alert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", [
+    showAlert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", [
       { text: "Annuler", style: "cancel" },
       { text: "Se déconnecter", onPress: handleLogout, style: "destructive" },
     ]);
@@ -289,7 +291,7 @@ const Profile = () => {
     if (option.routeName) {
       router.push(option.routeName as Href);
     } else {
-      Alert.alert(
+      showAlert(
         "Bientôt disponible",
         "Cette fonctionnalité arrive prochainement !",
       );

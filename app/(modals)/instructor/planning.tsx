@@ -27,11 +27,13 @@ import { useWeekNavigation } from "@/src/features/planning/hooks/useWeekNavigati
 import { usePlanningData } from "@/src/features/planning/hooks/usePlanningData";
 import { AvailabilityResponse } from "@/src/shared/types/availability.interface";
 import { InstructorBookingResponse } from "@/src/features/planning/types/planning.types";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 export default function PlanningScreen() {
   const { colors, isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { showAlert } = useCustomAlert();
 
   // Navigation semaine
   const {
@@ -124,7 +126,7 @@ export default function PlanningScreen() {
       minute: "2-digit",
     });
 
-    Alert.alert(
+    showAlert(
       "Réservation",
       `${booking.customer?.firstname || "Client"} ${booking.customer?.lastname || ""}\n\n` +
         `📍 ${booking.spot?.name || "Spot"}\n` +

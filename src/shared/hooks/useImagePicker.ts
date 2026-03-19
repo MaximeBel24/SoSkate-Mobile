@@ -5,8 +5,9 @@
 
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useState } from "react";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
 import { logger } from "@/src/shared/utils/logger";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 // ============================================
 // TYPES
@@ -73,6 +74,8 @@ export function useImagePicker(
 
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
+  const { showAlert } = useCustomAlert();
+
   /**
    * Vérifie et demande les permissions pour la galerie
    */
@@ -80,7 +83,7 @@ export function useImagePicker(
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
-      Alert.alert(
+      showAlert(
         "Permission requise",
         "SoSkate a besoin d'accéder à vos photos pour définir votre photo de profil.",
         [
@@ -104,7 +107,7 @@ export function useImagePicker(
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
     if (status !== "granted") {
-      Alert.alert(
+      showAlert(
         "Permission requise",
         "SoSkate a besoin d'accéder à votre caméra pour prendre une photo de profil.",
         [
@@ -202,7 +205,7 @@ export function useImagePicker(
         return processResult(result);
       } catch (error) {
         logger.error("Error picking image from gallery:", error);
-        Alert.alert("Erreur", "Impossible d'accéder à la galerie");
+        showAlert("Erreur", "Impossible d'accéder à la galerie");
         return null;
       } finally {
         setIsLoading(false);
@@ -230,7 +233,7 @@ export function useImagePicker(
       return processResult(result);
     } catch (error) {
       logger.error("Error taking photo:", error);
-      Alert.alert("Erreur", "Impossible d'accéder à la caméra");
+      showAlert("Erreur", "Impossible d'accéder à la caméra");
       return null;
     } finally {
       setIsLoading(false);
@@ -242,12 +245,12 @@ export function useImagePicker(
    */
   const showImagePickerAlert = useCallback(
     (onImageSelected?: (image: SelectedImage) => void) => {
-      Alert.alert(
+      showAlert(
         "Changer la photo",
         "Comment souhaitez-vous ajouter votre photo ?",
         [
           {
-            text: "📷 Prendre une photo",
+            text: "Prendre une photo",
             onPress: async () => {
               const image = await takePhoto();
               if (image && onImageSelected) {
@@ -256,7 +259,7 @@ export function useImagePicker(
             },
           },
           {
-            text: "🖼️ Choisir dans la galerie",
+            text: "Galerie",
             onPress: async () => {
               const image = await pickFromGallery();
               if (image && onImageSelected) {
@@ -269,6 +272,7 @@ export function useImagePicker(
             style: "cancel",
           },
         ],
+        "vertical",
       );
     },
     [takePhoto, pickFromGallery],
