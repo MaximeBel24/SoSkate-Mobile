@@ -27,6 +27,7 @@ import { MyBookingResponse } from "@/src/features/my-bookings/types/my-bookings.
 import BookingCard from "@/src/features/my-bookings/components/BookingCard";
 import BookingDetailModal from "@/src/features/my-bookings/components/BookingDetailsModal";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
+import CustomModal from "@/src/shared/ui/CustomModal/CustomModal";
 
 export default function MyBookingsScreen() {
   const { colors } = useTheme();

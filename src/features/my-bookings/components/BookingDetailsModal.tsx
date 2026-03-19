@@ -30,6 +30,7 @@ import {
   canEditNotes,
   isBookingPast,
 } from "../types/my-bookings.types";
+import CustomModal from "@/src/shared/ui/CustomModal/CustomModal";
 
 interface BookingDetailModalProps {
   visible: boolean;
@@ -98,6 +99,8 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [showEditNotes, setShowEditNotes] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
 
   if (!booking) return null;
 
@@ -119,31 +122,9 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
   };
 
   const handleCancel = () => {
-    Alert.alert(
-      "Annuler la réservation",
-      "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est irréversible.",
-      [
-        {
-          text: "Non, garder",
-          style: "cancel",
-        },
-        {
-          text: "Oui, annuler",
-          style: "destructive",
-          onPress: async () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            const success = await onCancel(booking.participationId);
-            if (success) {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success,
-              );
-              onClose();
-            }
-          },
-        },
-      ],
-    );
+    setShowCancelModal(true);
   };
+
 
   const handleSaveNotes = async (notes: string): Promise<boolean> => {
     return await onUpdateNotes(booking.participationId, notes);
@@ -492,6 +473,32 @@ const BookingDetailModal: React.FC<BookingDetailModalProps> = ({
           )}
         </View>
       </Modal>
+
+      <CustomModal
+          visible={showCancelModal}
+          title="Annuler la réservation"
+          message="Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est irréversible."
+          buttons={[
+            {
+              text: "Non, garder",
+              style: "cancel",
+            },
+            {
+              text: "Oui, annuler",
+              style: "destructive",
+              onPress: async () => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                const success = await onCancel(booking.participationId);
+                if (success) {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  onClose();
+                }
+              },
+            },
+          ]}
+          onClose={() => setShowCancelModal(false)}
+      />
+
 
       {/* Modal édition notes */}
       <EditNotesModal
