@@ -16,11 +16,13 @@ import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import { useUserLocation } from "@/src/features/map/hooks/useUserLocation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard, StyleSheet, Text, View } from "react-native";
-import MapView, { Callout, Marker, Region } from "react-native-maps";
+import MapView, { Callout, Circle, Marker, Region } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RadiusFilter from "@/src/features/map/ui/MapView/RadiusFilter";
-import { getDistanceKm } from "@/src/shared/utils/geo";
-
+import {getDistanceKm} from "@/src/shared/utils/geo";
+import LocationDeniedBanner from "@/src/features/map/ui/MapView/LocationDeniedBanner";
+import * as Location from "expo-location";
+import {useLocationSettings} from "@/src/shared/contexts/LocationContext";
 
 const MapScreen = () => {
   const mapRef = useRef<MapView>(null);
@@ -28,7 +30,7 @@ const MapScreen = () => {
   const { isDark } = useTheme();
 
   // Géolocalisation : récupère la position de l'utilisateur au mount
-  const { userLocation, refresh: refreshLocation } = useUserLocation();
+  const { userLocation, permissionStatus, refresh: refreshLocation } = useUserLocation();
 
   const [spots, setSpots] = useState<SpotResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,14 +40,16 @@ const MapScreen = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState<number | null>(null);
   const [showRadiusFilter, setShowRadiusFilter] = useState(false);
+  const { isBannerDismissed, setBannerDismissed } = useLocationSettings();
 
   // Fallback Paris si la géoloc n'est pas disponible (permission refusée, etc.)
   const DEFAULT_REGION: Region = {
-    latitude: 48.774159,
-    longitude: 2.536275,
-    latitudeDelta: 0.0522,
-    longitudeDelta: 0.0221,
+    latitude: 48.8367,
+    longitude: 2.3856,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
   };
+
 
   // Région initiale : position de l'utilisateur si disponible, sinon Paris
   // useMemo évite de recréer l'objet à chaque render
@@ -228,6 +232,19 @@ const MapScreen = () => {
               <CustomMarker isSelected={selectedSpot?.id === spot.id} />
             </Marker>
           ))}
+          {userLocation && selectedRadius && (
+              <Circle
+                  center={{
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
+                  }}
+                  radius={selectedRadius * 1000}
+                  fillColor="rgba(255, 107, 53, 0.1)"
+                  strokeColor="rgba(255, 107, 53, 0.4)"
+                  strokeWidth={2}
+              />
+          )}
+
 
         {/* Marqueur utilisateur : affiché uniquement si la géoloc est disponible */}
         {userLocation && (
@@ -254,6 +271,7 @@ const MapScreen = () => {
           onSearchPress={handleOpenSearch}
           onFilterPress={() => setShowRadiusFilter(!showRadiusFilter)}
           isFilterActive={selectedRadius !== null}
+          showFilter={!!userLocation}
       />
 
 
@@ -268,7 +286,21 @@ const MapScreen = () => {
           spot={selectedSpot}
           bottomInset={insets.bottom}
           onClose={() => setSelectedSpot(null)}
+          distance={
+            userLocation && selectedSpot
+                ? getDistanceKm(
+                    userLocation.latitude,
+                    userLocation.longitude,
+                    selectedSpot.latitude,
+                    selectedSpot.longitude,
+                )
+                : null
+          }
         />
+      )}
+
+      {!isBannerDismissed && permissionStatus === Location.PermissionStatus.DENIED && (
+          <LocationDeniedBanner onDismiss={setBannerDismissed} />
       )}
 
       {showRadiusFilter && !selectedSpot && (

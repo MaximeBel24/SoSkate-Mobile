@@ -10,6 +10,7 @@ type SpotInfoProps = {
   city: string;
   isIndoor: boolean;
   description?: string;
+  distance?: number | null;
 };
 
 const SpotInfo = ({
@@ -19,6 +20,7 @@ const SpotInfo = ({
   city,
   isIndoor,
   description,
+  distance,
 }: SpotInfoProps) => {
   const { colors } = useTheme();
 
@@ -70,7 +72,28 @@ const SpotInfo = ({
             {isIndoor ? "Intérieur" : "Extérieur"}
           </Typo>
         </View>
+        {distance != null && (
+          <View
+              style={[
+                styles.tag,
+                {
+                  backgroundColor: colors.background.subtle,
+                  borderColor: colors.border.default,
+                },
+              ]}
+          >
+            <Icons.NavigationArrowIcon
+                size={14}
+                color={colors.accent.primary}
+                weight="duotone"
+            />
+            <Typo size={12} fontWeight="600" color={colors.accent.primary}>
+              {distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`}
+            </Typo>
+          </View>
+      )}
       </View>
+
     </>
   );
 };

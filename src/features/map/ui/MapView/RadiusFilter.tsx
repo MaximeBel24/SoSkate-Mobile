@@ -63,7 +63,7 @@ const RadiusFilter: React.FC<RadiusFilterProps> = ({
             <Slider
                 style={styles.slider}
                 minimumValue={2}
-                maximumValue={20}
+                maximumValue={30}
                 step={1}
                 value={selectedRadius ?? 10}
                 onValueChange={(value) => onSelectRadius(value)}
@@ -89,8 +89,6 @@ const styles = StyleSheet.create({
         bottom: 120,
         left: 0,
         right: 0,
-        borderTopStartRadius: scale(16),
-        borderTopEndRadius: scale(16),
         borderWidth: 1,
         paddingHorizontal: scale(16),
         paddingTop: verticalScale(12),

@@ -32,7 +32,9 @@ type SpotCardProps = {
   spot: SpotResponse;
   bottomInset: number;
   onClose: () => void;
+  distance?: number | null;
 };
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const COMPACT_HEIGHT_CUSTOMER = 420;
@@ -40,7 +42,7 @@ const COMPACT_HEIGHT_INSTRUCTOR = 540;
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.96;
 const PHOTO_HEIGHT = 180;
 
-const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
+const SpotCard = ({ spot, bottomInset, onClose, distance }: SpotCardProps) => {
   const { colors, isDark } = useTheme();
   const { user, isInstructor } = useAuth();
 
@@ -158,6 +160,7 @@ const SpotCard = ({ spot, bottomInset, onClose }: SpotCardProps) => {
               city={spot.city}
               isIndoor={spot.isIndoor}
               description={spot.description}
+              distance={distance}
             />
           </View>
 

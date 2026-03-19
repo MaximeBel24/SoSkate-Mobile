@@ -13,10 +13,18 @@ type MapHeaderProps = {
   onSearchPress: () => void;
   onFilterPress: () => void;
   isFilterActive: boolean;
+  showFilter: boolean;
 };
 
+const MapHeader = ({
+                     spotsCount,
+                     topInset,
+                     onSearchPress,
+                     onFilterPress,
+                     isFilterActive,
+                     showFilter
+}: MapHeaderProps) => {
 
-const MapHeader = ({ spotsCount, topInset, onSearchPress, onFilterPress, isFilterActive }: MapHeaderProps) => {
   const { colors, isDark } = useTheme();
 
   return (
@@ -56,23 +64,26 @@ const MapHeader = ({ spotsCount, topInset, onSearchPress, onFilterPress, isFilte
           </View>
 
           <View style={styles.headerRight}>
-            <TouchableOpacity
-                style={[
-                  styles.searchButton,
-                  {
-                    backgroundColor: colors.background.elevated,
-                    borderColor: isFilterActive ? "#ff6b35" : colors.border.default,
-                  },
-                ]}
-                onPress={onFilterPress}
-                activeOpacity={0.7}
-            >
-              <Icons.FunnelSimpleIcon
-                  size={20}
-                  color={isFilterActive ? "#ff6b35" : colors.text.primary}
-                  weight={isFilterActive ? "fill" : "bold"}
-              />
-            </TouchableOpacity>
+            {showFilter && (
+                <TouchableOpacity
+                    style={[
+                      styles.searchButton,
+                      {
+                        backgroundColor: colors.background.elevated,
+                        borderColor: isFilterActive ? "#ff6b35" : colors.border.default,
+                      },
+                    ]}
+                    onPress={onFilterPress}
+                    activeOpacity={0.7}
+                >
+                  <Icons.FunnelSimpleIcon
+                      size={20}
+                      color={isFilterActive ? "#ff6b35" : colors.text.primary}
+                      weight={isFilterActive ? "fill" : "bold"}
+                  />
+                </TouchableOpacity>
+            )}
+
 
             <TouchableOpacity
                 style={[
