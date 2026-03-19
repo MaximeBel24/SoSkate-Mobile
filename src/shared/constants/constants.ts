@@ -13,23 +13,15 @@ export const ENDPOINTS = {
     // Nouvel endpoint unifié (Customer + Instructor)
     UNIFIED_LOGIN: "/auth/login",
     EMAIL_EXISTS: "/auth/email-exists",
+    CHANGE_PASSWORD: "/auth/change-password",
+    DELETE_ACCOUNT: "/auth/delete-account",
 
     // Endpoints Customer spécifiques
     CUSTOMER_REGISTER: "/customer/auth/register",
     CUSTOMER_LOGIN: "/customer/auth/login",
+
   },
   ADMIN: {
     INSTRUCTOR: "/admin/instructors",
   },
-};
-
-// Configuration de la carte
-export const MAP_CONFIG = {
-  INITIAL_REGION: {
-    latitude: 48.8566, // Paris
-    longitude: 2.3522,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-  },
-  MARKER_SIZE: 40,
 };

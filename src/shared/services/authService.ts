@@ -70,6 +70,37 @@ export const registerCustomer = async (
   }
 };
 
+/**
+ * Change le mot de passe de l'utilisateur connecté
+ */
+export const changePassword = async (
+    currentPassword: string,
+    newPassword: string,
+): Promise<void> => {
+  try {
+    await apiClient.patch(ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+      currentPassword,
+      newPassword,
+    });
+  } catch (err) {
+    return handleApiError(err, "Erreur lors du changement de mot de passe");
+  }
+};
+
+/**
+ * Supprime le compte de l'utilisateur connecté (soft delete)
+ */
+export const deleteAccount = async (password: string): Promise<void> => {
+  try {
+    await apiClient.delete(ENDPOINTS.AUTH.DELETE_ACCOUNT, {
+      data: { password },
+    });
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la suppression du compte");
+  }
+};
+
+
 // ============================================
 // EMAIL VERIFICATION
 // ============================================

@@ -12,11 +12,12 @@ import { scale, verticalScale } from "@/src/shared/utils/styling";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
-import React from "react";
+import React, {useState} from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocationSettings } from "@/src/shared/contexts/LocationContext";
+import ChangePasswordModal from "@/src/features/profile/ui/ChangePasswordModal";
 
 // ============================================
 // SETTING ITEM COMPONENT
@@ -121,6 +122,7 @@ const SettingsScreen = () => {
   // Mock states for toggles
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const { isLocationEnabled: locationEnabled, setLocationEnabled } = useLocationSettings();
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   return (
     <ScreenWrapper showPattern={true} bgOpacity={0.15}>
@@ -188,6 +190,7 @@ const SettingsScreen = () => {
               onPress={() => {}}
               animationDelay={400}
             />
+
           </View>
 
           {/* Privacy Section */}
@@ -220,6 +223,20 @@ const SettingsScreen = () => {
                   }
                 />
               }
+            />
+
+            <SettingItem
+                icon={
+                  <Icons.LockKeyIcon
+                      size={20}
+                      color={colors.semantic.info}
+                      weight="duotone"
+                  />
+                }
+                title="Changer le mot de passe"
+                description="Modifier votre mot de passe actuel"
+                onPress={() => setShowChangePassword(true)}
+                animationDelay={525}
             />
 
             <SettingItem
@@ -336,6 +353,10 @@ const SettingsScreen = () => {
         ]}
         style={[styles.bottomGradient, { height: insets.bottom + 60 }]}
         pointerEvents="none"
+      />
+      <ChangePasswordModal
+          visible={showChangePassword}
+          onClose={() => setShowChangePassword(false)}
       />
     </ScreenWrapper>
   );
