@@ -126,13 +126,14 @@ const openNavigationApp = async (
   }
 };
 
-/**
- * Affiche un menu de sélection de l'application de navigation
- */
+type ShowAlertFn = (title: string, message?: string, buttons?: { text: string; style?: "default" | "cancel" | "destructive"; onPress?: () => void }[]) => void;
+
 export const openNavigationMenu = async (
-  coords: Coordinates,
-  options?: NavigationOptions,
+    coords: Coordinates,
+    options?: NavigationOptions,
+    showAlert?: ShowAlertFn,
 ): Promise<void> => {
+
   // Vérifier les apps disponibles
   const availableApps: { name: string; app: NavigationApp; url: string }[] = [];
 
@@ -140,7 +141,7 @@ export const openNavigationMenu = async (
   const googleMapsUrl = getGoogleMapsUrl(coords, options);
   if (await isAppInstalled(googleMapsUrl)) {
     availableApps.push({
-      name: "Google Maps",
+      name: "Maps",
       app: "google-maps",
       url: googleMapsUrl,
     });
@@ -184,17 +185,16 @@ export const openNavigationMenu = async (
     onPress: () => openNavigationApp(app.app, coords, options),
   }));
 
-  Alert.alert(
-    "Choisir une application",
-    "Quelle application souhaitez-vous utiliser pour l'itinéraire ?",
-    [
-      ...buttons,
-      {
-        text: "Annuler",
-        style: "cancel",
-      },
-    ],
+  const alertFn = showAlert ?? Alert.alert;
+  alertFn(
+      "Choisir une application",
+      "Quelle application souhaitez-vous utiliser pour l'itinéraire ?",
+      [
+        ...buttons,
+        { text: "Annuler", style: "cancel" },
+      ],
   );
+
 };
 
 /**

@@ -8,6 +8,7 @@ import {
 } from "@/src/shared/services/instructorSpotsService";
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { logger } from "@/src/shared/utils/logger";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 interface UseInstructorAssociationParams {
   spotId: number;
@@ -37,6 +38,7 @@ export function useInstructorAssociation({
   const [isAssociatedToSpot, setIsAssociatedToSpot] = useState(false);
   const [loadingAssociation, setLoadingAssociation] = useState(false);
   const [checkingAssociation, setCheckingAssociation] = useState(false);
+  const { showAlert } = useCustomAlert();
 
   const checkInstructorAssociation = useCallback(async () => {
     if (!isInstructor || !instructorId) {
@@ -68,7 +70,7 @@ export function useInstructorAssociation({
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    Alert.alert(
+    showAlert(
       "S'associer a ce spot",
       `Voulez-vous enseigner a "${spotName}" ? Vous serez visible par les eleves sur ce spot.`,
       [
@@ -83,7 +85,7 @@ export function useInstructorAssociation({
               Haptics.notificationAsync(
                 Haptics.NotificationFeedbackType.Success,
               );
-              Alert.alert(
+              showAlert(
                 "Succes !",
                 `Vous enseignez maintenant a "${spotName}". Les eleves peuvent vous trouver ici.`,
               );
@@ -93,7 +95,7 @@ export function useInstructorAssociation({
             } catch (error) {
               logger.error("Erreur association:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-              Alert.alert(
+              showAlert(
                 "Erreur",
                 getErrorMessage(
                   error,
@@ -114,7 +116,7 @@ export function useInstructorAssociation({
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    Alert.alert(
+    showAlert(
       "Se retirer de ce spot",
       `Voulez-vous arreter d'enseigner a "${spotName}" ? Vous ne serez plus visible par les eleves ici.`,
       [
@@ -136,7 +138,7 @@ export function useInstructorAssociation({
             } catch (error) {
               logger.error("Erreur retrait:", error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-              Alert.alert(
+              showAlert(
                 "Erreur",
                 getErrorMessage(
                   error,

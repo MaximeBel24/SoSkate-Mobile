@@ -16,6 +16,7 @@ import * as Haptics from "expo-haptics";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { InstructorSpotResponse } from "../types/instructor-spots.types";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 interface InstructorSpotCardProps {
   spot: InstructorSpotResponse;
@@ -34,6 +35,7 @@ const InstructorSpotCard: React.FC<InstructorSpotCardProps> = ({
 }) => {
   const { colors } = useTheme();
   const scale = useSharedValue(1);
+  const { showAlert } = useCustomAlert();
 
   const handlePressIn = () => {
     scale.value = withSpring(0.98);
@@ -46,7 +48,7 @@ const InstructorSpotCard: React.FC<InstructorSpotCardProps> = ({
   const handleRemove = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    Alert.alert(
+    showAlert(
       "Se retirer de ce spot",
       `Êtes-vous sûr de vouloir arrêter d'enseigner à "${spot.spot.name}" ?`,
       [

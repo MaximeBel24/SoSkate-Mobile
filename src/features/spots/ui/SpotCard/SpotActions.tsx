@@ -5,7 +5,8 @@ import { logger } from "@/src/shared/utils/logger";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Icons from "phosphor-react-native";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
 
 type SpotActionsProps = {
   spotId: number;
@@ -28,13 +29,11 @@ const SpotActions = ({
   hasServices,
 }: SpotActionsProps) => {
   const { colors } = useTheme();
+  const { showAlert } = useCustomAlert();
 
   const handleItinerary = async () => {
     if (!latitude || !longitude) {
-      Alert.alert(
-        "Position non disponible",
-        "Les coordonnées de ce spot ne sont pas disponibles.",
-      );
+      showAlert("Position non disponible", "Les coordonnées de ce spot ne sont pas disponibles.");
       return;
     }
 
@@ -45,10 +44,12 @@ const SpotActions = ({
           destinationName: spotName,
           address: address,
         },
+        showAlert,
       );
     } catch (error) {
       logger.error("Erreur lors de l'ouverture de l'itinéraire:", error);
-      Alert.alert("Erreur", "Impossible d'ouvrir l'application de navigation.");
+      showAlert("Erreur", "Impossible d'ouvrir l'application de navigation.");
+
     }
   };
 
