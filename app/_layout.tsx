@@ -11,6 +11,7 @@ import ErrorFallback from "@/src/shared/ui/feedback/ErrorFallback";
 import ErrorBoundary from "@/src/shared/ui/feedback/ErrorBoundary";
 import { StyleSheet } from "react-native";
 import {LocationProvider} from "@/src/shared/contexts/LocationContext";
+import {AlertProvider} from "@/src/shared/ui/CustomModal/AlertContext";
 
 const RootLayout = () => {
   return (
@@ -19,25 +20,27 @@ const RootLayout = () => {
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <AuthProvider>
               <LocationProvider>
-                  <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="index" />
-                      <Stack.Screen name="(auth)" />
-                      <Stack.Screen name="(tabs)" />
-                      <Stack.Screen
-                          name="(modals)/profileModal"
-                          options={{
-                              presentation: "modal",
-                              animation: "slide_from_bottom",
-                          }}
-                      />
-                      <Stack.Screen
-                          name="(modals)/settingsModal"
-                          options={{
-                              presentation: "modal",
-                              animation: "slide_from_bottom",
-                          }}
-                      />
-                  </Stack>
+                  <AlertProvider>
+                      <Stack screenOptions={{ headerShown: false }}>
+                          <Stack.Screen name="index" />
+                          <Stack.Screen name="(auth)" />
+                          <Stack.Screen name="(tabs)" />
+                          <Stack.Screen
+                              name="(modals)/profileModal"
+                              options={{
+                                  presentation: "modal",
+                                  animation: "slide_from_bottom",
+                              }}
+                          />
+                          <Stack.Screen
+                              name="(modals)/settingsModal"
+                              options={{
+                                  presentation: "modal",
+                                  animation: "slide_from_bottom",
+                              }}
+                          />
+                      </Stack>
+                  </AlertProvider>
               </LocationProvider>
           </AuthProvider>
         </ErrorBoundary>
