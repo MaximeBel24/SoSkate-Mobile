@@ -100,6 +100,15 @@ export const deleteAccount = async (password: string): Promise<void> => {
   }
 };
 
+export const verifyPassword = async (password: string): Promise<boolean> => {
+  try {
+    const response = await apiClient.post<boolean>("/auth/verify-password", { password });
+    return response.data;
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la vérification du mot de passe");
+  }
+};
+
 
 // ============================================
 // EMAIL VERIFICATION

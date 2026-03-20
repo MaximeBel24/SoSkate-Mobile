@@ -4,9 +4,10 @@ import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from "react-native-reanima
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
 import { scale, verticalScale } from "@/src/shared/utils/styling";
-import { changePassword } from "@/src/shared/services/authService";
+import { changePassword, verifyPassword } from "@/src/shared/services/authService";
 import { useCustomAlert } from "@/src/shared/ui/CustomModal/AlertContext";
-import {getErrorMessage} from "@/src/api/axios/getErrorMessage";
+import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
+import PasswordRequirements from "@/src/features/auth/components/PasswordRequirements";
 
 type ChangePasswordModalProps = {
     visible: boolean;
@@ -14,21 +15,25 @@ type ChangePasswordModalProps = {
 };
 
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
-         visible,
-         onClose,
-     }) => {
+                                                                     visible,
+                                                                     onClose,
+                                                                 }) => {
     const { colors } = useTheme();
     const { showAlert } = useCustomAlert();
 
+    const [step, setStep] = useState<1 | 2>(1);
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
 
     const resetForm = () => {
+        setStep(1);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
+        setIsPasswordValid(false);
     };
 
     const handleClose = () => {
@@ -36,15 +41,37 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         onClose();
     };
 
+    // Étape 1 : vérifier le mot de passe actuel
+    const handleVerify = async () => {
+        if (!currentPassword) {
+            showAlert("Erreur", "Veuillez entrer votre mot de passe actuel");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const isValid = await verifyPassword(currentPassword);
+            if (isValid) {
+                setStep(2);
+            } else {
+                showAlert("Erreur", "Mot de passe incorrect");
+            }
+        } catch (error) {
+            showAlert("Erreur", getErrorMessage(error, "Impossible de vérifier le mot de passe"));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Étape 2 : changer le mot de passe
     const handleSubmit = async () => {
-        // Validations
-        if (!currentPassword || !newPassword || !confirmPassword) {
+        if (!newPassword || !confirmPassword) {
             showAlert("Erreur", "Veuillez remplir tous les champs");
             return;
         }
 
-        if (newPassword.length < 6) {
-            showAlert("Erreur", "Le nouveau mot de passe doit contenir au moins 6 caractères");
+        if (!isPasswordValid) {
+            showAlert("Erreur", "Le mot de passe ne respecte pas tous les critères");
             return;
         }
 
@@ -101,60 +128,106 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                         },
                     ]}
                 >
-                    <Typo size={18} fontWeight="700" color={colors.text.primary} style={styles.title}>
-                        Changer le mot de passe
-                    </Typo>
-
-                    <TextInput
-                        style={inputStyle}
-                        placeholder="Mot de passe actuel"
-                        placeholderTextColor={colors.text.muted}
-                        secureTextEntry
-                        value={currentPassword}
-                        onChangeText={setCurrentPassword}
-                    />
-
-                    <TextInput
-                        style={inputStyle}
-                        placeholder="Nouveau mot de passe"
-                        placeholderTextColor={colors.text.muted}
-                        secureTextEntry
-                        value={newPassword}
-                        onChangeText={setNewPassword}
-                    />
-
-                    <TextInput
-                        style={inputStyle}
-                        placeholder="Confirmer le nouveau mot de passe"
-                        placeholderTextColor={colors.text.muted}
-                        secureTextEntry
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                    />
-
-                    <View style={styles.buttons}>
-                        <Pressable
-                            onPress={handleClose}
-                            style={[styles.button, { backgroundColor: colors.background.subtle }]}
-                        >
-                            <Typo size={14} fontWeight="600" color={colors.text.secondary}>
-                                Annuler
+                    {step === 1 ? (
+                        <>
+                            <Typo size={18} fontWeight="700" color={colors.text.primary} style={styles.title}>
+                                Vérification
                             </Typo>
-                        </Pressable>
 
-                        <Pressable
-                            onPress={handleSubmit}
-                            disabled={isLoading}
-                            style={[
-                                styles.button,
-                                { backgroundColor: "#ff6b35", opacity: isLoading ? 0.6 : 1 },
-                            ]}
-                        >
-                            <Typo size={14} fontWeight="700" color="#fff">
-                                {isLoading ? "Modification..." : "Confirmer"}
+                            <Typo size={13} color={colors.text.secondary} style={styles.subtitle}>
+                                Entrez votre mot de passe actuel pour continuer
                             </Typo>
-                        </Pressable>
-                    </View>
+
+                            <TextInput
+                                style={inputStyle}
+                                placeholder="Mot de passe actuel"
+                                placeholderTextColor={colors.text.muted}
+                                secureTextEntry
+                                value={currentPassword}
+                                onChangeText={setCurrentPassword}
+                            />
+
+                            <View style={styles.buttons}>
+                                <Pressable
+                                    onPress={handleClose}
+                                    style={[styles.button, { backgroundColor: colors.background.subtle }]}
+                                >
+                                    <Typo size={14} fontWeight="600" color={colors.text.secondary}>
+                                        Annuler
+                                    </Typo>
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={handleVerify}
+                                    disabled={isLoading}
+                                    style={[
+                                        styles.button,
+                                        { backgroundColor: "#ff6b35", opacity: isLoading ? 0.6 : 1 },
+                                    ]}
+                                >
+                                    <Typo size={14} fontWeight="700" color="#fff">
+                                        {isLoading ? "Vérification..." : "Continuer"}
+                                    </Typo>
+                                </Pressable>
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <Typo size={18} fontWeight="700" color={colors.text.primary} style={styles.title}>
+                                Nouveau mot de passe
+                            </Typo>
+
+                            <TextInput
+                                style={inputStyle}
+                                placeholder="Nouveau mot de passe"
+                                placeholderTextColor={colors.text.muted}
+                                secureTextEntry
+                                value={newPassword}
+                                onChangeText={setNewPassword}
+                            />
+
+                            <PasswordRequirements
+                                password={newPassword}
+                                onValidationChange={setIsPasswordValid}
+                            />
+
+                            <TextInput
+                                style={[inputStyle, { marginTop: verticalScale(12) }]}
+                                placeholder="Confirmer le nouveau mot de passe"
+                                placeholderTextColor={colors.text.muted}
+                                secureTextEntry
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                            />
+
+                            <View style={styles.buttons}>
+                                <Pressable
+                                    onPress={() => setStep(1)}
+                                    style={[styles.button, { backgroundColor: colors.background.subtle }]}
+                                >
+                                    <Typo size={14} fontWeight="600" color={colors.text.secondary}>
+                                        Retour
+                                    </Typo>
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={handleSubmit}
+                                    disabled={isLoading || !isPasswordValid}
+                                    style={[
+                                        styles.button,
+                                        {
+                                            backgroundColor: "#ff6b35",
+                                            opacity: isLoading || !isPasswordValid ? 0.6 : 1,
+                                        },
+                                    ]}
+                                >
+                                    <Typo size={14} fontWeight="700" color="#fff">
+                                        {isLoading ? "Modification..." : "Confirmer"}
+                                    </Typo>
+                                </Pressable>
+                            </View>
+                        </>
+                    )}
                 </Animated.View>
             </View>
         </Modal>
@@ -182,7 +255,11 @@ const styles = StyleSheet.create({
     },
     title: {
         textAlign: "center",
-        marginBottom: verticalScale(20),
+        marginBottom: verticalScale(8),
+    },
+    subtitle: {
+        textAlign: "center",
+        marginBottom: verticalScale(16),
     },
     input: {
         borderWidth: 1,
