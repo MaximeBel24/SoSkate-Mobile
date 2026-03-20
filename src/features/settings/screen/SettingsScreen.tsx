@@ -18,6 +18,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocationSettings } from "@/src/shared/contexts/LocationContext";
 import ChangePasswordModal from "@/src/features/profile/ui/ChangePasswordModal";
+import DeleteAccountModal from "@/src/features/profile/ui/DeleteAccountModal";
 
 // ============================================
 // SETTING ITEM COMPONENT
@@ -122,7 +123,9 @@ const SettingsScreen = () => {
   // Mock states for toggles
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const { isLocationEnabled: locationEnabled, setLocationEnabled } = useLocationSettings();
+
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
 
   return (
     <ScreenWrapper showPattern={true} bgOpacity={0.15}>
@@ -330,6 +333,23 @@ const SettingsScreen = () => {
             />
           </View>
 
+          <SectionHeader title="Compte" animationDelay={950} />
+          <View style={styles.section}>
+            <SettingItem
+                icon={
+                  <Icons.TrashIcon
+                      size={20}
+                      color={colors.semantic.danger}
+                      weight="duotone"
+                  />
+                }
+                title="Supprimer mon compte"
+                description="Suppression définitive de votre compte"
+                onPress={() => setShowDeleteAccount(true)}
+                animationDelay={1000}
+            />
+          </View>
+
           {/* Footer */}
           <Animated.View
             style={styles.footer}
@@ -354,6 +374,11 @@ const SettingsScreen = () => {
         style={[styles.bottomGradient, { height: insets.bottom + 60 }]}
         pointerEvents="none"
       />
+      <DeleteAccountModal
+          visible={showDeleteAccount}
+          onClose={() => setShowDeleteAccount(false)}
+      />
+
       <ChangePasswordModal
           visible={showChangePassword}
           onClose={() => setShowChangePassword(false)}
@@ -364,9 +389,6 @@ const SettingsScreen = () => {
 
 export default SettingsScreen;
 
-// ============================================
-// STYLES
-// ============================================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
