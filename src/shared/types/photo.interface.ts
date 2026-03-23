@@ -15,6 +15,7 @@ export enum PhotoEntityType {
  */
 export enum PhotoType {
   AVATAR = "AVATAR",
+  COVER = "COVER",
   GALLERY = "GALLERY",
   THUMBNAIL = "THUMBNAIL",
 }

@@ -14,7 +14,7 @@ import { handleApiError } from "@/src/api/axios/handleApiError";
 // TYPES
 // ============================================
 export type PhotoEntityType = "CUSTOMER" | "INSTRUCTOR" | "SPOT" | "EVENT";
-export type PhotoType = "AVATAR" | "COVER" | "GALLERY";
+export type PhotoType = "AVATAR" | "COVER" | "GALLERY" | "TRICK";
 
 export interface UploadAvatarParams {
   file: {
@@ -26,6 +26,20 @@ export interface UploadAvatarParams {
   entityId: number;
   uploadedBy: number;
 }
+
+export interface UploadPhotoParams {
+  file: {
+    uri: string;
+    type: string;
+    name: string;
+  };
+  entityType: PhotoEntityType;
+  entityId: number;
+  photoType: PhotoType;
+  uploadedBy: number;
+  displayOrder?: number;
+}
+
 
 export interface AvatarResponse {
   id: number;
@@ -147,12 +161,80 @@ export const getSpotPhotos = async (
 };
 
 /**
- * Récupère les photos d'un instructeur
- * TODO: Implémenter quand l'endpoint backend sera disponible
+ * Récupère les photos galerie d'un instructeur
+ * GET /api/photos?entityType=INSTRUCTOR&entityId={id}&photoType=GALLERY
  */
 export const getInstructorPhotos = async (
-  instructorId: number,
+    instructorId: number,
 ): Promise<PhotoResponse[]> => {
-  // TODO: Attendre l'implémentation backend
-  return [];
+  try {
+    const endpoint = `${ENDPOINTS.PHOTOS}?entityType=INSTRUCTOR&entityId=${instructorId}&photoType=GALLERY`;
+    const { data } = await apiClient.get<PhotoResponse[]>(endpoint);
+
+    if (!Array.isArray(data)) {
+      throw new ApiError("Format de réponse invalide", 500);
+    }
+
+    return data;
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la récupération des photos");
+  }
+};
+
+/**
+ * Upload une photo galerie pour un instructeur
+ * POST /api/photos
+ */
+export const uploadInstructorPhoto = async (
+    params: UploadPhotoParams,
+): Promise<PhotoResponse> => {
+  try {
+    const formData = new FormData();
+
+    formData.append("file", {
+      uri: params.file.uri,
+      type: params.file.type,
+      name: params.file.name,
+    } as any);
+
+    formData.append("entityType", params.entityType);
+    formData.append("entityId", params.entityId.toString());
+    formData.append("photoType", params.photoType);
+    formData.append("uploadedBy", params.uploadedBy.toString());
+
+    if (params.displayOrder !== undefined) {
+      formData.append("displayOrder", params.displayOrder.toString());
+    }
+
+    const { data } = await apiClient.post<PhotoResponse>(
+        ENDPOINTS.PHOTOS,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+    );
+
+    return data;
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de l'upload de la photo");
+  }
+};
+
+/**
+ * Supprime une photo (soft delete)
+ * DELETE /api/photos/{id}
+ */
+export const deletePhoto = async (
+    photoId: number,
+    deletedBy: number,
+): Promise<void> => {
+  try {
+    await apiClient.delete(
+        `${ENDPOINTS.PHOTOS}/${photoId}?deletedBy=${deletedBy}`,
+    );
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la suppression de la photo");
+  }
 };
