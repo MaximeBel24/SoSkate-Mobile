@@ -185,6 +185,20 @@ const Profile = () => {
       roles: ["INSTRUCTOR"],
     },
     {
+      id: "my-photos",
+      title: "Mes photos",
+      icon: (
+          <Icons.ImagesIcon
+              size={24}
+              color={colors.constant.white}
+              weight="duotone"
+          />
+      ),
+      bgColor: "#f97316",
+      routeName: "/(modals)/instructor/photos",
+      roles: ["INSTRUCTOR"],
+    },
+    {
       id: "my-stats",
       title: "Mes statistiques",
       icon: (
