@@ -14,6 +14,7 @@ import * as Icons from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   Linking,
   ScrollView,
   StyleSheet,
@@ -26,6 +27,12 @@ import Animated, {
   FadeInUp,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getInstructorPhotos } from "@/src/shared/services/photoService";
+import { PhotoResponse } from "@/src/shared/types/photo.interface";
+import { Image } from "expo-image";
+import ImageViewerModal from "@/src/shared/ui/media/ImageViewerModal";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 // ============================================
 // COMPONENT
@@ -36,10 +43,25 @@ const InstructorDetailsModal = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  // === Gallery layout ===
+  const GALLERY_COLUMNS = 3;
+  const GALLERY_GAP = 2;
+  const sectionInnerWidth = SCREEN_WIDTH - spacingX._24 * 2 - spacingX._16 * 2;
+  const GALLERY_ITEM_SIZE = Math.floor(
+      (sectionInnerWidth - GALLERY_GAP * (GALLERY_COLUMNS - 1)) / GALLERY_COLUMNS
+  );
+
   // === State ===
   const [instructor, setInstructor] = useState<InstructorResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // === Gallery State ===
+  const [galleryPhotos, setGalleryPhotos] = useState<PhotoResponse[]>([]);
+  const [isLoadingGallery, setIsLoadingGallery] = useState(false);
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+
 
   // === Avatar State ===
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -56,6 +78,7 @@ const InstructorDetailsModal = () => {
   useEffect(() => {
     if (instructor) {
       loadAvatar();
+      loadGalleryPhotos();
     }
   }, [instructor]);
 
@@ -89,6 +112,20 @@ const InstructorDetailsModal = () => {
     }
   };
 
+  const loadGalleryPhotos = async () => {
+    if (!instructor) return;
+
+    try {
+      setIsLoadingGallery(true);
+      const photos = await getInstructorPhotos(Number(instructor.id));
+      setGalleryPhotos(photos);
+    } catch (err) {
+      logger.error("Error loading gallery photos:", err);
+    } finally {
+      setIsLoadingGallery(false);
+    }
+  };
+
   const handleClose = () => {
     router.back();
   };
@@ -107,6 +144,11 @@ const InstructorDetailsModal = () => {
     if (instructor?.youtubeChannel) {
       Linking.openURL(instructor.youtubeChannel);
     }
+  };
+
+  const handleGalleryPhotoPress = (index: number) => {
+    setViewerIndex(index);
+    setViewerVisible(true);
   };
 
   const handleBookLesson = () => {
@@ -393,8 +435,64 @@ const InstructorDetailsModal = () => {
               </View>
             </Animated.View>
           )}
+
+          {/* Gallery Section */}
+          {galleryPhotos.length > 0 && (
+              <Animated.View
+                  entering={FadeInUp.delay(400).springify()}
+                  style={[styles.section, { borderColor: colors.border.subtle }]}
+              >
+                <View style={styles.sectionHeader}>
+                  <Icons.ImagesIcon
+                      size={20}
+                      color={colors.accent.primary}
+                      weight="duotone"
+                  />
+                  <Typo size={16} fontWeight="700" color={colors.text.primary}>
+                    Photos
+                  </Typo>
+                  <Typo size={13} color={colors.text.muted} style={{ marginLeft: "auto" }}>
+                    {galleryPhotos.length}
+                  </Typo>
+                </View>
+                <View style={styles.galleryGrid}>
+                  {galleryPhotos.map((photo, index) => (
+                      <TouchableOpacity
+                          key={photo.id}
+                          activeOpacity={0.8}
+                          onPress={() => handleGalleryPhotoPress(index)}
+                          style={[
+                            styles.galleryItem,
+                            {
+                              width: GALLERY_ITEM_SIZE,
+                              height: GALLERY_ITEM_SIZE,
+                              marginRight: (index + 1) % GALLERY_COLUMNS === 0 ? 0 : GALLERY_GAP,
+                              marginBottom: GALLERY_GAP,
+                            },
+                          ]}
+                      >
+                        <Image
+                            source={{ uri: photo.thumbnailUrl || photo.url }}
+                            style={styles.galleryImage}
+                            contentFit="cover"
+                            transition={200}
+                        />
+                      </TouchableOpacity>
+                  ))}
+                </View>
+              </Animated.View>
+          )}
         </ScrollView>
       </View>
+
+      {/* Image Viewer */}
+      <ImageViewerModal
+          visible={viewerVisible}
+          images={galleryPhotos}
+          initialIndex={viewerIndex}
+          onClose={() => setViewerVisible(false)}
+      />
+
     </ScreenWrapper>
   );
 };
@@ -517,5 +615,18 @@ const styles = StyleSheet.create({
     padding: spacingX._14,
     borderRadius: 12,
     borderWidth: 1,
+  },
+  galleryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    // justifyContent: "center",
+  },
+  galleryItem: {
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  galleryImage: {
+    width: "100%",
+    height: "100%",
   },
 });

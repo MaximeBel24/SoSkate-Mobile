@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, {useCallback, useState} from "react";
 import {
     View,
     StyleSheet,
@@ -20,6 +20,7 @@ import Typo from "@/src/shared/ui/typography/Typo";
 import ScreenWrapper from "@/src/shared/ui/layout/ScreenWrapper";
 import { useInstructorPhotos } from "@/src/features/profile/hooks/useInstructorPhotos";
 import { PhotoResponse } from "@/src/shared/types/photo.interface";
+import ImageViewerModal from "@/src/shared/ui/media/ImageViewerModal";
 
 const NUM_COLUMNS = 3;
 const GRID_GAP = 2;
@@ -30,6 +31,9 @@ export default function InstructorPhotosScreen() {
     const { colors } = useTheme();
     const router = useRouter();
     const insets = useSafeAreaInsets();
+
+    const [viewerVisible, setViewerVisible] = useState(false);
+    const [viewerIndex, setViewerIndex] = useState(0);
 
     const {
         photos,
@@ -62,6 +66,12 @@ export default function InstructorPhotosScreen() {
         handleDeletePhoto(photoId);
     };
 
+    const handlePhotoPress = (index: number) => {
+        setViewerIndex(index);
+        setViewerVisible(true);
+    };
+
+
     const renderPhoto = ({ item, index }: { item: PhotoResponse; index: number }) => (
         <Animated.View
             entering={FadeInUp.delay(index * 50).springify()}
@@ -75,12 +85,17 @@ export default function InstructorPhotosScreen() {
                 },
             ]}
         >
-            <Image
-                source={{ uri: item.thumbnailUrl || item.url }}
-                style={styles.photo}
-                contentFit="cover"
-                transition={200}
-            />
+            <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handlePhotoPress(index)}
+            >
+                <Image
+                    source={{ uri: item.thumbnailUrl || item.url }}
+                    style={styles.photo}
+                    contentFit="cover"
+                    transition={200}
+                />
+            </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.deleteButton, { backgroundColor: "rgba(0,0,0,0.5)" }]}
                 onPress={() => handleDelete(item.id)}
@@ -90,6 +105,7 @@ export default function InstructorPhotosScreen() {
             </TouchableOpacity>
         </Animated.View>
     );
+
 
     const renderEmpty = () => {
         if (isLoading) return null;
@@ -198,6 +214,15 @@ export default function InstructorPhotosScreen() {
                         showsVerticalScrollIndicator={false}
                     />
                 )}
+
+                {/* Image Viewer */}
+                <ImageViewerModal
+                    visible={viewerVisible}
+                    images={photos}
+                    initialIndex={viewerIndex}
+                    onClose={() => setViewerVisible(false)}
+                />
+
             </View>
         </ScreenWrapper>
     );
