@@ -6,10 +6,11 @@ import {
   StyleSheet,
   TextInput,
   TextInputProps,
-  TextStyle,
+  TextStyle, TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
+import * as Icons from "phosphor-react-native";
 
 interface InputProps extends TextInputProps {
   icon?: React.ReactNode;
@@ -21,6 +22,7 @@ interface InputProps extends TextInputProps {
 const Input = (props: InputProps) => {
   const { colors, isDark } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
     <View
@@ -39,13 +41,34 @@ const Input = (props: InputProps) => {
     >
       {props.icon}
       <TextInput
-        style={[styles.input, { color: colors.text.primary }, props.inputStyle]}
-        placeholderTextColor={colors.text.muted}
-        ref={props.inputRef}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        {...props}
+          style={[styles.input, { color: colors.text.primary }, props.inputStyle]}
+          placeholderTextColor={colors.text.muted}
+          ref={props.inputRef}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          {...props}
+          secureTextEntry={props.secureTextEntry && !passwordVisible}
       />
+      {props.secureTextEntry && (
+          <TouchableOpacity
+              onPress={() => setPasswordVisible(!passwordVisible)}
+              hitSlop={8}
+          >
+            {passwordVisible ? (
+                <Icons.EyeIcon
+                    size={verticalScale(20)}
+                    color={colors.text.muted}
+                    weight="duotone"
+                />
+            ) : (
+                <Icons.EyeSlashIcon
+                    size={verticalScale(20)}
+                    color={colors.text.muted}
+                    weight="duotone"
+                />
+            )}
+          </TouchableOpacity>
+      )}
     </View>
   );
 };
