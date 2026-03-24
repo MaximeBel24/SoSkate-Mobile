@@ -11,6 +11,7 @@ export default function ModalsLayout() {
       <Stack.Screen name="instructor/[id]" />
       <Stack.Screen name="instructor/courses" />
       <Stack.Screen name="instructor/course/[id]" />
+      <Stack.Screen name="instructor/photos" />
     </Stack>
   );
 }

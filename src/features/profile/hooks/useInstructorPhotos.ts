@@ -36,11 +36,12 @@ export interface UseInstructorPhotosReturn {
 export function useInstructorPhotos(): UseInstructorPhotosReturn {
     const { user } = useAuth();
     const { showAlert } = useCustomAlert();
-    const { showImagePickerAlert } = useImagePicker({
+    const { showMultiImagePickerAlert } = useImagePicker({
         allowsEditing: false,
         quality: 0.8,
         maxWidth: 1920,
         maxHeight: 1920,
+        allowsMultiple: true
     });
 
     const [photos, setPhotos] = useState<PhotoResponse[]>([]);
@@ -62,46 +63,61 @@ export function useInstructorPhotos(): UseInstructorPhotosReturn {
         }
     }, [user?.instructorId]);
 
-    // === Upload une photo ===
-    const onImageSelected = useCallback(
-        async (image: SelectedImage) => {
+    // === Upload multiple photos ===
+    const onImagesSelected = useCallback(
+        async (images: SelectedImage[]) => {
             if (!user?.instructorId) return;
 
             try {
                 setIsUploading(true);
 
-                const result = await uploadInstructorPhoto({
-                    file: {
-                        uri: image.uri,
-                        type: image.type,
-                        name: image.name,
-                    },
-                    entityType: "INSTRUCTOR",
-                    entityId: user.instructorId,
-                    photoType: "GALLERY",
-                    uploadedBy: user.id,
-                });
+                const results: PhotoResponse[] = [];
 
-                // Ajouter la photo en début de liste
-                setPhotos((prev) => [result, ...prev]);
+                for (const image of images) {
+                    const result = await uploadInstructorPhoto({
+                        file: {
+                            uri: image.uri,
+                            type: image.type,
+                            name: image.name,
+                        },
+                        entityType: "INSTRUCTOR",
+                        entityId: user.instructorId,
+                        photoType: "GALLERY",
+                        uploadedBy: user.id,
+                    });
+                    results.push(result);
+                }
 
-                showAlert("Succès", "Photo ajoutée avec succès !");
+                // Ajouter les photos en début de liste
+                setPhotos((prev) => [...results, ...prev]);
+
+                const count = results.length;
+                showAlert(
+                    "Succès",
+                    count > 1
+                        ? `${count} photos ajoutées avec succès !`
+                        : "Photo ajoutée avec succès !",
+                );
             } catch (error) {
-                logger.error("Error uploading instructor photo:", error);
+                logger.error("Error uploading instructor photos:", error);
                 showAlert(
                     "Erreur",
-                    getErrorMessage(error, "Impossible d'ajouter la photo"),
+                    getErrorMessage(error, "Impossible d'ajouter les photos"),
                 );
+                // Recharger pour être à jour
+                await loadPhotos();
             } finally {
                 setIsUploading(false);
             }
         },
-        [user?.instructorId, user?.id],
+        [user?.instructorId, user?.id, loadPhotos],
     );
 
+
     const handleAddPhoto = useCallback(() => {
-        showImagePickerAlert(onImageSelected);
-    }, [showImagePickerAlert, onImageSelected]);
+        showMultiImagePickerAlert(onImagesSelected);
+    }, [showMultiImagePickerAlert, onImagesSelected]);
+
 
     // === Supprimer une photo ===
     const handleDeletePhoto = useCallback(

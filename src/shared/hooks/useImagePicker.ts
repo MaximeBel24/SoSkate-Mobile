@@ -31,6 +31,7 @@ export interface UseImagePickerOptions {
   /** Taille max en pixels */
   maxWidth?: number;
   maxHeight?: number;
+  allowsMultiple?: boolean;
 }
 
 export interface UseImagePickerReturn {
@@ -40,6 +41,12 @@ export interface UseImagePickerReturn {
   isLoading: boolean;
   /** Ouvrir la galerie */
   pickFromGallery: () => Promise<SelectedImage | null>;
+  /** Ouvrir la galerie en multi-sélection */
+  pickMultipleFromGallery: () => Promise<SelectedImage[]>;
+  /** Afficher le menu multi-photos (galerie uniquement) */
+  showMultiImagePickerAlert: (
+      onImagesSelected?: (images: SelectedImage[]) => void,
+  ) => void;
   /** Ouvrir la caméra */
   takePhoto: () => Promise<SelectedImage | null>;
   /** Afficher le menu de choix (galerie ou caméra) */
@@ -183,6 +190,26 @@ export function useImagePicker(
   };
 
   /**
+   * Traite le résultat du picker en mode multi-sélection
+   */
+  const processMultipleResult = (
+      result: ImagePicker.ImagePickerResult,
+  ): SelectedImage[] => {
+    if (result.canceled || !result.assets || result.assets.length === 0) {
+      return [];
+    }
+
+    return result.assets.map((asset) => ({
+      uri: asset.uri,
+      type: asset.mimeType || getMimeType(asset.uri),
+      name: getFileName(asset.uri),
+      width: asset.width,
+      height: asset.height,
+      fileSize: asset.fileSize,
+    }));
+  };
+
+  /**
    * Ouvre la galerie pour sélectionner une image
    */
   const pickFromGallery =
@@ -211,6 +238,36 @@ export function useImagePicker(
         setIsLoading(false);
       }
     }, [mergedOptions]);
+
+  /**
+   * Ouvre la galerie en mode multi-sélection
+   */
+  const pickMultipleFromGallery = useCallback(async (): Promise<SelectedImage[]> => {
+    try {
+      setIsLoading(true);
+
+      const hasPermission = await requestGalleryPermission();
+      if (!hasPermission) {
+        return [];
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
+        quality: mergedOptions.quality,
+        orderedSelection: true,
+        selectionLimit: 10,
+      });
+
+      return processMultipleResult(result);
+    } catch (error) {
+      logger.error("Error picking multiple images:", error);
+      showAlert("Erreur", "Impossible d'accéder à la galerie");
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  }, [mergedOptions]);
 
   /**
    * Ouvre la caméra pour prendre une photo
@@ -279,6 +336,34 @@ export function useImagePicker(
   );
 
   /**
+   * Affiche un menu pour la multi-sélection (galerie uniquement, pas de caméra)
+   */
+  const showMultiImagePickerAlert = useCallback(
+      (onImagesSelected?: (images: SelectedImage[]) => void) => {
+        showAlert(
+            "Ajouter des photos",
+            "Sélectionnez une ou plusieurs photos depuis votre galerie",
+            [
+              {
+                text: "Galerie",
+                onPress: async () => {
+                  const images = await pickMultipleFromGallery();
+                  if (images.length > 0 && onImagesSelected) {
+                    onImagesSelected(images);
+                  }
+                },
+              },
+              {
+                text: "Annuler",
+                style: "cancel",
+              },
+            ],
+        );
+      },
+      [pickMultipleFromGallery],
+  );
+
+  /**
    * Réinitialise l'image sélectionnée
    */
   const clearSelection = useCallback(() => {
@@ -289,10 +374,13 @@ export function useImagePicker(
     selectedImage,
     isLoading,
     pickFromGallery,
+    pickMultipleFromGallery,  // ← AJOUTER
     takePhoto,
     showImagePickerAlert,
+    showMultiImagePickerAlert,  // ← AJOUTER
     clearSelection,
   };
+
 }
 
 export default useImagePicker;
