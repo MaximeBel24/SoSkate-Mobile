@@ -50,12 +50,13 @@ const RadiusFilter: React.FC<RadiusFilterProps> = ({
                 {isFiltering && (
                     <Pressable
                         onPress={() => onSelectRadius(null)}
-                        style={[styles.resetButton, { backgroundColor: "rgba(255, 107, 53, 0.15)" }]}
+                        style={[styles.resetButton, { backgroundColor: "rgba(239, 68, 68, 0.15)" }]}
                     >
-                        <Typo size={11} fontWeight="600" color="#ff6b35">
-                            Voir tous
+                        <Typo size={11} fontWeight="600" color="#ef4444">
+                            Supprimer le filtre
                         </Typo>
                     </Pressable>
+
                 )}
             </View>
 
@@ -65,7 +66,7 @@ const RadiusFilter: React.FC<RadiusFilterProps> = ({
                 minimumValue={2}
                 maximumValue={30}
                 step={1}
-                value={selectedRadius ?? 10}
+                value={selectedRadius ?? 1}
                 onValueChange={(value) => onSelectRadius(value)}
                 minimumTrackTintColor="#ff6b35"
                 maximumTrackTintColor={colors.neutral[600]}
