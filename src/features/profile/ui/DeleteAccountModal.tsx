@@ -1,5 +1,5 @@
-    import React, { useState } from "react";
-import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import {Modal, Pressable, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
@@ -8,7 +8,8 @@ import { deleteAccount } from "@/src/shared/services/authService";
 import { useCustomAlert } from "@/src/shared/ui/CustomModal/AlertContext";
 import {useAuth} from "@/src/shared/contexts/AuthContext";
 import {getErrorMessage} from "@/src/api/axios/getErrorMessage";
-    import {useRouter} from "expo-router";
+import {useRouter} from "expo-router";
+import * as Icons from "phosphor-react-native";
 
 type DeleteAccountModalProps = {
     visible: boolean;
@@ -27,6 +28,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const resetForm = () => {
         setPassword("");
@@ -47,11 +49,11 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
         try {
             await deleteAccount(password);
             handleClose();
-            // showAlert(
-            //     "Compte supprimé",
-            //     "Votre compte a été supprimé avec succès. Vous allez être déconnecté.",
-            //     [{ text: "OK" }]
-            // );
+            showAlert(
+                "Compte supprimé",
+                "Votre compte a été supprimé avec succès. Vous allez être déconnecté.",
+                [{ text: "OK" }]
+            );
             await logout()
             router.replace("/(auth)/welcome");
         } catch (error) {
@@ -92,21 +94,33 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
                         Entrez votre mot de passe pour confirmer.
                     </Typo>
 
-                    <TextInput
+                    <View
                         style={[
                             styles.input,
+                            styles.inputRow,
                             {
                                 backgroundColor: colors.background.subtle,
                                 borderColor: colors.semantic.danger + "40",
-                                color: colors.text.primary,
                             },
                         ]}
-                        placeholder="Votre mot de passe"
-                        placeholderTextColor={colors.text.muted}
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
-                    />
+                    >
+                        <TextInput
+                            style={[styles.inputText, { color: colors.text.primary }]}
+                            placeholder="Votre mot de passe"
+                            placeholderTextColor={colors.text.muted}
+                            secureTextEntry={!showPassword}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+                            {showPassword ? (
+                                <Icons.EyeIcon size={20} color={colors.text.muted} weight="duotone" />
+                            ) : (
+                                <Icons.EyeSlashIcon size={20} color={colors.text.muted} weight="duotone" />
+                            )}
+                        </TouchableOpacity>
+                    </View>
+
 
                     <View style={styles.buttons}>
                         <Pressable
@@ -183,4 +197,13 @@ const styles = StyleSheet.create({
         borderRadius: scale(12),
         alignItems: "center",
     },
+    inputRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    inputText: {
+        flex: 1,
+        fontSize: 14,
+    },
+
 });
