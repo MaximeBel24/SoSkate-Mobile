@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Pressable, StyleSheet, TextInput, View } from "react-native";
+import {Modal, Pressable, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
@@ -8,6 +8,7 @@ import { changePassword, verifyPassword } from "@/src/shared/services/authServic
 import { useCustomAlert } from "@/src/shared/ui/CustomModal/AlertContext";
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import PasswordRequirements from "@/src/features/auth/components/PasswordRequirements";
+import * as Icons from "phosphor-react-native";
 
 type ChangePasswordModalProps = {
     visible: boolean;
@@ -15,9 +16,9 @@ type ChangePasswordModalProps = {
 };
 
 const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
-                                                                     visible,
-                                                                     onClose,
-                                                                 }) => {
+     visible,
+     onClose,
+ }) => {
     const { colors } = useTheme();
     const { showAlert } = useCustomAlert();
 
@@ -27,6 +28,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const resetForm = () => {
         setStep(1);
@@ -138,14 +142,24 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                                 Entrez votre mot de passe actuel pour continuer
                             </Typo>
 
-                            <TextInput
-                                style={inputStyle}
-                                placeholder="Mot de passe actuel"
-                                placeholderTextColor={colors.text.muted}
-                                secureTextEntry
-                                value={currentPassword}
-                                onChangeText={setCurrentPassword}
-                            />
+                            <View style={[inputStyle, styles.inputRow]}>
+                                <TextInput
+                                    style={[styles.inputText, { color: colors.text.primary }]}
+                                    placeholder="Mot de passe actuel"
+                                    placeholderTextColor={colors.text.muted}
+                                    secureTextEntry={!showCurrentPassword}
+                                    value={currentPassword}
+                                    onChangeText={setCurrentPassword}
+                                />
+                                <TouchableOpacity onPress={() => setShowCurrentPassword(!showCurrentPassword)} hitSlop={8}>
+                                    {showCurrentPassword ? (
+                                        <Icons.EyeIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    ) : (
+                                        <Icons.EyeSlashIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+
 
                             <View style={styles.buttons}>
                                 <Pressable
@@ -177,28 +191,48 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                                 Nouveau mot de passe
                             </Typo>
 
-                            <TextInput
-                                style={inputStyle}
-                                placeholder="Nouveau mot de passe"
-                                placeholderTextColor={colors.text.muted}
-                                secureTextEntry
-                                value={newPassword}
-                                onChangeText={setNewPassword}
-                            />
+                            <View style={[inputStyle, styles.inputRow]}>
+                                <TextInput
+                                    style={[styles.inputText, { color: colors.text.primary }]}
+                                    placeholder="Nouveau mot de passe"
+                                    placeholderTextColor={colors.text.muted}
+                                    secureTextEntry={!showNewPassword}
+                                    value={newPassword}
+                                    onChangeText={setNewPassword}
+                                />
+                                <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)} hitSlop={8}>
+                                    {showNewPassword ? (
+                                        <Icons.EyeIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    ) : (
+                                        <Icons.EyeSlashIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+
 
                             <PasswordRequirements
                                 password={newPassword}
                                 onValidationChange={setIsPasswordValid}
                             />
 
-                            <TextInput
-                                style={[inputStyle, { marginTop: verticalScale(12) }]}
-                                placeholder="Confirmer le nouveau mot de passe"
-                                placeholderTextColor={colors.text.muted}
-                                secureTextEntry
-                                value={confirmPassword}
-                                onChangeText={setConfirmPassword}
-                            />
+                            <View style={[inputStyle, styles.inputRow, { marginTop: verticalScale(12) }]}>
+                                <TextInput
+                                    style={[styles.inputText, { color: colors.text.primary }]}
+                                    placeholder="Confirmer le nouveau mot de passe"
+                                    placeholderTextColor={colors.text.muted}
+                                    secureTextEntry={!showConfirmPassword}
+                                    value={confirmPassword}
+                                    onChangeText={setConfirmPassword}
+                                />
+                                <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} hitSlop={8}>
+                                    {showConfirmPassword ? (
+                                        <Icons.EyeIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    ) : (
+                                        <Icons.EyeSlashIcon size={20} color={colors.text.muted} weight="duotone" />
+                                    )}
+                                </TouchableOpacity>
+                            </View>
+
 
                             <View style={styles.buttons}>
                                 <Pressable
@@ -279,5 +313,13 @@ const styles = StyleSheet.create({
         paddingVertical: verticalScale(14),
         borderRadius: scale(12),
         alignItems: "center",
+    },
+    inputRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    inputText: {
+        flex: 1,
+        fontSize: 14,
     },
 });
