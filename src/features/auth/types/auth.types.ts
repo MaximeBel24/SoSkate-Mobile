@@ -29,6 +29,22 @@ export interface CustomerRegisterRequest {
 }
 
 /**
+ * Requête de mot de passe oublié
+ */
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+/**
+ * Requête de réinitialisation de mot de passe
+ */
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
+/**
  * Réponse de connexion unifiée (nouveau endpoint /api/auth/login)
  * Supporte Customer et Instructor
  */

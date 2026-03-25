@@ -1,14 +1,10 @@
-// ============================================
-// 🛹 SOSKATE - AUTH SERVICE
-// ============================================
-// Service d'authentification avec endpoint unifié
-
 import apiClient from "@/src/api/axios/axiosConfig";
 import { ENDPOINTS } from "@/src/shared/constants/constants";
 import {
   CustomerRegisterRequest,
   CustomerResponse,
-  LoginRequest,
+  ForgotPasswordRequest,
+  LoginRequest, ResetPasswordRequest,
   UnifiedLoginResponse,
 } from "@/src/features/auth/types/auth.types";
 import { handleApiError } from "@/src/api/axios/handleApiError";
@@ -109,6 +105,32 @@ export const verifyPassword = async (password: string): Promise<boolean> => {
   }
 };
 
+/**
+ * Demande un code de réinitialisation de mot de passe
+ * Envoie un code à 6 chiffres par email
+ */
+export const forgotPassword = async (
+    payload: ForgotPasswordRequest,
+): Promise<void> => {
+  try {
+    await apiClient.post(ENDPOINTS.AUTH.FORGOT_PASSWORD, payload);
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la demande de réinitialisation");
+  }
+};
+
+/**
+ * Réinitialise le mot de passe avec le code reçu par email
+ */
+export const resetPassword = async (
+    payload: ResetPasswordRequest,
+): Promise<void> => {
+  try {
+    await apiClient.post(ENDPOINTS.AUTH.RESET_PASSWORD, payload);
+  } catch (err) {
+    return handleApiError(err, "Erreur lors de la réinitialisation du mot de passe");
+  }
+};
 
 // ============================================
 // EMAIL VERIFICATION

@@ -15,10 +15,11 @@ export const ENDPOINTS = {
     EMAIL_EXISTS: "/auth/email-exists",
     CHANGE_PASSWORD: "/auth/change-password",
     DELETE_ACCOUNT: "/auth/delete-account",
+    FORGOT_PASSWORD: "/auth/forgot-password",
+    RESET_PASSWORD: "/auth/reset-password",
 
     // Endpoints Customer spécifiques
     CUSTOMER_REGISTER: "/customer/auth/register",
-    CUSTOMER_LOGIN: "/customer/auth/login",
 
   },
   ADMIN: {
