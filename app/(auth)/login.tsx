@@ -84,10 +84,7 @@ const Login = () => {
   };
 
   const handleForgotPassword = () => {
-    showAlert(
-      "Mot de passe oublié",
-      "Cette fonctionnalité sera bientôt disponible !",
-    );
+    router.push("/(auth)/forgot-password");
   };
 
   // === Render ===
