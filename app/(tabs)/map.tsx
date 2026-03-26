@@ -50,7 +50,6 @@ const MapScreen = () => {
     longitudeDelta: 0.05,
   };
 
-
   // Région initiale : position de l'utilisateur si disponible, sinon Paris
   // useMemo évite de recréer l'objet à chaque render
   const initialRegion = useMemo<Region>(() => {
@@ -80,7 +79,7 @@ const MapScreen = () => {
     });
   }, [spots, selectedRadius, userLocation]);
 
-  const NAVBAR_HEIGHT = 80;
+  const NAVBAR_HEIGHT = 25;
   const SPOT_CARD_HEIGHT = 400;
 
   useEffect(() => {
@@ -244,7 +243,6 @@ const MapScreen = () => {
                   strokeWidth={2}
               />
           )}
-
 
         {/* Marqueur utilisateur : affiché uniquement si la géoloc est disponible */}
         {userLocation && (

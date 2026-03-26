@@ -1,13 +1,10 @@
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
   FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  withSpring,
+  FadeOut
 } from "react-native-reanimated";
 import TabIcon from "./TabIcon";
 
@@ -35,11 +32,6 @@ const AnimatedTab = ({
 }: AnimatedTabProps) => {
   const { colors } = useTheme();
 
-  const animatedBackgroundStyle = useAnimatedStyle(() => ({
-    opacity: withSpring(isFocused ? 1 : 0, { damping: 15 }),
-    transform: [{ scale: withSpring(isFocused ? 1 : 0.8, { damping: 15 }) }],
-  }));
-
   const displayLabel = LABEL_MAP[label] || label;
 
   return (
@@ -52,17 +44,6 @@ const AnimatedTab = ({
       activeOpacity={0.7}
     >
       <View style={styles.tabContent}>
-        {/* Background actif avec gradient */}
-        <Animated.View
-          style={[styles.activeBackground, animatedBackgroundStyle]}
-        >
-          <LinearGradient
-            colors={[colors.accent.primary, colors.accent.primaryDark]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.activeGradient}
-          />
-        </Animated.View>
 
         {/* Icône */}
         <View style={styles.iconContainer}>
@@ -107,18 +88,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacingY._8,
     paddingHorizontal: spacingX._12,
     minWidth: 70,
-  },
-  activeBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 16,
-  },
-  activeGradient: {
-    flex: 1,
-    opacity: 0.15,
   },
   iconContainer: {
     marginBottom: 4,

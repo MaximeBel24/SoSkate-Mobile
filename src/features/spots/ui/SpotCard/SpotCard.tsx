@@ -13,10 +13,12 @@ import { SpotResponse } from "@/src/shared/types/spot.interface";
 import PhotoGallery from "@/src/shared/ui/media/PhotoGallery";
 import Typo from "@/src/shared/ui/typography/Typo";
 import * as Icons from "phosphor-react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -26,7 +28,8 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 type SpotCardProps = {
   spot: SpotResponse;
@@ -86,6 +89,16 @@ const SpotCard = ({ spot, bottomInset, onClose, distance }: SpotCardProps) => {
   };
 
   const isLoading = loadingServices || loadingInstructors;
+  const shadowOpacity = useSharedValue(0);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    shadowOpacity.value = withTiming(offsetY > 5 ? 1 : 0, { duration: 200 });
+  }, []);
+
+  const galleryShadowStyle = useAnimatedStyle(() => ({
+    opacity: shadowOpacity.value,
+  }));
   const hasContent = instructors.length > 0 || services.length > 0;
 
   return (
@@ -145,14 +158,31 @@ const SpotCard = ({ spot, bottomInset, onClose, distance }: SpotCardProps) => {
         </TouchableOpacity>
 
         {/* === SCROLLABLE CONTENT === */}
-        <ScrollView
-          style={styles.mainScrollView}
-          contentContainerStyle={styles.mainScrollContent}
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled
-          scrollEnabled={isExpanded}
+        {/* Gallery shadow */}
+        {/* Gallery shadow */}
+        <Animated.View
+            style={[
+              styles.galleryShadow,
+              galleryShadowStyle,
+            ]}
+            pointerEvents="none"
         >
-          <View style={styles.spotInfoSection}>
+          <LinearGradient
+              colors={["rgba(0,0,0,0.15)", "transparent"]}
+              style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
+
+        <ScrollView
+            style={styles.mainScrollView}
+            contentContainerStyle={styles.mainScrollContent}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+            scrollEnabled={isExpanded}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+        >
+        <View style={styles.spotInfoSection}>
             <SpotInfo
               name={spot.name}
               address={spot.address}
@@ -319,4 +349,10 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     gap: 12,
   },
+  galleryShadow: {
+    height: 16,
+    marginTop: -1,
+    zIndex: 5,
+  },
+
 });
