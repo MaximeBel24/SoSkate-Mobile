@@ -1,10 +1,10 @@
 import { radius, spacingX, spacingY } from "@/src/shared/constants/theme";
 import { useTheme } from "@/src/shared/theme";
 import Typo from "@/src/shared/ui/typography/Typo";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Icons from "phosphor-react-native";
 import React, { useState } from "react";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import CalendarModal from "@/src/shared/ui/form/CalendarModal";
 
 interface DatePickerInputProps {
   value: Date | null;
@@ -12,6 +12,7 @@ interface DatePickerInputProps {
   minimumDate?: Date;
   maximumDate?: Date;
   placeholder?: string;
+  title?: string;
   formatDate?: (date: Date) => string;
 }
 
@@ -21,6 +22,7 @@ const DatePickerInput = ({
   minimumDate = new Date(1940, 0, 1),
   maximumDate = new Date(),
   placeholder,
+  title = "Sélectionner une date",
   formatDate = (date) =>
     date.toLocaleDateString("fr-FR", {
       day: "2-digit",
@@ -28,16 +30,23 @@ const DatePickerInput = ({
       year: "numeric",
     }),
 }: DatePickerInputProps) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [showPicker, setShowPicker] = useState(false);
 
-  const handleChange = (event: any, selectedDate?: Date) => {
-    if (Platform.OS === "android") {
-      setShowPicker(false);
-    }
-    if (selectedDate) {
-      onChange(selectedDate);
-    }
+  // Convertir Date en string YYYY-MM-DD pour le calendrier
+  const selectedDateString = value
+      ? value.toISOString().split("T")[0]
+      : undefined;
+
+  // Convertir les limites en string YYYY-MM-DD
+  const minDateString = minimumDate.toISOString().split("T")[0];
+  const maxDateString = maximumDate.toISOString().split("T")[0];
+
+  const handleSelectDate = (dateString: string) => {
+    // dateString est au format YYYY-MM-DD
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    onChange(date);
   };
 
   return (
@@ -71,19 +80,15 @@ const DatePickerInput = ({
         />
       </TouchableOpacity>
 
-      {showPicker && (
-        <DateTimePicker
-          value={value ?? new Date()}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={handleChange}
-          maximumDate={maximumDate}
-          minimumDate={minimumDate}
-          accentColor={colors.accent.primary}
-          textColor={colors.text.primary}
-          themeVariant={isDark ? "dark" : "light"}
-        />
-      )}
+      <CalendarModal
+          visible={showPicker}
+          onClose={() => setShowPicker(false)}
+          onSelectDate={handleSelectDate}
+          selectedDate={selectedDateString}
+          minDate={minDateString}
+          maxDate={maxDateString}
+          title={title}
+      />
     </View>
   );
 };

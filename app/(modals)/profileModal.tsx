@@ -1,8 +1,3 @@
-// ============================================
-// 🛹 SOSKATE - PROFILE MODAL
-// ============================================
-// Modal d'édition du profil avec upload photo
-
 import { getErrorMessage } from "@/src/api/axios/getErrorMessage";
 import { spacingX, spacingY } from "@/src/shared/constants/theme";
 import { logger } from "@/src/shared/utils/logger";
@@ -696,9 +691,6 @@ const ProfileModal = () => {
 
 export default ProfileModal;
 
-// ============================================
-// STYLES
-// ============================================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
