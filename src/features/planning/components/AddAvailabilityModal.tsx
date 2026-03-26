@@ -1,8 +1,3 @@
-// ============================================
-// 🛹 SOSKATE - ADD AVAILABILITY MODAL
-// ============================================
-// Modal pour ajouter ou modifier une disponibilité
-
 import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
@@ -10,7 +5,6 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,6 +18,8 @@ import {
   PLANNING_END_HOUR,
 } from "../types/planning.types";
 import { useCustomAlert } from "@/src/shared/ui/CustomModal/AlertContext";
+import "@/src/shared/ui/form/CalendarModal"; // Pour initialiser la locale FR
+import { Calendar } from "react-native-calendars";
 
 interface AddAvailabilityModalProps {
   visible: boolean;
@@ -58,28 +54,6 @@ const generateTimeOptions = (): string[] => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
-// Générer les 14 prochains jours
-const generateDateOptions = (): { date: string; label: string }[] => {
-  const options: { date: string; label: string }[] = [];
-  const today = new Date();
-
-  for (let i = 0; i < 14; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-
-    const dateString = date.toISOString().split("T")[0];
-    const label = date.toLocaleDateString("fr-FR", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    });
-
-    options.push({ date: dateString, label });
-  }
-
-  return options;
-};
-
 const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
   visible,
   onClose,
@@ -99,9 +73,55 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
   const [endTime, setEndTime] = useState("12:00");
 
   const isEditMode = !!existingAvailability;
-  const dateOptions = useMemo(() => generateDateOptions(), []);
 
   const { showAlert } = useCustomAlert();
+
+  // Date minimum : dans 3 jours
+  const minAvailabilityDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return d.toISOString().split("T")[0];
+  }, []);
+
+  // Date maximum : dans 3 mois
+  const maxAvailabilityDate = useMemo(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 3);
+    return d.toISOString().split("T")[0];
+  }, []);
+
+  const calendarTheme = useMemo(
+      () => ({
+        backgroundColor: "transparent",
+        calendarBackground: "transparent",
+        monthTextColor: colors.text.primary,
+        textMonthFontSize: 16,
+        textMonthFontWeight: "700" as const,
+        arrowColor: colors.accent.primary,
+        textSectionTitleColor: colors.text.muted,
+        textDayHeaderFontSize: 13,
+        textDayHeaderFontWeight: "600" as const,
+        dayTextColor: colors.text.primary,
+        textDayFontSize: 15,
+        textDayFontWeight: "500" as const,
+        selectedDayBackgroundColor: colors.accent.primary,
+        selectedDayTextColor: "#fff",
+        todayTextColor: colors.accent.primary,
+        textDisabledColor: "rgba(128,128,128,0.3)",
+      }),
+      [colors],
+  );
+
+  const markedDates = useMemo(() => {
+    if (!date) return {};
+    return {
+      [date]: {
+        selected: true,
+        selectedColor: colors.accent.primary,
+        selectedTextColor: "#fff",
+      },
+    };
+  }, [date, colors.accent.primary]);
 
   // Initialiser les valeurs
   useEffect(() => {
@@ -290,78 +310,83 @@ const AddAvailabilityModal: React.FC<AddAvailabilityModalProps> = ({
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          {/* Date - Sélectionnable si pas en mode édition */}
+          {/* Date */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Icons.CalendarIcon
-                size={20}
-                color={colors.accent.primary}
-                weight="fill"
+                  size={20}
+                  color={colors.accent.primary}
+                  weight="fill"
               />
               <Typo size={14} fontWeight="600" color={colors.text.primary}>
                 Date
               </Typo>
+              {date && (
+                  <Typo
+                      size={13}
+                      color={colors.text.muted}
+                      style={{ marginLeft: "auto", textTransform: "capitalize" }}
+                  >
+                    {formatDateDisplay(date)}
+                  </Typo>
+              )}
             </View>
 
             {isEditMode ? (
-              // En mode édition, date non modifiable
-              <View
-                style={[
-                  styles.dateDisplay,
-                  {
-                    backgroundColor: colors.background.subtle,
-                    borderColor: colors.border.default,
-                  },
-                ]}
-              >
-                <Typo
-                  size={15}
-                  color={colors.text.primary}
-                  style={{ textTransform: "capitalize" }}
-                >
-                  {formatDateDisplay(date)}
-                </Typo>
-              </View>
-            ) : (
-              // En mode création, dates sélectionnables
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.dateOptionsContainer}
-              >
-                {dateOptions.map((option) => (
-                  <Pressable
-                    key={option.date}
-                    onPress={() => handleDateSelect(option.date)}
+                <View
                     style={[
-                      styles.dateOption,
+                      styles.dateDisplay,
                       {
-                        backgroundColor:
-                          date === option.date
-                            ? colors.accent.primary
-                            : colors.background.subtle,
-                        borderColor:
-                          date === option.date
-                            ? colors.accent.primary
-                            : colors.border.default,
+                        backgroundColor: colors.background.subtle,
+                        borderColor: colors.border.default,
                       },
                     ]}
-                  >
-                    <Typo
-                      size={12}
-                      fontWeight={date === option.date ? "600" : "400"}
-                      color={
-                        date === option.date
-                          ? colors.constant.white
-                          : colors.text.primary
-                      }
+                >
+                  <Typo
+                      size={15}
+                      color={colors.text.primary}
                       style={{ textTransform: "capitalize" }}
-                    >
-                      {option.label}
-                    </Typo>
-                  </Pressable>
-                ))}
-              </ScrollView>
+                  >
+                    {formatDateDisplay(date)}
+                  </Typo>
+                </View>
+            ) : (
+                <View
+                    style={[
+                      styles.calendarContainer,
+                      {
+                        backgroundColor: colors.background.subtle,
+                        borderColor: colors.border.default,
+                      },
+                    ]}
+                >
+                  <Calendar
+                      theme={calendarTheme}
+                      markedDates={markedDates}
+                      minDate={minAvailabilityDate}
+                      maxDate={maxAvailabilityDate}
+                      onDayPress={(day: { dateString: string }) => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        setDate(day.dateString);
+                      }}
+                      enableSwipeMonths
+                      renderArrow={(direction: string) =>
+                          direction === "left" ? (
+                              <Icons.CaretLeftIcon
+                                  size={18}
+                                  color={colors.accent.primary}
+                                  weight="bold"
+                              />
+                          ) : (
+                              <Icons.CaretRightIcon
+                                  size={18}
+                                  color={colors.accent.primary}
+                                  weight="bold"
+                              />
+                          )
+                      }
+                  />
+                </View>
             )}
           </View>
 
@@ -682,5 +707,11 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     borderRadius: 12,
+  },
+  calendarContainer: {
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: "hidden",
+    paddingBottom: 4,
   },
 });
