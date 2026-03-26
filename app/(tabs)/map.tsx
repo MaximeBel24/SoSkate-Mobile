@@ -2,7 +2,6 @@ import ErrorState from "@/src/features/map/ui/MapLoadingStates/ErrorState";
 import LoadingState from "@/src/features/map/ui/MapLoadingStates/LoadingState";
 import CustomMarker from "@/src/features/map/ui/MapView/CustomMarker";
 import UserMarker from "@/src/features/map/ui/MapView/UserMarker";
-import MapControls from "@/src/features/map/ui/MapView/MapControls";
 import MapHeader from "@/src/features/map/ui/MapView/MapHeader";
 import MapSearchBar from "@/src/features/map/ui/MapView/MapSearchBar";
 import SpotCard from "@/src/features/spots/ui/SpotCard/SpotCard";
@@ -270,13 +269,7 @@ const MapScreen = () => {
           onFilterPress={() => setShowRadiusFilter(!showRadiusFilter)}
           isFilterActive={selectedRadius !== null}
           showFilter={!!userLocation}
-      />
-
-
-      <MapControls
-        topInset={insets.top}
-        onRecenter={handleRecenterMap}
-        onRefresh={loadSpots}
+          onRecenter={handleRecenterMap}
       />
 
       {selectedSpot && (

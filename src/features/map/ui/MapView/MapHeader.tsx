@@ -14,15 +14,17 @@ type MapHeaderProps = {
   onFilterPress: () => void;
   isFilterActive: boolean;
   showFilter: boolean;
+  onRecenter: () => void;
 };
 
 const MapHeader = ({
-                     spotsCount,
-                     topInset,
-                     onSearchPress,
-                     onFilterPress,
-                     isFilterActive,
-                     showFilter
+     spotsCount,
+     topInset,
+     onSearchPress,
+     onFilterPress,
+     isFilterActive,
+     showFilter,
+    onRecenter
 }: MapHeaderProps) => {
 
   const { colors, isDark } = useTheme();
@@ -67,7 +69,7 @@ const MapHeader = ({
             {showFilter && (
                 <TouchableOpacity
                     style={[
-                      styles.searchButton,
+                      styles.headerButton,
                       {
                         backgroundColor: colors.background.elevated,
                         borderColor: isFilterActive ? "#ff6b35" : colors.border.default,
@@ -87,7 +89,7 @@ const MapHeader = ({
 
             <TouchableOpacity
                 style={[
-                  styles.searchButton,
+                  styles.headerButton,
                   {
                     backgroundColor: colors.background.elevated,
                     borderColor: colors.border.default,
@@ -97,6 +99,24 @@ const MapHeader = ({
                 activeOpacity={0.7}
             >
               <Icons.MagnifyingGlassIcon
+                  size={20}
+                  color={colors.text.primary}
+                  weight="bold"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                  styles.headerButton,
+                {
+                  backgroundColor: colors.background.elevated,
+                  borderColor: colors.border.default,
+                },
+              ]}
+              onPress={onRecenter}
+              activeOpacity={0.7}
+            >
+              <Icons.CrosshairSimpleIcon
                   size={20}
                   color={colors.text.primary}
                   weight="bold"
@@ -139,9 +159,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
   },
-  searchButton: {
+  headerButton: {
     width: 44,
     height: 44,
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 12,
