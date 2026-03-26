@@ -12,7 +12,6 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,7 +24,6 @@ import Typo from "@/src/shared/ui/typography/Typo";
 
 // Booking components
 import BookingStepper from "@/src/features/booking/components/BookingStepper";
-import WeekCalendar from "@/src/features/booking/components/WeekCalendar";
 import DurationPicker from "@/src/features/booking/components/DurationPicker";
 import TimeSlotList from "@/src/features/booking/components/TimeSlotList";
 import BookingSummary from "@/src/features/booking/components/BookingSummary";
@@ -45,6 +43,7 @@ import { useAuth } from "@/src/shared/contexts/AuthContext";
 import { TimeSlot } from "@/src/shared/services/availableSlotsService";
 import { logger } from "@/src/shared/utils/logger";
 import {useCustomAlert} from "@/src/shared/ui/CustomModal/AlertContext";
+import BookingCalendar from "@/src/features/booking/components/BookingCalendar";
 
 export default function BookingScreen() {
   const { colors } = useTheme();
@@ -296,7 +295,7 @@ export default function BookingScreen() {
                 </Typo>
               </View>
             ) : (
-              <WeekCalendar
+              <BookingCalendar
                 selectedDate={state.selectedDate}
                 onSelectDate={selectDate}
                 hasAvailability={hasAvailabilityForDate}
