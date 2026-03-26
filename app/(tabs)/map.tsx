@@ -23,6 +23,23 @@ import LocationDeniedBanner from "@/src/features/map/ui/MapView/LocationDeniedBa
 import * as Location from "expo-location";
 import {useLocationSettings} from "@/src/shared/contexts/LocationContext";
 
+const TrackedMarker = ({ children, ...props }: any) => {
+  const [tracksViewChanges, setTracksViewChanges] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setTracksViewChanges(false);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  return (
+      <Marker {...props} tracksViewChanges={tracksViewChanges}>
+        {children}
+      </Marker>
+  );
+};
+
 const MapScreen = () => {
   const mapRef = useRef<MapView>(null);
   const insets = useSafeAreaInsets();
@@ -219,16 +236,16 @@ const MapScreen = () => {
         {filteredSpots
           .filter((spot) => spot.latitude && spot.longitude)
           .map((spot) => (
-            <Marker
-              key={spot.id}
-              coordinate={{
-                latitude: spot.latitude,
-                longitude: spot.longitude,
-              }}
-              onPress={() => handleMarkerPress(spot)}
-            >
-              <CustomMarker isSelected={selectedSpot?.id === spot.id} />
-            </Marker>
+              <TrackedMarker
+                  key={spot.id}
+                  coordinate={{
+                    latitude: spot.latitude,
+                    longitude: spot.longitude,
+                  }}
+                  onPress={() => handleMarkerPress(spot)}
+              >
+                <CustomMarker isSelected={selectedSpot?.id === spot.id} />
+              </TrackedMarker>
           ))}
           {userLocation && selectedRadius && (
               <Circle
@@ -245,20 +262,19 @@ const MapScreen = () => {
 
         {/* Marqueur utilisateur : affiché uniquement si la géoloc est disponible */}
         {userLocation && (
-          <Marker
-            coordinate={{
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude,
-            }}
-            tracksViewChanges={true}
-          >
-            <UserMarker />
-            <Callout tooltip>
-              <View style={styles.callout}>
-                <Text style={styles.calloutText}>Vous êtes ici</Text>
-              </View>
-            </Callout>
-          </Marker>
+            <TrackedMarker
+                coordinate={{
+                  latitude: userLocation.latitude,
+                  longitude: userLocation.longitude,
+                }}
+            >
+              <UserMarker />
+              <Callout tooltip>
+                <View style={styles.callout}>
+                  <Text style={styles.calloutText}>Vous êtes ici</Text>
+                </View>
+              </Callout>
+            </TrackedMarker>
         )}
       </MapView>
 

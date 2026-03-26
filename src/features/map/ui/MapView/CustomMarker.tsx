@@ -7,7 +7,7 @@ type CustomMarkerProps = {
   isSelected: boolean;
 };
 
-const CustomMarker = ({ isSelected }: CustomMarkerProps) => {
+const CustomMarker: React.FC<{ isSelected: boolean }> = React.memo(({ isSelected }) => {
   const { colors } = useTheme();
 
   return (
@@ -30,7 +30,9 @@ const CustomMarker = ({ isSelected }: CustomMarkerProps) => {
       </View>
     </View>
   );
-};
+});
+
+CustomMarker.displayName = "CustomMarker";
 
 export default CustomMarker;
 
